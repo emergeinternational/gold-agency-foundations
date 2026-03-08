@@ -18,7 +18,7 @@ export default function TalentCategories() {
     <Layout>
       <PageHero
         badge="Disciplines"
-        title="Eight Categories. One Standard."
+        title="Ten Disciplines. One Standard."
         subtitle="We represent and develop talent across the full spectrum of creative industries — from broadcast media to digital storytelling."
       />
 
