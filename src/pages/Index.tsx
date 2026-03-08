@@ -168,7 +168,7 @@ export default function Index() {
         <div className="container-wide">
           <SectionHeading
             badge="Disciplines"
-            title="Eight Categories. One Standard of Excellence."
+            title="Ten Disciplines. One Standard of Excellence."
             subtitle="From broadcast media to digital storytelling — we champion talent that shapes culture and commands attention."
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">

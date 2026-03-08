@@ -23,6 +23,8 @@ import SubmissionTerms from "./pages/SubmissionTerms";
 import SubmissionSuccess from "./pages/SubmissionSuccess";
 import BookingSuccess from "./pages/BookingSuccess";
 import EnrollmentSuccess from "./pages/EnrollmentSuccess";
+import Roster from "./pages/Roster";
+import TalentProfile from "./pages/TalentProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -54,6 +56,8 @@ const App = () => (
           <Route path="/submission-success" element={<SubmissionSuccess />} />
           <Route path="/booking-success" element={<BookingSuccess />} />
           <Route path="/enrollment-success" element={<EnrollmentSuccess />} />
+          <Route path="/roster" element={<Roster />} />
+          <Route path="/roster/:slug" element={<TalentProfile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

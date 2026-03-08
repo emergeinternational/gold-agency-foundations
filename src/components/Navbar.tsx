@@ -9,6 +9,7 @@ const navLinks = [
   { label: "Mr. Zik", href: "/mr-zik" },
   { label: "Representation", href: "/representation" },
   { label: "Talent", href: "/talent-categories" },
+  { label: "Roster", href: "/roster" },
   { label: "Academy", href: "/academy" },
   { label: "Submissions", href: "/submit" },
   { label: "Book Talent", href: "/book-talent" },
