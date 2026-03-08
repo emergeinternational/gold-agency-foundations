@@ -25,12 +25,12 @@ export default function MrZik() {
         <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-transparent" />
         <div className="relative z-10 container-wide px-5 sm:px-8 lg:px-12 pb-16 sm:pb-20 lg:pb-24 pt-40">
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" as const }}>
-            <span className="badge-label mb-5 block">The Face of {BRAND.name}</span>
+            <span className="badge-label mb-5 block">Ambassador · {BRAND.name}</span>
             <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold text-foreground leading-[1.02] tracking-tight">
               Mr. Zik
             </h1>
             <p className="mt-6 text-lg sm:text-xl text-secondary-foreground/80 leading-relaxed max-w-lg font-light">
-              Ambassador, visionary, and the public leader of a movement redefining talent representation and development.
+              The public face of {BRAND.name} — leading a movement that connects African creative talent with global opportunity.
             </p>
           </motion.div>
         </div>
@@ -44,18 +44,18 @@ export default function MrZik() {
               <motion.div {...fadeUp}>
                 <span className="badge-label mb-5 block">Biography</span>
                 <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground leading-[1.1] mb-8">
-                  Leading with Vision
+                  A Career Built on Access and Integrity
                 </h2>
                 <div className="gold-line mb-10" />
                 <div className="space-y-5 text-muted-foreground leading-[1.8] text-[15px]">
                   <p>
-                    Mr. Zik is a media personality, talent advocate, and creative strategist who has dedicated his career to building pathways for emerging and established talent. As the face of {BRAND.name}, he represents the agency's commitment to excellence, access, and global ambition.
+                    Mr. Zik is a media personality, talent advocate, and creative strategist whose career has been defined by one purpose: building real pathways for exceptional talent. As the ambassador of {BRAND.name}, he represents the agency's unwavering standard of professionalism, credibility, and creative ambition.
                   </p>
                   <p>
-                    With a background spanning media production, entertainment, and talent development, Mr. Zik brings a rare combination of industry insight and genuine passion for elevating creative professionals. His vision is simple: every talented individual deserves access to the tools, training, and opportunities that can transform their potential into a lasting career.
+                    His background spans media production, entertainment, and talent development — a combination that gives him rare insight into what it takes to succeed on both sides of the industry. He understands the business because he's lived it, and he understands talent because he's championed it from the beginning.
                   </p>
                   <p>
-                    Under his leadership, {BRAND.name} has positioned itself as more than a talent agency — it's a development platform that takes talent from where they are to where they're meant to be.
+                    Under his public leadership, {BRAND.name} has grown into more than a talent agency — it's a development platform where emerging and established creatives gain access to the training, positioning, and opportunities that define lasting careers.
                   </p>
                 </div>
               </motion.div>
@@ -77,7 +77,7 @@ export default function MrZik() {
           <motion.div {...fadeUp} className="text-center">
             <Quote className="w-8 h-8 text-primary/30 mx-auto mb-6" strokeWidth={1} />
             <blockquote className="font-display text-xl sm:text-2xl lg:text-3xl font-light text-foreground/90 leading-relaxed italic">
-              "I believe that talent is universal, but opportunity is not. {BRAND.name} exists to change that equation — one creative at a time."
+              "Talent is everywhere. What's rare is the infrastructure to support it. That's what we're building — not promises, but pathways."
             </blockquote>
             <p className="mt-6 text-sm text-primary font-semibold tracking-[0.2em] uppercase">— Mr. Zik</p>
           </motion.div>
@@ -87,12 +87,12 @@ export default function MrZik() {
       {/* Why Mr. Zik */}
       <section className="section-padding">
         <div className="container-wide">
-          <SectionHeading badge="Leadership" title="Credibility. Access. Trust." align="left" />
+          <SectionHeading badge="Leadership" title="Why His Presence Matters" align="left" />
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {[
-              { title: "Industry Access", desc: "Deep relationships across media, entertainment, and brand ecosystems that directly benefit represented talent." },
-              { title: "Hands-On Involvement", desc: "Actively involved in talent scouting, program development, and strategic partnerships — not just a figurehead." },
-              { title: "Talent-First Culture", desc: "His involvement ensures the agency's culture remains personal, ambitious, and genuinely invested in every talent's growth." },
+              { title: "Industry Relationships", desc: "Established connections across media, entertainment, and brand ecosystems that open real doors for represented talent." },
+              { title: "Active Involvement", desc: "Personally invested in talent scouting, program development, and strategic partnerships — not a figurehead, but a working leader." },
+              { title: "Culture of Trust", desc: "His presence ensures the agency stays personal, ambitious, and genuinely invested in every creative's trajectory." },
             ].map((item, i) => (
               <motion.div key={item.title} {...fadeUp} transition={{ duration: 0.5, delay: i * 0.08 }} className="card-premium p-8 card-hover">
                 <h3 className="font-display text-xl font-semibold text-foreground mb-3">{item.title}</h3>
@@ -106,12 +106,12 @@ export default function MrZik() {
       {/* Media */}
       <section className="section-padding bg-card/50 border-y border-border/20">
         <div className="container-wide">
-          <SectionHeading badge="Media" title="Featured Appearances" subtitle="Highlights from Mr. Zik's media presence and public engagements." />
+          <SectionHeading badge="Media" title="Public Engagements" subtitle="Selected highlights from Mr. Zik's media presence and speaking appearances." />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {[
-              { title: "Agency Launch Keynote", type: "Video", desc: "The founding vision behind The Gold Agency and what it means for talent in Africa." },
-              { title: "Media & Entertainment Panel", type: "Interview", desc: "Discussing the future of talent representation in a digital-first world." },
-              { title: "Academy Opening Address", type: "Event", desc: "Welcoming the first cohort of academy participants and setting the standard." },
+              { title: "Agency Launch Address", type: "Keynote", desc: "The founding vision behind {BRAND.name} and what it means for the future of talent in Africa." },
+              { title: "The Future of Representation", type: "Panel", desc: "A candid conversation on what modern talent representation should look like in a digital-first world." },
+              { title: "Academy Inaugural Address", type: "Event", desc: "Setting the standard for the first cohort of academy participants and the program's long-term vision." },
             ].map((item, i) => (
               <motion.div key={i} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.08 }} className="card-premium overflow-hidden card-hover">
                 <div className="aspect-video bg-secondary/50 flex items-center justify-center">
@@ -131,19 +131,19 @@ export default function MrZik() {
       <section className="section-padding">
         <div className="container-narrow text-center">
           <motion.div {...fadeUp}>
-            <span className="badge-label mb-5 block">Join the Movement</span>
+            <span className="badge-label mb-5 block">Be Part of It</span>
             <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground leading-[1.1]">
-              Your Journey Starts Here
+              The Door Is Open
             </h2>
             <p className="mt-5 text-muted-foreground text-base max-w-lg mx-auto font-light">
-              Mr. Zik invites talent, partners, and creative leaders to be part of something built to last.
+              Mr. Zik invites talent, collaborators, and creative leaders to join a platform built on substance, not spectacle.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
               <Button variant="hero" size="xl" asChild>
-                <Link to="/submit">Submit Your Talent <ArrowRight className="w-4 h-4 ml-2" /></Link>
+                <Link to="/submit">Apply for Representation <ArrowRight className="w-4 h-4 ml-2" /></Link>
               </Button>
               <Button variant="hero-outline" size="xl" asChild>
-                <Link to="/academy">Explore Academy</Link>
+                <Link to="/academy">Explore the Academy</Link>
               </Button>
             </div>
           </motion.div>

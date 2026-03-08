@@ -31,14 +31,14 @@ export default function Submit() {
     const e: Record<string, string> = {};
     if (!form.fullName.trim()) e.fullName = "Full name is required";
     if (!form.email.trim()) e.email = "Email is required";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Valid email required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Please enter a valid email";
     if (!form.category) e.category = "Please select a category";
-    if (!form.shortBio.trim()) e.shortBio = "Short bio is required";
-    if (!form.whyRepresentation.trim()) e.whyRepresentation = "This field is required";
-    if (!consent) e.consent = "Consent is required";
+    if (!form.shortBio.trim()) e.shortBio = "A short bio is required";
+    if (!form.whyRepresentation.trim()) e.whyRepresentation = "Please share your goals";
+    if (!consent) e.consent = "Consent is required to proceed";
     if (!agreeTerms) e.agreeTerms = "You must agree to submission terms";
-    if (isMinor && !form.guardianName.trim()) e.guardianName = "Guardian name required for minors";
-    if (isMinor && !form.guardianEmail.trim()) e.guardianEmail = "Guardian email required for minors";
+    if (isMinor && !form.guardianName.trim()) e.guardianName = "Required for applicants under 18";
+    if (isMinor && !form.guardianEmail.trim()) e.guardianEmail = "Required for applicants under 18";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -56,8 +56,8 @@ export default function Submit() {
     <Layout>
       <PageHero
         badge="Open Submissions"
-        title="Submit Your Talent"
-        subtitle="All talent categories are welcome to submit. Submission does not guarantee representation — every application is reviewed carefully by our team."
+        title="Show Us What You've Got"
+        subtitle="We welcome talent across every category and experience level. This is your first step toward professional representation — take it seriously, and so will we."
       />
 
       <section className="section-padding">
@@ -68,10 +68,10 @@ export default function Submit() {
               <div>
                 <p className="text-sm text-foreground font-medium">Before you begin</p>
                 <ul className="text-xs text-muted-foreground mt-1 space-y-1 list-disc list-inside">
-                  <li>Submission does not guarantee representation</li>
-                  <li>Review timelines may vary based on volume</li>
-                  <li>Classes and workshops do not guarantee signing</li>
-                  <li>All talent categories are welcome to submit</li>
+                  <li>Submission is an application — it does not guarantee representation</li>
+                  <li>Review timelines vary depending on volume and category</li>
+                  <li>Academy enrollment is separate from representation consideration</li>
+                  <li>All talent categories and experience levels are welcome</li>
                 </ul>
               </div>
             </div>
@@ -117,7 +117,7 @@ export default function Submit() {
 
             {/* Social Links */}
             <fieldset>
-              <legend className="font-display text-xl font-semibold text-foreground mb-6">Social & Portfolio Links</legend>
+              <legend className="font-display text-xl font-semibold text-foreground mb-6">Social & Portfolio</legend>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className={labelClass}>Instagram</label>
@@ -136,8 +136,8 @@ export default function Submit() {
                   <input className={inputClass} value={form.website} onChange={e => update("website", e.target.value)} placeholder="https://..." />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className={labelClass}>Additional Portfolio Links</label>
-                  <textarea className={`${inputClass} min-h-[80px]`} value={form.portfolioLinks} onChange={e => update("portfolioLinks", e.target.value)} placeholder="Any other links to your work (one per line)" />
+                  <label className={labelClass}>Additional Work Links</label>
+                  <textarea className={`${inputClass} min-h-[80px]`} value={form.portfolioLinks} onChange={e => update("portfolioLinks", e.target.value)} placeholder="Any other links to your work — one per line" />
                 </div>
               </div>
             </fieldset>
@@ -149,7 +149,7 @@ export default function Submit() {
                 <div>
                   <label className={labelClass}>Category *</label>
                   <select className={inputClass} value={form.category} onChange={e => update("category", e.target.value)}>
-                    <option value="">Select your category</option>
+                    <option value="">Select your primary category</option>
                     {TALENT_CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
                   </select>
                   {errors.category && <p className={errorClass}>{errors.category}</p>}
@@ -158,20 +158,20 @@ export default function Submit() {
                   <label className={labelClass}>Experience Level</label>
                   <select className={inputClass} value={form.experienceLevel} onChange={e => update("experienceLevel", e.target.value)}>
                     <option value="">Select level</option>
-                    <option value="beginner">Beginner</option>
-                    <option value="intermediate">Intermediate</option>
-                    <option value="advanced">Advanced</option>
-                    <option value="professional">Professional</option>
+                    <option value="beginner">Emerging</option>
+                    <option value="intermediate">Developing</option>
+                    <option value="advanced">Experienced</option>
+                    <option value="professional">Established Professional</option>
                   </select>
                 </div>
                 <div className="sm:col-span-2">
                   <label className={labelClass}>Short Bio *</label>
-                  <textarea className={`${inputClass} min-h-[100px]`} value={form.shortBio} onChange={e => update("shortBio", e.target.value)} placeholder="Tell us about yourself, your craft, and your experience (200-500 words)" maxLength={2000} />
+                  <textarea className={`${inputClass} min-h-[100px]`} value={form.shortBio} onChange={e => update("shortBio", e.target.value)} placeholder="Who you are, what you do, and what makes your work distinctive" maxLength={2000} />
                   {errors.shortBio && <p className={errorClass}>{errors.shortBio}</p>}
                 </div>
                 <div className="sm:col-span-2">
-                  <label className={labelClass}>Why do you want representation? *</label>
-                  <textarea className={`${inputClass} min-h-[100px]`} value={form.whyRepresentation} onChange={e => update("whyRepresentation", e.target.value)} placeholder="What are your goals and why do you believe this platform is the right fit?" maxLength={2000} />
+                  <label className={labelClass}>Why are you seeking representation? *</label>
+                  <textarea className={`${inputClass} min-h-[100px]`} value={form.whyRepresentation} onChange={e => update("whyRepresentation", e.target.value)} placeholder="Your goals and why this platform is the right fit for your career" maxLength={2000} />
                   {errors.whyRepresentation && <p className={errorClass}>{errors.whyRepresentation}</p>}
                 </div>
               </div>
@@ -183,30 +183,30 @@ export default function Submit() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[
                   { label: "Headshot / Photo", accept: "image/*", file: headshot, setFile: setHeadshot, hint: "JPG, PNG, or WebP" },
-                  { label: "Media Kit / Resume", accept: ".pdf,image/*", file: mediaKit, setFile: setMediaKit, hint: "PDF or image" },
+                  { label: "Media Kit / Resume", accept: ".pdf,image/*", file: mediaKit, setFile: setMediaKit, hint: "PDF or image format" },
                   { label: "Video / Audio Sample", accept: "video/*,audio/*", file: videoAudio, setFile: setVideoAudio, hint: "MP4, MP3, or WAV" },
                 ].map(u => (
                   <div key={u.label}>
                     <label className={labelClass}>{u.label}</label>
                     <label className="flex flex-col items-center justify-center border-2 border-dashed border-border rounded-lg p-6 cursor-pointer hover:border-primary/40 transition-colors bg-secondary/30">
                       <Upload className="w-6 h-6 text-muted-foreground mb-2" />
-                      <span className="text-xs text-muted-foreground">{u.file ? u.file.name : `Choose file (${u.hint})`}</span>
+                      <span className="text-xs text-muted-foreground text-center">{u.file ? u.file.name : `Select file · ${u.hint}`}</span>
                       <input type="file" accept={u.accept} className="hidden" onChange={e => u.setFile(e.target.files?.[0] || null)} />
                     </label>
                   </div>
                 ))}
               </div>
-              <p className="text-xs text-muted-foreground mt-3">File upload storage is not yet connected. Files will be stored once the backend is live.</p>
+              <p className="text-xs text-muted-foreground/60 mt-3">File storage will be activated once the platform backend is connected.</p>
             </fieldset>
 
             {/* Guardian Info */}
             {isMinor && (
               <fieldset>
-                <legend className="font-display text-xl font-semibold text-foreground mb-6">Guardian Information (Required for Minors)</legend>
+                <legend className="font-display text-xl font-semibold text-foreground mb-6">Guardian Information <span className="text-sm font-normal text-muted-foreground">(required for applicants under 18)</span></legend>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
                     <label className={labelClass}>Guardian Full Name *</label>
-                    <input className={inputClass} value={form.guardianName} onChange={e => update("guardianName", e.target.value)} placeholder="Guardian's name" />
+                    <input className={inputClass} value={form.guardianName} onChange={e => update("guardianName", e.target.value)} placeholder="Guardian's full name" />
                     {errors.guardianName && <p className={errorClass}>{errors.guardianName}</p>}
                   </div>
                   <div>
@@ -227,7 +227,7 @@ export default function Submit() {
               <label className="flex items-start gap-3 cursor-pointer">
                 <input type="checkbox" checked={consent} onChange={e => { setConsent(e.target.checked); if (errors.consent) setErrors(prev => { const n = { ...prev }; delete n.consent; return n; }); }} className="mt-1 accent-primary" />
                 <span className="text-sm text-muted-foreground">
-                  I consent to {BRAND.name} collecting and reviewing my submission materials for the purpose of talent evaluation. I understand that submission does not guarantee representation.
+                  I consent to {BRAND.name} collecting and reviewing my submission materials for talent evaluation purposes. I understand that submission does not guarantee representation.
                 </span>
               </label>
               {errors.consent && <p className={errorClass}>{errors.consent}</p>}

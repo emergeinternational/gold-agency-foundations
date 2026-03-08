@@ -16,9 +16,9 @@ export default function About() {
   return (
     <Layout>
       <PageHero
-        badge="About Us"
-        title="Where Talent Meets Opportunity"
-        subtitle={`${BRAND.name} is a premier talent representation and development platform powered by ${BRAND.poweredBy}. We exist to discover, train, position, and elevate exceptional talent for the global stage.`}
+        badge="About"
+        title="Built for Talent That's Ready"
+        subtitle={`${BRAND.name} is a premier talent representation and development platform powered by ${BRAND.poweredBy}. We exist to close the gap between potential and the global stage.`}
         backgroundImage={addisImage}
       />
 
@@ -26,34 +26,34 @@ export default function About() {
         <div className="container-wide">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20">
             <motion.div {...fadeUp}>
-              <span className="badge-label mb-5 block">Our Story</span>
-              <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground leading-[1.1] mb-8">Built for the Future of Talent</h2>
+              <span className="badge-label mb-5 block">Origin</span>
+              <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground leading-[1.1] mb-8">A Platform, Not Just an Agency</h2>
               <div className="gold-line mb-10" />
               <div className="space-y-5 text-muted-foreground leading-[1.8] text-[15px]">
                 <p>
-                  {BRAND.name} was founded with a clear vision: to create a world-class talent representation and development platform that bridges the gap between raw potential and global readiness.
+                  {BRAND.name} was created to solve a specific problem: extraordinary talent exists everywhere, but the infrastructure to develop and position it rarely does. We built this platform to change that.
                 </p>
                 <p>
-                  Based in {BRAND.locationPrimary}, with strategic vision tied to {BRAND.locationVision}, we operate at the intersection of African creative excellence and international industry standards. Our platform combines selective talent representation with rigorous professional development.
+                  Headquartered in {BRAND.locationPrimary} with strategic ambition rooted in {BRAND.locationVision}, we operate where African creative excellence meets international industry standards. Our model combines selective representation with rigorous professional development — because visibility without readiness is a missed opportunity.
                 </p>
                 <p>
-                  Powered by {BRAND.poweredBy}, the agency brings together industry expertise, media access, and development infrastructure to ensure that every talent we work with is positioned for lasting success — not just momentary visibility.
+                  Powered by {BRAND.poweredBy}, the agency brings together industry expertise, media access, and development infrastructure designed for talent who want lasting careers — not just moments of attention.
                 </p>
               </div>
             </motion.div>
             <motion.div {...fadeUp} transition={{ duration: 0.6, delay: 0.1 }}>
-              <span className="badge-label mb-5 block">Our Approach</span>
-              <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground leading-[1.1] mb-8">Representation Meets Development</h2>
+              <span className="badge-label mb-5 block">Philosophy</span>
+              <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground leading-[1.1] mb-8">Representation Meets Preparation</h2>
               <div className="gold-line mb-10" />
               <div className="space-y-5 text-muted-foreground leading-[1.8] text-[15px]">
                 <p>
-                  We don't simply represent talent — we develop it. Our model integrates professional training, brand strategy, media positioning, and opportunity access into a unified ecosystem.
+                  We don't simply represent talent — we invest in it. Our model integrates professional training, brand strategy, media positioning, and opportunity access into a single, cohesive ecosystem.
                 </p>
                 <p>
-                  Through our academy, emerging and established talent gain access to structured learning tracks, industry-led workshops, and one-on-one mentorship. Through our representation arm, proven talent gains access to bookings, partnerships, and campaign opportunities.
+                  Through our academy, creatives at every stage gain access to structured learning, industry-led workshops, and direct mentorship. Through our representation arm, proven talent gains access to bookings, brand partnerships, and campaign opportunities with credible partners.
                 </p>
                 <p>
-                  This dual approach ensures that talent who joins our platform is not only visible — but genuinely ready for the opportunities ahead.
+                  The result: talent that arrives prepared, not just present. Professionals who are ready for the room — and memorable once they leave it.
                 </p>
               </div>
             </motion.div>
@@ -63,13 +63,13 @@ export default function About() {
 
       <section className="section-padding bg-card/50 border-y border-border/20">
         <div className="container-wide">
-          <SectionHeading badge="Values" title="What Drives Us" />
+          <SectionHeading badge="Values" title="What We Stand On" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { title: "Excellence", desc: "We hold ourselves and our talent to the highest professional and creative standards." },
-              { title: "Access", desc: "Opportunity should be earned through merit, not limited by geography or background." },
-              { title: "Integrity", desc: "Transparent processes, honest communication, and ethical representation define every interaction." },
-              { title: "Development", desc: "Growth is continuous. We invest in talent's long-term readiness, not just short-term exposure." },
+              { title: "Excellence", desc: "We hold ourselves and our talent to the highest professional and creative standards — no exceptions." },
+              { title: "Access", desc: "Opportunity should follow merit, not geography. We build bridges where others build walls." },
+              { title: "Integrity", desc: "Transparent processes, honest timelines, and ethical representation define how we operate." },
+              { title: "Development", desc: "Growth is continuous. We invest in long-term readiness, not short-term exposure." },
             ].map((v, i) => (
               <motion.div
                 key={v.title}
