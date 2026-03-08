@@ -80,7 +80,7 @@ export default function Submit() {
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Personal Info */}
             <fieldset>
-              <legend className="font-display text-xl font-semibold text-foreground mb-6">Personal Information</legend>
+              <legend className="font-display text-xl font-semibold text-foreground mb-8">Personal Information</legend>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className={labelClass}>Full Name *</label>
