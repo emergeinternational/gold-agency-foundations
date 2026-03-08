@@ -30,32 +30,32 @@ const footerLinks = {
 
 export default function Footer() {
   return (
-    <footer className="bg-card border-t border-border">
-      <div className="container-wide section-padding">
+    <footer className="bg-card/80 border-t border-border/20">
+      <div className="container-wide px-5 sm:px-8 lg:px-12 py-20 sm:py-24">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 lg:gap-12">
           {/* Brand column */}
           <div className="col-span-2 md:col-span-4 lg:col-span-1 mb-4 lg:mb-0">
-            <Link to="/" className="inline-block">
-              <h3 className="font-display text-xl font-bold tracking-widest text-primary uppercase">
+            <Link to="/" className="inline-block group">
+              <h3 className="font-display text-lg font-bold tracking-[0.25em] text-primary uppercase group-hover:text-gold-light transition-colors">
                 {BRAND.name}
               </h3>
-              <p className="text-[10px] tracking-[0.2em] text-muted-foreground uppercase mt-1">
+              <p className="text-[8px] tracking-[0.25em] text-muted-foreground/50 uppercase mt-1">
                 Powered by {BRAND.poweredBy}
               </p>
             </Link>
-            <p className="text-sm text-muted-foreground mt-4 max-w-xs">
+            <p className="text-xs text-muted-foreground/60 mt-5 max-w-xs leading-relaxed">
               Premier talent representation and development platform. Based in {BRAND.locationPrimary}, with global vision.
             </p>
-            <div className="flex gap-4 mt-6">
+            <div className="flex gap-5 mt-6">
               {Object.entries(BRAND.socialLinks).map(([platform, url]) => (
                 <a
                   key={platform}
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-primary transition-colors text-xs uppercase tracking-widest"
+                  className="text-muted-foreground/40 hover:text-primary transition-colors text-[10px] uppercase tracking-[0.2em]"
                 >
-                  {platform.slice(0, 2).toUpperCase()}
+                  {platform.charAt(0).toUpperCase() + platform.slice(1, 3)}
                 </a>
               ))}
             </div>
@@ -64,7 +64,7 @@ export default function Footer() {
           {/* Link columns */}
           {Object.entries(footerLinks).map(([title, links]) => (
             <div key={title}>
-              <h4 className="font-display text-sm font-semibold tracking-widest uppercase text-foreground mb-4">
+              <h4 className="text-[10px] font-body font-semibold tracking-[0.3em] uppercase text-foreground/60 mb-5">
                 {title}
               </h4>
               <ul className="space-y-2.5">
@@ -72,7 +72,7 @@ export default function Footer() {
                   <li key={link.href}>
                     <Link
                       to={link.href}
-                      className="text-sm text-muted-foreground hover:text-primary transition-colors duration-300"
+                      className="text-xs text-muted-foreground/50 hover:text-primary transition-colors duration-300"
                     >
                       {link.label}
                     </Link>
@@ -84,13 +84,13 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-16 pt-8 border-t border-border">
+        <div className="mt-16 pt-8 border-t border-border/10">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <p className="text-xs text-muted-foreground">
+            <p className="text-[10px] text-muted-foreground/40 tracking-wider">
               © {new Date().getFullYear()} {BRAND.name}. All rights reserved.
             </p>
-            <p className="text-xs text-muted-foreground text-center sm:text-right">
-              {BRAND.poweredBy} — A subsidiary of {BRAND.legalEntity}
+            <p className="text-[10px] text-muted-foreground/30 text-center sm:text-right tracking-wider">
+              {BRAND.poweredBy} · A subsidiary of {BRAND.legalEntity}
             </p>
           </div>
         </div>
