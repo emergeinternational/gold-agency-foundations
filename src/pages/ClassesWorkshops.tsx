@@ -80,7 +80,7 @@ export default function ClassesWorkshops() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filtered.map((c, i) => (
-                <motion.div key={c.id} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.05 }} className="bg-card border border-border rounded-lg overflow-hidden card-hover flex flex-col">
+                <motion.div key={c.id} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.05 }} className="card-premium overflow-hidden card-hover flex flex-col">
                   <div className="p-6 flex-1">
                     <div className="flex items-center gap-2 mb-3">
                       <span className="text-[10px] uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded">{c.format}</span>
