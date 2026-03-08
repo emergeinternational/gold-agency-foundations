@@ -43,7 +43,7 @@ export default function Partnerships() {
     if (Object.keys(errs).length === 0) setSubmitted(true);
   };
 
-  const inputClass = "w-full px-4 py-3 bg-secondary border border-border rounded-md text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-colors text-sm";
+  const inputClass = "w-full px-4 py-3 bg-secondary/60 border border-border/60 rounded-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary/40 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-sm";
 
   return (
     <Layout>
