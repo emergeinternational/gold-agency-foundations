@@ -26,14 +26,19 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
+
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? "bg-background/95 backdrop-blur-xl border-b border-border/30" : "bg-transparent border-b border-transparent"}`}>
-      <nav className="container-wide flex items-center justify-between h-14 sm:h-16 lg:h-18 px-5 sm:px-8 lg:px-12">
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? "bg-background/95 backdrop-blur-xl border-b border-border/20" : "bg-transparent border-b border-transparent"}`}>
+      <nav className="container-wide flex items-center justify-between h-14 sm:h-16 px-5 sm:px-8 lg:px-12">
         <Link to="/" className="flex flex-col leading-none gap-0.5 group">
-          <span className="font-display text-base sm:text-lg font-bold tracking-[0.25em] text-primary uppercase group-hover:text-gold-light transition-colors">
+          <span className="font-display text-[15px] sm:text-lg font-bold tracking-[0.2em] text-primary uppercase group-hover:text-gold-light transition-colors">
             {BRAND.name}
           </span>
-          <span className="text-[8px] sm:text-[9px] tracking-[0.25em] text-muted-foreground/70 uppercase">
+          <span className="text-[7px] sm:text-[8px] tracking-[0.2em] text-muted-foreground/50 uppercase">
             Powered by {BRAND.poweredBy}
           </span>
         </Link>
@@ -44,10 +49,10 @@ export default function Navbar() {
             <Link
               key={link.href}
               to={link.href}
-              className={`px-3 xl:px-4 py-2 text-[11px] tracking-[0.2em] uppercase transition-colors duration-300 ${
+              className={`px-3 xl:px-3.5 py-2 text-[10px] tracking-[0.18em] uppercase transition-colors duration-300 ${
                 location.pathname === link.href
                   ? "text-primary"
-                  : "text-muted-foreground/80 hover:text-foreground"
+                  : "text-muted-foreground/70 hover:text-foreground"
               }`}
             >
               {link.label}
@@ -72,19 +77,19 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="lg:hidden bg-background/98 backdrop-blur-xl border-b border-border/30 overflow-hidden"
+            transition={{ duration: 0.25 }}
+            className="lg:hidden bg-background/98 backdrop-blur-xl border-b border-border/20 overflow-hidden"
           >
-            <div className="px-5 py-6 flex flex-col gap-0.5">
+            <div className="px-5 py-5 flex flex-col gap-0.5">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   to={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className={`px-4 py-3 text-sm tracking-[0.15em] uppercase transition-colors ${
+                  className={`px-4 py-2.5 text-[13px] tracking-[0.12em] uppercase transition-colors ${
                     location.pathname === link.href
                       ? "text-primary"
-                      : "text-muted-foreground hover:text-foreground"
+                      : "text-muted-foreground/70 hover:text-foreground"
                   }`}
                 >
                   {link.label}
