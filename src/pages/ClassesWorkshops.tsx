@@ -4,7 +4,7 @@ import PageHero from "@/components/PageHero";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Calendar, Tag, Users } from "lucide-react";
+import { Calendar, Tag, Users, MapPin, Globe } from "lucide-react";
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
