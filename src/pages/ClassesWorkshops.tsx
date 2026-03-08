@@ -120,6 +120,8 @@ export default function ClassesWorkshops() {
             <p className="text-muted-foreground leading-relaxed mb-6">{selectedClass.desc}</p>
             <div className="space-y-2 text-sm text-muted-foreground mb-6">
               <p><strong className="text-foreground">Date:</strong> {selectedClass.date}</p>
+              <p><strong className="text-foreground">Format:</strong> {selectedClass.delivery}</p>
+              <p><strong className="text-foreground">Location:</strong> {selectedClass.location}{selectedClass.delivery === "Online" ? " — all timezones welcome" : ""}</p>
               <p><strong className="text-foreground">Investment:</strong> {selectedClass.price}</p>
               <p><strong className="text-foreground">Availability:</strong> {selectedClass.spots === "Waitlist" ? "Waitlist only" : "Spots available"}</p>
             </div>

@@ -91,7 +91,7 @@ export default function Academy() {
           <div className="space-y-3">
             {[
               { q: "Do I need prior experience?", a: "No. Programs range from foundational to advanced. We meet you where you are and build from there." },
-              { q: "Are sessions in-person or online?", a: "Both. Workshops and masterclasses run in Addis Ababa. Tutorials and select courses are available online from anywhere." },
+              { q: "Are sessions in-person or online?", a: "Both. Workshops and masterclasses run in person in Addis Ababa, with select programs available online for participants anywhere in the world. Each listing clearly indicates its delivery format and location." },
               { q: "Does completing a program lead to representation?", a: "Not automatically. The academy and representation operate as separate tracks. Strong performance may lead to consideration, but there is no guaranteed pathway." },
               { q: "What do programs cost?", a: "Pricing varies by program. Some introductory workshops are free. Full pricing details are listed on individual program pages." },
             ].map((faq, i) => (
