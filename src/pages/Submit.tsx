@@ -62,7 +62,7 @@ export default function Submit() {
 
       <section className="section-padding">
         <div className="container-narrow">
-          <div className="bg-card border border-border rounded-lg p-6 sm:p-10 mb-8">
+          <div className="card-premium p-6 sm:p-8 mb-10">
             <div className="flex items-start gap-3 mb-6">
               <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
               <div>
