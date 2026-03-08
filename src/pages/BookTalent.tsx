@@ -44,7 +44,7 @@ export default function BookTalent() {
 
   return (
     <Layout>
-      <PageHero badge="Book Talent" title="Hire from Our Roster" subtitle={`${BRAND.name} connects brands, event producers, media teams, and campaign directors with vetted, professional talent. Tell us about your project.`} />
+      <PageHero badge="Talent Booking" title="Access Our Roster" subtitle={`${BRAND.name} connects brands, production teams, event producers, and campaign directors with vetted, professional talent across every creative discipline.`} />
 
       <section className="section-padding">
         <div className="container-narrow">
@@ -91,7 +91,7 @@ export default function BookTalent() {
                   {errors.projectType && <p className={errorClass}>{errors.projectType}</p>}
                 </div>
                 <div>
-                  <label className={labelClass}>Talent Type Needed</label>
+                  <label className={labelClass}>Talent Category Needed</label>
                   <input className={inputClass} value={form.talentType} onChange={e => update("talentType", e.target.value)} placeholder="e.g., Host, Model, Musician" />
                 </div>
                 <div>
@@ -124,7 +124,7 @@ export default function BookTalent() {
                 </div>
                 <div className="sm:col-span-2">
                   <label className={labelClass}>Project Description *</label>
-                  <textarea className={`${inputClass} min-h-[120px]`} value={form.projectDescription} onChange={e => update("projectDescription", e.target.value)} placeholder="Describe the project scope, creative direction, and what you need from talent" maxLength={3000} />
+                  <textarea className={`${inputClass} min-h-[120px]`} value={form.projectDescription} onChange={e => update("projectDescription", e.target.value)} placeholder="Describe the scope, creative direction, and what you need from talent" maxLength={3000} />
                   {errors.projectDescription && <p className={errorClass}>{errors.projectDescription}</p>}
                 </div>
                 <div className="sm:col-span-2">

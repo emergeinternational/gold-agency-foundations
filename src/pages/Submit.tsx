@@ -56,8 +56,8 @@ export default function Submit() {
     <Layout>
       <PageHero
         badge="Open Submissions"
-        title="Show Us What You've Got"
-        subtitle="We welcome talent across every category and experience level. This is your first step toward professional representation — take it seriously, and so will we."
+        title="Apply for Representation"
+        subtitle="We welcome talent at every level across all categories. This is your introduction — take it seriously, and so will we. Submission does not guarantee representation."
       />
 
       <section className="section-padding">
@@ -68,10 +68,10 @@ export default function Submit() {
               <div>
                 <p className="text-sm text-foreground font-medium">Before you begin</p>
                 <ul className="text-xs text-muted-foreground mt-1 space-y-1 list-disc list-inside">
-                  <li>Submission is an application — it does not guarantee representation</li>
-                  <li>Review timelines vary depending on volume and category</li>
-                  <li>Academy enrollment is separate from representation consideration</li>
-                  <li>All talent categories and experience levels are welcome</li>
+                  <li>This is an application for review — not a guarantee of representation</li>
+                  <li>Response timelines vary depending on volume and category demand</li>
+                  <li>Academy enrollment and representation are separate processes</li>
+                  <li>All talent categories and experience levels may apply</li>
                 </ul>
               </div>
             </div>
@@ -117,7 +117,7 @@ export default function Submit() {
 
             {/* Social Links */}
             <fieldset>
-              <legend className="font-display text-xl font-semibold text-foreground mb-6">Social & Portfolio</legend>
+              <legend className="font-display text-xl font-semibold text-foreground mb-6">Online Presence</legend>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className={labelClass}>Instagram</label>
@@ -147,9 +147,9 @@ export default function Submit() {
               <legend className="font-display text-xl font-semibold text-foreground mb-6">Professional Details</legend>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className={labelClass}>Category *</label>
+                  <label className={labelClass}>Primary Category *</label>
                   <select className={inputClass} value={form.category} onChange={e => update("category", e.target.value)}>
-                    <option value="">Select your primary category</option>
+                    <option value="">Select your primary discipline</option>
                     {TALENT_CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
                   </select>
                   {errors.category && <p className={errorClass}>{errors.category}</p>}
@@ -166,12 +166,12 @@ export default function Submit() {
                 </div>
                 <div className="sm:col-span-2">
                   <label className={labelClass}>Short Bio *</label>
-                  <textarea className={`${inputClass} min-h-[100px]`} value={form.shortBio} onChange={e => update("shortBio", e.target.value)} placeholder="Who you are, what you do, and what makes your work distinctive" maxLength={2000} />
+                  <textarea className={`${inputClass} min-h-[100px]`} value={form.shortBio} onChange={e => update("shortBio", e.target.value)} placeholder="Who you are, what you do, and what sets your work apart" maxLength={2000} />
                   {errors.shortBio && <p className={errorClass}>{errors.shortBio}</p>}
                 </div>
                 <div className="sm:col-span-2">
                   <label className={labelClass}>Why are you seeking representation? *</label>
-                  <textarea className={`${inputClass} min-h-[100px]`} value={form.whyRepresentation} onChange={e => update("whyRepresentation", e.target.value)} placeholder="Your goals and why this platform is the right fit for your career" maxLength={2000} />
+                  <textarea className={`${inputClass} min-h-[100px]`} value={form.whyRepresentation} onChange={e => update("whyRepresentation", e.target.value)} placeholder="Your goals and why this platform is the right fit for your career direction" maxLength={2000} />
                   {errors.whyRepresentation && <p className={errorClass}>{errors.whyRepresentation}</p>}
                 </div>
               </div>
@@ -179,11 +179,11 @@ export default function Submit() {
 
             {/* Uploads */}
             <fieldset>
-              <legend className="font-display text-xl font-semibold text-foreground mb-6">Media Uploads</legend>
+              <legend className="font-display text-xl font-semibold text-foreground mb-6">Supporting Materials</legend>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[
                   { label: "Headshot / Photo", accept: "image/*", file: headshot, setFile: setHeadshot, hint: "JPG, PNG, or WebP" },
-                  { label: "Media Kit / Resume", accept: ".pdf,image/*", file: mediaKit, setFile: setMediaKit, hint: "PDF or image format" },
+                  { label: "Media Kit / Resume", accept: ".pdf,image/*", file: mediaKit, setFile: setMediaKit, hint: "PDF or image" },
                   { label: "Video / Audio Sample", accept: "video/*,audio/*", file: videoAudio, setFile: setVideoAudio, hint: "MP4, MP3, or WAV" },
                 ].map(u => (
                   <div key={u.label}>
@@ -196,13 +196,13 @@ export default function Submit() {
                   </div>
                 ))}
               </div>
-              <p className="text-xs text-muted-foreground/60 mt-3">File storage will be activated once the platform backend is connected.</p>
+              <p className="text-xs text-muted-foreground/60 mt-3">File uploads will be fully active once the platform backend is connected.</p>
             </fieldset>
 
             {/* Guardian Info */}
             {isMinor && (
               <fieldset>
-                <legend className="font-display text-xl font-semibold text-foreground mb-6">Guardian Information <span className="text-sm font-normal text-muted-foreground">(required for applicants under 18)</span></legend>
+                <legend className="font-display text-xl font-semibold text-foreground mb-6">Guardian Information <span className="text-sm font-normal text-muted-foreground">(required under 18)</span></legend>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
                     <label className={labelClass}>Guardian Full Name *</label>
@@ -227,7 +227,7 @@ export default function Submit() {
               <label className="flex items-start gap-3 cursor-pointer">
                 <input type="checkbox" checked={consent} onChange={e => { setConsent(e.target.checked); if (errors.consent) setErrors(prev => { const n = { ...prev }; delete n.consent; return n; }); }} className="mt-1 accent-primary" />
                 <span className="text-sm text-muted-foreground">
-                  I consent to {BRAND.name} collecting and reviewing my submission materials for talent evaluation purposes. I understand that submission does not guarantee representation.
+                  I consent to {BRAND.name} collecting and reviewing my submission materials for talent evaluation purposes. I understand this is an application for review and does not guarantee representation.
                 </span>
               </label>
               {errors.consent && <p className={errorClass}>{errors.consent}</p>}

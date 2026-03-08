@@ -24,7 +24,7 @@ export default function Contact() {
 
   return (
     <Layout>
-      <PageHero badge="Contact" title="Let's Talk" subtitle="Whether you have a question, an opportunity, or simply want to learn more — we're listening." />
+      <PageHero badge="Contact" title="Get in Touch" subtitle="Questions, opportunities, or general inquiries — we respond within 2–3 business days." />
       <section className="section-padding">
         <div className="container-wide">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
@@ -32,8 +32,8 @@ export default function Contact() {
               {submitted ? (
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center py-16">
                   <Send className="w-12 h-12 text-primary mx-auto mb-4" />
-                  <h3 className="font-display text-2xl font-semibold text-foreground mb-2">Message Sent</h3>
-                  <p className="text-muted-foreground">Thank you for reaching out. We'll respond within 2–3 business days.</p>
+                  <h3 className="font-display text-2xl font-semibold text-foreground mb-2">Message Received</h3>
+                  <p className="text-muted-foreground">Thank you for reaching out. Our team will follow up shortly.</p>
                 </motion.div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">

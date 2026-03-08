@@ -15,12 +15,12 @@ const fadeUp = {
 };
 
 const partnerTypes = [
-  { icon: Building, title: "Sponsors", desc: "Align your brand with premium talent and high-visibility creative projects across our platform." },
-  { icon: Handshake, title: "Brand Collaborators", desc: "Co-create campaigns, content, and experiences with talent from our curated roster." },
-  { icon: Mic, title: "Studios & Venues", desc: "Host or co-produce events, live programming, and creative productions with our network." },
-  { icon: MapPin, title: "Media Partners", desc: "Access our talent network for editorial, broadcast, digital, and branded content." },
+  { icon: Building, title: "Sponsors", desc: "Align your brand with premium talent and high-visibility creative projects that reach engaged audiences." },
+  { icon: Handshake, title: "Brand Collaborators", desc: "Co-create campaigns, content, and cultural experiences with professionals from our curated roster." },
+  { icon: Mic, title: "Studios & Venues", desc: "Host or co-produce events, live programming, and creative productions through our network." },
+  { icon: MapPin, title: "Media Partners", desc: "Access our talent pool for editorial, broadcast, digital, and branded content opportunities." },
   { icon: BookOpen, title: "Educators & Mentors", desc: "Contribute to our academy as guest instructors, curriculum advisors, or mentorship leads." },
-  { icon: TrendingUp, title: "Investors & Institutions", desc: "Support the growth of Africa's creative economy through strategic, long-term partnership." },
+  { icon: TrendingUp, title: "Investors & Institutions", desc: "Support the growth of Ethiopia's creative economy through strategic, long-term collaboration." },
 ];
 
 export default function Partnerships() {
@@ -47,11 +47,11 @@ export default function Partnerships() {
 
   return (
     <Layout>
-      <PageHero badge="Partnerships" title="Build Something Significant" subtitle={`${BRAND.name} partners with forward-thinking brands, institutions, and creative leaders who share our commitment to elevating talent and culture at the highest level.`} />
+      <PageHero badge="Partnerships" title="Collaborate With Purpose" subtitle={`${BRAND.name} works with forward-thinking brands, institutions, and creative leaders invested in elevating talent and culture at the highest level.`} />
 
       <section className="section-padding">
         <div className="container-wide">
-          <SectionHeading badge="How We Collaborate" title="Partnership Models" />
+          <SectionHeading badge="Models" title="Ways to Work Together" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {partnerTypes.map((p, i) => (
               <motion.div key={p.title} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.05 }} className="card-premium p-7 card-hover">
@@ -66,14 +66,14 @@ export default function Partnerships() {
 
       <section className="section-padding bg-card">
         <div className="container-narrow">
-          <SectionHeading badge="Get in Touch" title="Partnership Inquiry" />
+          <SectionHeading badge="Inquire" title="Start a Conversation" />
           {submitted ? (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center py-12">
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                 <Handshake className="w-8 h-8 text-primary" />
               </div>
               <h3 className="font-display text-2xl font-semibold text-foreground mb-2">Inquiry Received</h3>
-              <p className="text-muted-foreground">Thank you for your interest in partnering with {BRAND.name}. Our team will review your inquiry and respond within five business days.</p>
+              <p className="text-muted-foreground">Thank you for your interest. Our team will review your inquiry and respond within five business days.</p>
             </motion.div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -102,7 +102,7 @@ export default function Partnerships() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground mb-1.5">Message *</label>
-                <textarea className={`${inputClass} min-h-[120px]`} value={form.message} onChange={e => update("message", e.target.value)} placeholder="Tell us about the partnership you have in mind" maxLength={2000} />
+                <textarea className={`${inputClass} min-h-[120px]`} value={form.message} onChange={e => update("message", e.target.value)} placeholder="Describe the collaboration you have in mind" maxLength={2000} />
                 {errors.message && <p className="text-xs text-destructive mt-1">{errors.message}</p>}
               </div>
               <Button type="submit" variant="gold" size="lg">Submit Inquiry</Button>

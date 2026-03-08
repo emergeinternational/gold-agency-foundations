@@ -14,12 +14,12 @@ const fadeUp = {
 };
 
 const classes = [
-  { id: 1, title: "On-Camera Confidence Masterclass", topic: "Media", format: "Workshop", level: "Beginner", date: "March 22, 2026", price: "Free", spots: "Open", desc: "Build the foundational skills to perform with confidence in front of any camera — from auditions to live broadcast." },
-  { id: 2, title: "Social Media Strategy Intensive", topic: "Digital", format: "Class", level: "Intermediate", date: "April 5, 2026", price: "$75", spots: "Open", desc: "Platform-specific strategies for growing, engaging, and monetizing your creative presence online." },
+  { id: 1, title: "On-Camera Confidence Masterclass", topic: "Media", format: "Workshop", level: "Beginner", date: "March 22, 2026", price: "Free", spots: "Open", desc: "Foundational skills for performing with confidence in front of any camera — auditions, interviews, and live broadcast." },
+  { id: 2, title: "Social Media Strategy Intensive", topic: "Digital", format: "Class", level: "Intermediate", date: "April 5, 2026", price: "$75", spots: "Open", desc: "Platform-specific strategies for growing, engaging, and monetizing a professional creative presence online." },
   { id: 3, title: "Music Industry Fundamentals", topic: "Music", format: "Workshop", level: "Beginner", date: "April 12, 2026", price: "$50", spots: "Open", desc: "Contracts, royalties, distribution, and the business knowledge every musician needs before signing anything." },
-  { id: 4, title: "Advanced Interview Techniques", topic: "Media", format: "Masterclass", level: "Advanced", date: "April 19, 2026", price: "$120", spots: "Waitlist", desc: "Master the nuances of conducting and navigating high-stakes interviews across media formats." },
-  { id: 5, title: "Personal Branding for Creatives", topic: "Branding", format: "Class", level: "Beginner", date: "May 3, 2026", price: "Free", spots: "Open", desc: "Define, articulate, and communicate a personal brand that opens doors and sustains attention." },
-  { id: 6, title: "Public Speaking & Stage Command", topic: "Performance", format: "Workshop", level: "Intermediate", date: "May 10, 2026", price: "$90", spots: "Open", desc: "Own any stage or podium with professional delivery, presence, and audience engagement techniques." },
+  { id: 4, title: "Advanced Interview Techniques", topic: "Media", format: "Masterclass", level: "Advanced", date: "April 19, 2026", price: "$120", spots: "Waitlist", desc: "Mastering the nuances of conducting and navigating high-stakes interviews across media formats." },
+  { id: 5, title: "Personal Branding for Creatives", topic: "Branding", format: "Class", level: "Beginner", date: "May 3, 2026", price: "Free", spots: "Open", desc: "Define, articulate, and communicate a personal brand that opens doors and sustains professional attention." },
+  { id: 6, title: "Public Speaking & Stage Presence", topic: "Performance", format: "Workshop", level: "Intermediate", date: "May 10, 2026", price: "$90", spots: "Open", desc: "Professional delivery, audience engagement, and stage command techniques for any speaking environment." },
 ];
 
 const topics = ["All", "Media", "Digital", "Music", "Branding", "Performance"];
@@ -40,7 +40,7 @@ export default function ClassesWorkshops() {
 
   return (
     <Layout>
-      <PageHero badge="Classes & Workshops" title="Sharpen Your Edge" subtitle="Browse upcoming programs by topic, format, or experience level. Every session is designed to produce real, applicable results." />
+      <PageHero badge="Programs" title="Upcoming Classes & Workshops" subtitle="Browse by topic, format, or experience level. Every session is designed to produce applicable, career-relevant results." />
 
       <section className="section-padding">
         <div className="container-wide">

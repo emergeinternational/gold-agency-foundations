@@ -15,14 +15,14 @@ const fadeUp = {
 };
 
 const services = [
-  { icon: TrendingUp, title: "Career Strategy", desc: "Tailored direction built around your strengths, market position, and long-term trajectory." },
-  { icon: Sparkles, title: "Brand Architecture", desc: "Developing a compelling personal brand that resonates with industry and audiences alike." },
-  { icon: Camera, title: "Campaign Placement", desc: "Connecting talent with brand campaigns, editorial projects, and commercial productions." },
-  { icon: Users, title: "Booking Coordination", desc: "Professional management of event, production, and partnership bookings." },
-  { icon: Megaphone, title: "Media Strategy", desc: "Press positioning, media training, and public profile development." },
-  { icon: Globe, title: "Global Readiness", desc: "Preparing talent for cross-border opportunities and international market standards." },
-  { icon: Shield, title: "Partnership Development", desc: "Facilitating endorsements, brand partnerships, and collaborative ventures with credible partners." },
-  { icon: Laptop, title: "Digital Positioning", desc: "Social media optimization, content strategy, and digital presence management." },
+  { icon: TrendingUp, title: "Career Strategy", desc: "Tailored direction built around your strengths, market position, and long-term trajectory — not short-term visibility." },
+  { icon: Sparkles, title: "Brand Architecture", desc: "Defining a personal brand that resonates with audiences and industry decision-makers alike." },
+  { icon: Camera, title: "Campaign Placement", desc: "Positioning talent in brand campaigns, editorial features, and commercial productions with credible partners." },
+  { icon: Users, title: "Booking Management", desc: "Professional coordination of event, production, and partnership bookings on your behalf." },
+  { icon: Megaphone, title: "Media Positioning", desc: "Press strategy, interview preparation, and public profile development for sustained media presence." },
+  { icon: Globe, title: "International Readiness", desc: "Preparing talent for cross-border opportunities, international standards, and global market demands." },
+  { icon: Shield, title: "Partnership Facilitation", desc: "Connecting represented talent with endorsements, sponsorships, and strategic brand collaborations." },
+  { icon: Laptop, title: "Digital Presence", desc: "Social media optimization, content direction, and digital footprint management for professional credibility." },
 ];
 
 export default function Representation() {
@@ -30,14 +30,14 @@ export default function Representation() {
     <Layout>
       <PageHero
         badge="Representation"
-        title="Selective. Strategic. Substantive."
-        subtitle={`${BRAND.name} represents talent who are ready — or actively becoming ready — for the demands of a global stage. Our approach is built on trust, strategy, and genuine investment in every career we take on.`}
-        cta={{ label: "Apply for Representation", href: "/submit" }}
+        title="Curated. Strategic. Invested."
+        subtitle={`Representation at ${BRAND.name} is selective and intentional. We take on talent we believe in — and back that belief with strategy, infrastructure, and access that moves careers forward.`}
+        cta={{ label: "Submit for Review", href: "/submit" }}
       />
 
       <section className="section-padding">
         <div className="container-wide">
-          <SectionHeading badge="Services" title="What Representation Includes" />
+          <SectionHeading badge="What's Included" title="The Full Scope of Representation" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {services.map((s, i) => (
               <motion.div
@@ -58,10 +58,10 @@ export default function Representation() {
       <section className="section-padding bg-card">
         <div className="container-narrow text-center">
           <motion.div {...fadeUp}>
-            <SectionHeading badge="Next Step" title="How to Join Our Roster" subtitle="Representation is selective and merit-based. Submission does not guarantee signing — but every application is reviewed with care." />
+            <SectionHeading badge="How to Apply" title="Joining Our Roster" subtitle="Representation is earned through review, not guaranteed by application. Every submission is evaluated with care — readiness and fit determine the outcome." />
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="hero" size="xl" asChild>
-                <Link to="/submit">Begin Your Application</Link>
+                <Link to="/submit">Submit for Review</Link>
               </Button>
               <Button variant="hero-outline" size="xl" asChild>
                 <Link to="/academy">Prepare Through the Academy</Link>
