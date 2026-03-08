@@ -54,7 +54,7 @@ export default function Partnerships() {
           <SectionHeading badge="Partner Types" title="How We Collaborate" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {partnerTypes.map((p, i) => (
-              <motion.div key={p.title} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.05 }} className="bg-card border border-border rounded-lg p-6 card-hover">
+              <motion.div key={p.title} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.05 }} className="card-premium p-7 card-hover">
                 <p.icon className="w-8 h-8 text-primary mb-4" />
                 <h3 className="font-display text-lg font-semibold text-foreground mb-2">{p.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{p.desc}</p>

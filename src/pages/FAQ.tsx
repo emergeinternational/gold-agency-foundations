@@ -27,7 +27,7 @@ export default function FAQ() {
         <div className="container-narrow">
           <div className="space-y-4">
             {faqs.map((faq, i) => (
-              <motion.div key={i} {...fadeUp} transition={{ duration: 0.5, delay: i * 0.03 }} className="bg-card border border-border rounded-lg p-6">
+              <motion.div key={i} {...fadeUp} transition={{ duration: 0.5, delay: i * 0.03 }} className="card-premium p-6 sm:p-7">
                 <h3 className="font-display text-lg font-semibold text-foreground mb-2">{faq.q}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
               </motion.div>

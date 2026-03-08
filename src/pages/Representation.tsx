@@ -44,7 +44,7 @@ export default function Representation() {
                 key={s.title}
                 {...fadeUp}
                 transition={{ duration: 0.6, delay: i * 0.05 }}
-                className="bg-card border border-border rounded-lg p-6 card-hover"
+                className="card-premium p-7 card-hover"
               >
                 <s.icon className="w-8 h-8 text-primary mb-4" />
                 <h3 className="font-display text-lg font-semibold text-foreground mb-2">{s.title}</h3>

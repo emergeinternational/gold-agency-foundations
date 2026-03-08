@@ -109,7 +109,7 @@ export default function ClassesWorkshops() {
       {/* Detail Modal */}
       {selectedClass && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4" onClick={() => setSelectedClass(null)}>
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-card border border-border rounded-lg p-8 max-w-lg w-full" onClick={e => e.stopPropagation()}>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="card-premium p-8 max-w-lg w-full" onClick={e => e.stopPropagation()}>
             <span className="text-[10px] uppercase tracking-widest text-primary">{selectedClass.format} · {selectedClass.level}</span>
             <h3 className="font-display text-2xl font-semibold text-foreground mt-2 mb-4">{selectedClass.title}</h3>
             <p className="text-muted-foreground leading-relaxed mb-6">{selectedClass.desc}</p>
