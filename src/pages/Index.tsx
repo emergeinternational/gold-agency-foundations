@@ -30,7 +30,7 @@ export default function Index() {
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: "easeOut" }}
+            transition={{ duration: 1, ease: "easeOut" as const }}
             className="max-w-2xl"
           >
             <span className="inline-block text-[11px] tracking-[0.3em] uppercase text-primary font-body font-semibold mb-6">
