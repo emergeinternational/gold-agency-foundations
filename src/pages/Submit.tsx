@@ -50,7 +50,7 @@ export default function Submit() {
 
   const inputClass = "w-full px-4 py-3 bg-secondary/60 border border-border/60 rounded-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary/40 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-sm";
   const labelClass = "block text-xs font-medium text-foreground/80 mb-1.5 tracking-wide uppercase";
-  const errorClass = "text-xs text-destructive mt-1";
+  const errorClass = "text-[11px] text-destructive mt-1";
 
   return (
     <Layout>
