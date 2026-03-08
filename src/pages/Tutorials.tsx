@@ -1,0 +1,82 @@
+import { useState } from "react";
+import Layout from "@/components/Layout";
+import PageHero from "@/components/PageHero";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { Play, Clock, Tag } from "lucide-react";
+
+const fadeUp = {
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-60px" },
+  transition: { duration: 0.7 as const },
+};
+
+const tutorials = [
+  { id: 1, title: "Building Your Personal Brand from Zero", category: "Branding", duration: "18 min", type: "Free" },
+  { id: 2, title: "Social Media Content Calendar Mastery", category: "Digital", duration: "24 min", type: "Premium" },
+  { id: 3, title: "How to Nail Your First On-Camera Audition", category: "Performance", duration: "15 min", type: "Free" },
+  { id: 4, title: "Understanding Music Licensing & Royalties", category: "Music", duration: "22 min", type: "Premium" },
+  { id: 5, title: "Pitch Yourself: The 60-Second Elevator Pitch", category: "Business", duration: "12 min", type: "Free" },
+  { id: 6, title: "Instagram Reels Strategy for Creatives", category: "Digital", duration: "20 min", type: "Free" },
+  { id: 7, title: "Working with Agents & Managers", category: "Business", duration: "28 min", type: "Premium" },
+  { id: 8, title: "Vocal Warm-Ups for Presenters & Hosts", category: "Performance", duration: "10 min", type: "Free" },
+  { id: 9, title: "Portfolio Photography: What Agencies Want", category: "Modeling", duration: "16 min", type: "Premium" },
+];
+
+const categories = ["All", "Branding", "Digital", "Performance", "Music", "Business", "Modeling"];
+
+export default function Tutorials() {
+  const [catFilter, setCatFilter] = useState("All");
+  const filtered = tutorials.filter(t => catFilter === "All" || t.category === catFilter);
+
+  return (
+    <Layout>
+      <PageHero badge="Online Tutorials" title="Learn at Your Own Pace" subtitle="A growing library of video tutorials and guides covering everything from branding to performance — available anytime, anywhere." />
+
+      <section className="section-padding">
+        <div className="container-wide">
+          {/* Filters */}
+          <div className="mb-10">
+            <span className="text-xs uppercase tracking-widest text-muted-foreground block mb-2">Category</span>
+            <div className="flex flex-wrap gap-2">
+              {categories.map(c => (
+                <button key={c} onClick={() => setCatFilter(c)} className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${catFilter === c ? "bg-primary text-primary-foreground border-primary" : "bg-secondary border-border text-muted-foreground hover:text-foreground"}`}>{c}</button>
+              ))}
+            </div>
+          </div>
+
+          {/* Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filtered.map((t, i) => (
+              <motion.div key={t.id} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.04 }} className="bg-card border border-border rounded-lg overflow-hidden card-hover group">
+                <div className="aspect-video bg-secondary flex items-center justify-center relative">
+                  <Play className="w-12 h-12 text-muted-foreground group-hover:text-primary transition-colors" />
+                  <span className="absolute top-3 right-3 text-[10px] uppercase tracking-widest bg-background/80 px-2 py-0.5 rounded text-foreground">{t.type}</span>
+                </div>
+                <div className="p-6">
+                  <span className="text-[10px] uppercase tracking-widest text-primary mb-2 block">{t.category}</span>
+                  <h3 className="font-display text-lg font-semibold text-foreground mb-3 group-hover:text-primary transition-colors">{t.title}</h3>
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {t.duration}</span>
+                    <span className="flex items-center gap-1"><Tag className="w-3.5 h-3.5" /> {t.type}</span>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {filtered.length === 0 && (
+            <div className="text-center py-16">
+              <p className="text-muted-foreground">No tutorials in this category yet. Check back soon for new content.</p>
+            </div>
+          )}
+
+          <div className="text-center mt-12">
+            <p className="text-sm text-muted-foreground">More tutorials are added regularly. Video content will be available once the media platform is connected.</p>
+          </div>
+        </div>
+      </section>
+    </Layout>
+  );
+}
