@@ -51,6 +51,7 @@ export default function Tutorials() {
               <motion.div key={t.id} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.04 }} className="card-premium overflow-hidden card-hover group">
                 <div className="aspect-video bg-secondary flex items-center justify-center relative">
                   <Play className="w-12 h-12 text-muted-foreground group-hover:text-primary transition-colors" />
+                  <span className="absolute top-3 left-3 text-[10px] uppercase tracking-widest bg-primary/10 text-primary px-2 py-0.5 rounded">Online</span>
                   <span className="absolute top-3 right-3 text-[10px] uppercase tracking-widest bg-background/80 px-2 py-0.5 rounded text-foreground">{t.type}</span>
                 </div>
                 <div className="p-6">
