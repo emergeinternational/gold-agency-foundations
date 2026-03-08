@@ -17,9 +17,9 @@ export default function TalentCategories() {
   return (
     <Layout>
       <PageHero
-        badge="Talent Categories"
-        title="Every Discipline. One Standard."
-        subtitle="We represent and develop talent across the full spectrum of creative industries. Find your category — or create your own."
+        badge="Disciplines"
+        title="Eight Categories. One Standard."
+        subtitle="We represent and develop talent across the full spectrum of creative industries — from broadcast media to digital storytelling."
       />
 
       <section className="section-padding">
@@ -40,7 +40,7 @@ export default function TalentCategories() {
                   <p className="text-muted-foreground leading-relaxed mb-6">{cat.description}</p>
                   <Button variant="gold-outline" size="sm" asChild>
                     <Link to="/submit">
-                      Apply as {cat.label.split(" ")[0]} <ArrowRight className="w-3 h-3 ml-1" />
+                      Apply in This Category <ArrowRight className="w-3 h-3 ml-1" />
                     </Link>
                   </Button>
                 </div>
@@ -54,14 +54,14 @@ export default function TalentCategories() {
         <div className="container-narrow text-center">
           <motion.div {...fadeUp}>
             <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground">
-              Don't Fit a Single Category?
+              Work Across Multiple Disciplines?
             </h2>
             <p className="mt-4 text-muted-foreground text-lg font-light">
-              We welcome multidisciplinary and non-traditional talent. If your craft crosses boundaries, we still want to hear from you.
+              We welcome multidisciplinary talent. If your craft crosses categories, we still want to hear from you.
             </p>
             <div className="mt-8">
               <Button variant="hero" size="xl" asChild>
-                <Link to="/submit">Submit Your Talent</Link>
+                <Link to="/submit">Submit for Review</Link>
               </Button>
             </div>
           </motion.div>

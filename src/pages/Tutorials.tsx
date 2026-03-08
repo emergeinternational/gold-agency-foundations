@@ -31,7 +31,7 @@ export default function Tutorials() {
 
   return (
     <Layout>
-      <PageHero badge="Online Tutorials" title="Learn on Your Terms" subtitle="A growing library of professional tutorials and guides — from branding to performance — available anytime, from anywhere." />
+      <PageHero badge="Tutorials" title="Learn at Your Own Pace" subtitle="A growing library of professional guides and tutorials — from branding to performance — available anytime, anywhere." />
 
       <section className="section-padding">
         <div className="container-wide">

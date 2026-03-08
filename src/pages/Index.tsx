@@ -33,24 +33,23 @@ export default function Index() {
             className="max-w-2xl"
           >
             <span className="badge-label mb-8 block">
-              {BRAND.locationPrimary} · Global Vision
+              Rooted in {BRAND.locationPrimary} · Built for the World
             </span>
-            <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-[5.5rem] font-bold text-foreground leading-[1.02] tracking-tight">
-              <span className="gold-gradient-text">{BRAND.name}</span>
+            <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground leading-[1.05] tracking-tight">
+              Premier Talent Representation & Development
             </h1>
-            <p className="mt-3 text-[11px] tracking-[0.3em] uppercase text-muted-foreground/60">
-              Powered by {BRAND.poweredBy}
+            <p className="mt-8 text-lg sm:text-xl text-secondary-foreground/80 leading-relaxed max-w-lg font-light">
+              We identify, develop, and position exceptional creative professionals for careers that transcend borders.
             </p>
-            <p className="mt-10 text-lg sm:text-xl text-secondary-foreground/80 leading-relaxed max-w-lg font-light">
-              Where extraordinary talent meets world-class representation.
-              We discover, develop, and position creative professionals for the global stage.
+            <p className="mt-3 text-[11px] tracking-[0.3em] uppercase text-muted-foreground/50">
+              Powered by {BRAND.poweredBy}
             </p>
             <div className="mt-12 flex flex-col sm:flex-row gap-3">
               <Button variant="hero" size="xl" asChild>
-                <Link to="/submit">Apply for Representation</Link>
+                <Link to="/submit">Submit for Review</Link>
               </Button>
               <Button variant="hero-outline" size="xl" asChild>
-                <Link to="/academy">Enter the Academy</Link>
+                <Link to="/representation">How We Represent</Link>
               </Button>
             </div>
           </motion.div>
@@ -69,7 +68,7 @@ export default function Index() {
             <span className="text-primary/40">✦</span>
             <span>Booking</span>
             <span className="text-primary/40">✦</span>
-            <span>Global Reach</span>
+            <span>{BRAND.locationPrimary} to Global</span>
           </div>
         </div>
       </section>
@@ -81,20 +80,20 @@ export default function Index() {
         <div className="relative z-10 container-wide px-5 sm:px-8 lg:px-12 py-24 sm:py-32 lg:py-40">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <motion.div {...fadeUp}>
-              <span className="badge-label mb-5 block">Meet the Ambassador</span>
+              <span className="badge-label mb-5 block">Public Ambassador</span>
               <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-[1.05]">
                 Mr. Zik
               </h2>
               <div className="gold-line mt-5 mb-8" />
               <p className="text-secondary-foreground/80 text-lg leading-relaxed mb-4 font-light">
-                The public face of {BRAND.name} — bridging African creative excellence with global opportunity.
+                The face of {BRAND.name} — connecting Ethiopia's creative talent with the infrastructure, visibility, and access the industry demands.
               </p>
               <p className="text-muted-foreground text-base leading-relaxed mb-10">
-                With deep roots in media, entertainment, and talent advocacy, Mr. Zik sets the standard for how the agency operates: with credibility, ambition, and an unwavering commitment to the talent it serves.
+                A media personality and talent advocate whose career in entertainment and creative strategy gives the agency its edge: credibility earned, not claimed.
               </p>
               <Button variant="gold-outline" size="lg" asChild>
                 <Link to="/mr-zik">
-                  His Story <ArrowRight className="w-4 h-4 ml-2" />
+                  Learn More <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </motion.div>
@@ -116,9 +115,9 @@ export default function Index() {
         <div className="container-wide">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
             {[
-              { title: "Apply for Representation", desc: "Submissions are open across all categories. Show us your craft — we'll take it from there.", href: "/submit", cta: "Begin Application" },
-              { title: "Enter the Academy", desc: "Industry-led masterclasses, workshops, and mentorship designed to sharpen your competitive edge.", href: "/academy", cta: "Explore Programs" },
-              { title: "Book Our Talent", desc: "Hire from our curated roster for campaigns, events, productions, and brand collaborations.", href: "/book-talent", cta: "Request Talent" },
+              { title: "Representation", desc: "We manage careers — not just bookings. If your talent is ready for serious positioning, this is where it starts.", href: "/submit", cta: "Submit for Review" },
+              { title: "The Academy", desc: "Structured training designed by working professionals. From camera confidence to contract literacy — preparation with purpose.", href: "/academy", cta: "Explore Programs" },
+              { title: "Talent Booking", desc: "Brands, productions, and event teams can access our curated roster for campaigns, appearances, and creative collaborations.", href: "/book-talent", cta: "Inquire About Talent" },
             ].map((item, i) => (
               <motion.div
                 key={item.title}
@@ -140,14 +139,14 @@ export default function Index() {
       {/* ─── PILLARS ─── */}
       <section className="section-padding-sm bg-card/50 border-y border-border/20">
         <div className="container-wide">
-          <SectionHeading badge="Our Model" title="Five Pillars of the Platform" />
+          <SectionHeading badge="How We Operate" title="The Five Pillars" />
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
             {[
-              { icon: Star, title: "Representation", desc: "Selective, merit-based talent management." },
-              { icon: Users, title: "Open Submissions", desc: "Accessible entry for emerging creatives." },
-              { icon: BookOpen, title: "Academy", desc: "Structured training and professional development." },
-              { icon: Briefcase, title: "Booking", desc: "Connecting talent with commercial opportunities." },
-              { icon: Globe, title: "Global Vision", desc: "Preparing talent for international markets." },
+              { icon: Star, title: "Curation", desc: "Selective, merit-based talent management built on standards." },
+              { icon: Users, title: "Access", desc: "Open submissions across all categories and experience levels." },
+              { icon: BookOpen, title: "Development", desc: "Professional training tied directly to career readiness." },
+              { icon: Briefcase, title: "Opportunity", desc: "Booking, casting, and campaign placement for our roster." },
+              { icon: Globe, title: "Reach", desc: "Ethiopia-first with infrastructure built for international markets." },
             ].map((pillar, i) => (
               <motion.div
                 key={pillar.title}
@@ -168,9 +167,9 @@ export default function Index() {
       <section className="section-padding">
         <div className="container-wide">
           <SectionHeading
-            badge="Talent Categories"
-            title="Every Discipline. One Standard."
-            subtitle="From broadcast media to digital creation — we champion talent that sets the pace for culture."
+            badge="Disciplines"
+            title="Eight Categories. One Standard of Excellence."
+            subtitle="From broadcast media to digital storytelling — we champion talent that shapes culture and commands attention."
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {TALENT_CATEGORIES.map((cat, i) => (
@@ -186,7 +185,7 @@ export default function Index() {
           </div>
           <div className="text-center mt-12">
             <Button variant="gold-outline" size="lg" asChild>
-              <Link to="/talent-categories">Explore All Categories</Link>
+              <Link to="/talent-categories">View All Categories</Link>
             </Button>
           </div>
         </div>
@@ -200,8 +199,8 @@ export default function Index() {
           <div className="container-wide">
             <SectionHeading
               badge="The Academy"
-              title="Where Craft Becomes Career"
-              subtitle="Intensive programs, masterclasses, and mentorship tracks — built by industry professionals for serious creatives."
+              title="Preparation Is the Advantage"
+              subtitle="Industry-led masterclasses, workshops, and mentorship tracks — built for creatives serious about making their craft a career."
             />
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
               {ACADEMY_TRACKS.map((track, i) => (
@@ -227,13 +226,13 @@ export default function Index() {
       {/* ─── HOW IT WORKS ─── */}
       <section className="section-padding">
         <div className="container-wide">
-          <SectionHeading badge="Process" title="From Application to Opportunity" />
+          <SectionHeading badge="The Process" title="From Submission to Stage" />
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12">
             {[
-              { step: "01", title: "Discover", desc: "Explore our categories, programs, and current opportunities." },
-              { step: "02", title: "Apply", desc: "Submit for representation or enroll in an academy track." },
-              { step: "03", title: "Develop", desc: "Train with industry professionals. Refine your edge." },
-              { step: "04", title: "Perform", desc: "Access bookings, campaigns, and career-defining moments." },
+              { step: "01", title: "Explore", desc: "Browse categories, programs, and current opportunities across the platform." },
+              { step: "02", title: "Submit", desc: "Apply for representation review or enroll in a development track." },
+              { step: "03", title: "Develop", desc: "Refine your craft with industry-led training and strategic guidance." },
+              { step: "04", title: "Perform", desc: "Access bookings, brand campaigns, and career-defining placements." },
             ].map((item, i) => (
               <motion.div key={item.step} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.08 }} className="text-center">
                 <span className="font-display text-4xl sm:text-5xl font-light text-primary/20">{item.step}</span>
@@ -248,12 +247,12 @@ export default function Index() {
       {/* ─── TESTIMONIALS ─── */}
       <section className="section-padding bg-card/50 border-y border-border/20">
         <div className="container-wide">
-          <SectionHeading badge="Testimonials" title="In Their Words" />
+          <SectionHeading badge="Voices" title="What They Say" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
             {[
-              { quote: "They didn't just sign me — they prepared me. The level of strategic thinking behind every move made all the difference.", name: "Represented Talent", role: "Media Personality" },
-              { quote: "From brief to delivery, working with their roster was seamless. The professionalism was evident at every stage.", name: "Brand Partner", role: "Campaign Director" },
-              { quote: "The academy gave me tools I didn't know I needed. The instructors challenged me to think bigger about my craft.", name: "Academy Participant", role: "Digital Creator" },
+              { quote: "They didn't just sign me — they repositioned my entire career. The strategy behind every decision was clear and intentional.", name: "Represented Talent", role: "Media Personality" },
+              { quote: "Working with their roster was seamless. The talent arrived prepared, professional, and exactly right for the campaign.", name: "Brand Partner", role: "Campaign Director" },
+              { quote: "The academy didn't teach me tricks — it gave me a framework. I walked out thinking differently about my entire craft.", name: "Academy Graduate", role: "Digital Creator" },
             ].map((t, i) => (
               <motion.div key={i} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.08 }} className="card-premium p-8 sm:p-10">
                 <div className="flex gap-0.5 mb-6">
@@ -275,7 +274,7 @@ export default function Index() {
       {/* ─── PARTNERS ─── */}
       <section className="section-padding-sm">
         <div className="container-wide text-center">
-          <span className="badge-label mb-8 block">Strategic Partners</span>
+          <span className="badge-label mb-8 block">Collaborators</span>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 items-center">
             {["Studio Partner", "Media Network", "Brand Collaborator", "Cultural Institution"].map((name) => (
               <div key={name} className="py-8 px-4 border border-border/20 rounded-sm">
@@ -285,7 +284,7 @@ export default function Index() {
           </div>
           <div className="mt-10">
             <Button variant="gold-outline" size="sm" asChild>
-              <Link to="/partnerships">Become a Partner</Link>
+              <Link to="/partnerships">Partner With Us</Link>
             </Button>
           </div>
         </div>
@@ -295,16 +294,16 @@ export default function Index() {
       <section className="section-padding bg-card border-t border-border/20">
         <div className="container-narrow text-center">
           <motion.div {...fadeUp}>
-            <span className="badge-label mb-5 block">Your Next Move</span>
+            <span className="badge-label mb-5 block">Get Started</span>
             <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground leading-[1.1]">
-              The Stage Is Set
+              The Platform Is Ready. Are You?
             </h2>
             <p className="mt-5 text-muted-foreground text-base sm:text-lg max-w-lg mx-auto font-light">
-              Whether you're ready to be represented, looking to sharpen your craft, or seeking exceptional talent for your next project — this is where it begins.
+              Whether you're seeking representation, sharpening your craft, or hiring exceptional talent — your next step begins here.
             </p>
             <div className="mt-12 flex flex-col sm:flex-row gap-3 justify-center">
               <Button variant="hero" size="xl" asChild>
-                <Link to="/submit">Apply Now</Link>
+                <Link to="/submit">Submit for Review</Link>
               </Button>
               <Button variant="hero-outline" size="xl" asChild>
                 <Link to="/book-talent">Book Talent</Link>
