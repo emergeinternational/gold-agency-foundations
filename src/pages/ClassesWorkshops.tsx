@@ -90,6 +90,11 @@ export default function ClassesWorkshops() {
                     <p className="text-sm text-muted-foreground leading-relaxed mb-4">{c.desc}</p>
                     <div className="space-y-1.5 text-xs text-muted-foreground">
                       <div className="flex items-center gap-2"><Calendar className="w-3.5 h-3.5" /> {c.date}</div>
+                      <div className="flex items-center gap-2">
+                        {c.delivery === "Online" ? <Globe className="w-3.5 h-3.5" /> : <MapPin className="w-3.5 h-3.5" />}
+                        {c.location}
+                        <span className="text-[10px] uppercase tracking-widest text-primary bg-primary/10 px-1.5 py-0.5 rounded ml-1">{c.delivery}</span>
+                      </div>
                       <div className="flex items-center gap-2"><Tag className="w-3.5 h-3.5" /> {c.price}</div>
                       <div className="flex items-center gap-2"><Users className="w-3.5 h-3.5" /> {c.spots === "Waitlist" ? <span className="text-primary">Waitlist Only</span> : "Spots available"}</div>
                     </div>
