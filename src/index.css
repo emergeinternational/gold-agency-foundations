@@ -60,9 +60,9 @@
     --gradient-gold: linear-gradient(135deg, hsl(40 55% 55%), hsl(40 40% 42%));
     --gradient-dark: linear-gradient(180deg, hsl(225 20% 5%), hsl(225 18% 8%));
     --gradient-card: linear-gradient(145deg, hsl(225 18% 8%), hsl(225 16% 11%));
-    --shadow-gold: 0 4px 30px -8px hsl(40 55% 55% / 0.3);
-    --shadow-card: 0 8px 32px -8px hsl(0 0% 0% / 0.5);
-    --shadow-elevated: 0 16px 48px -12px hsl(0 0% 0% / 0.6);
+    --shadow-gold: 0 4px 30px -8px hsl(40 55% 55% / 0.25);
+    --shadow-card: 0 8px 32px -8px hsl(0 0% 0% / 0.45);
+    --shadow-elevated: 0 16px 48px -12px hsl(0 0% 0% / 0.55);
   }
 }
 
@@ -82,11 +82,17 @@
     font-family: var(--font-display);
     letter-spacing: -0.01em;
   }
+
+  /* Improve selection color */
+  ::selection {
+    background: hsl(40 55% 55% / 0.25);
+    color: hsl(42 30% 92%);
+  }
 }
 
 @layer components {
   .section-padding {
-    @apply px-5 sm:px-8 lg:px-12 py-20 sm:py-24 lg:py-32;
+    @apply px-5 sm:px-8 lg:px-12 py-20 sm:py-24 lg:py-28;
   }
 
   .section-padding-sm {
@@ -113,11 +119,11 @@
   }
 
   .gold-line {
-    @apply w-12 h-[1px] bg-primary/60;
+    @apply w-12 h-px bg-primary/50;
   }
 
   .gold-line-wide {
-    @apply w-20 h-[1px] bg-primary/40;
+    @apply w-20 h-px bg-primary/30;
   }
 
   .card-hover {
@@ -126,10 +132,11 @@
   }
   .card-hover:hover {
     box-shadow: var(--shadow-card);
+    transform: translateY(-1px);
   }
 
   .card-premium {
-    @apply bg-card border border-border/60 rounded-sm;
+    @apply bg-card border border-border/50 rounded-sm;
     background: var(--gradient-card);
   }
 
@@ -142,6 +149,16 @@
     @apply inline-block text-[10px] tracking-[0.35em] uppercase text-primary font-body font-semibold;
     letter-spacing: 0.35em;
   }
+
+  /* Smoother page-level transitions */
+  main {
+    animation: fadeIn 0.4s ease-out;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @layer utilities {
