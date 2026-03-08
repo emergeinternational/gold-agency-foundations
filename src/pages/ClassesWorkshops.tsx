@@ -40,7 +40,7 @@ export default function ClassesWorkshops() {
 
   return (
     <Layout>
-      <PageHero badge="Programs" title="Upcoming Classes & Workshops" subtitle="Browse by topic, format, or experience level. Every session is designed to produce applicable, career-relevant results." />
+      <PageHero badge="Programs" title="Upcoming Classes & Workshops" subtitle="Browse by topic, format, or experience level. Sessions run in Addis Ababa, online, and in select international locations — designed for creatives everywhere." />
 
       <section className="section-padding">
         <div className="container-wide">
