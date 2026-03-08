@@ -18,8 +18,8 @@ export default function TalentCategories() {
     <Layout>
       <PageHero
         badge="Talent Categories"
-        title="Diverse Talent, Unified Vision"
-        subtitle="We represent and develop talent across every creative discipline. Explore our categories and find where you belong."
+        title="Every Discipline. One Standard."
+        subtitle="We represent and develop talent across the full spectrum of creative industries. Find your category — or create your own."
       />
 
       <section className="section-padding">
@@ -40,7 +40,7 @@ export default function TalentCategories() {
                   <p className="text-muted-foreground leading-relaxed mb-6">{cat.description}</p>
                   <Button variant="gold-outline" size="sm" asChild>
                     <Link to="/submit">
-                      Submit as {cat.label.split(" ")[0]} <ArrowRight className="w-3 h-3 ml-1" />
+                      Apply as {cat.label.split(" ")[0]} <ArrowRight className="w-3 h-3 ml-1" />
                     </Link>
                   </Button>
                 </div>
@@ -54,10 +54,10 @@ export default function TalentCategories() {
         <div className="container-narrow text-center">
           <motion.div {...fadeUp}>
             <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground">
-              Don't See Your Category?
+              Don't Fit a Single Category?
             </h2>
-            <p className="mt-4 text-muted-foreground text-lg">
-              We welcome multidisciplinary and non-traditional talent. If your craft doesn't fit neatly into a single category, we still want to hear from you.
+            <p className="mt-4 text-muted-foreground text-lg font-light">
+              We welcome multidisciplinary and non-traditional talent. If your craft crosses boundaries, we still want to hear from you.
             </p>
             <div className="mt-8">
               <Button variant="hero" size="xl" asChild>

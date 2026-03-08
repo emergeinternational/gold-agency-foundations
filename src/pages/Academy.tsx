@@ -20,8 +20,8 @@ export default function Academy() {
     <Layout>
       <PageHero
         badge="The Academy"
-        title="Develop Your Craft. Elevate Your Career."
-        subtitle={`${BRAND.name} Academy offers structured programs, masterclasses, and hands-on workshops for every experience level — from emerging talent to established professionals.`}
+        title="Where Craft Becomes Career"
+        subtitle={`${BRAND.name} Academy offers intensive programs, masterclasses, and professional workshops designed by industry leaders — for creatives who take their growth seriously.`}
         backgroundImage={academyImage}
         cta={{ label: "Browse Programs", href: "/classes-workshops" }}
         secondaryCta={{ label: "Online Tutorials", href: "/tutorials" }}
@@ -29,15 +29,15 @@ export default function Academy() {
 
       <section className="section-padding">
         <div className="container-wide">
-          <SectionHeading badge="Why the Academy" title="More Than Education — Transformation" />
+          <SectionHeading badge="Why the Academy" title="Development with Direction" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {[
-              { icon: GraduationCap, title: "Structured Programs", desc: "From beginner to advanced, follow a clear learning path designed for real industry readiness." },
-              { icon: Users, title: "Industry Instructors", desc: "Learn from working professionals who bring real-world insight to every session." },
-              { icon: Video, title: "In-Person & Online", desc: "Attend workshops in Addis Ababa or learn online through our tutorial library." },
-              { icon: Award, title: "Masterclasses", desc: "Intensive deep-dives into specific skills with industry leaders and guest experts." },
-              { icon: BookOpen, title: "Workshops", desc: "Hands-on, practical sessions designed to build tangible skills you can apply immediately." },
-              { icon: Clock, title: "Flexible Scheduling", desc: "Programs designed to fit real schedules with evening, weekend, and self-paced options." },
+              { icon: GraduationCap, title: "Structured Progression", desc: "Clear learning tracks from foundational skills to advanced industry readiness — no guesswork." },
+              { icon: Users, title: "Working Professionals", desc: "Every instructor is an active industry professional, not a theorist. Real insight, real application." },
+              { icon: Video, title: "In-Person & Online", desc: "Attend sessions in Addis Ababa or access our growing tutorial library from anywhere." },
+              { icon: Award, title: "Masterclasses", desc: "Intensive deep-dives into specific skills with guest experts and industry leaders." },
+              { icon: BookOpen, title: "Hands-On Workshops", desc: "Practical, skill-building sessions designed to produce tangible results you can apply immediately." },
+              { icon: Clock, title: "Built for Real Schedules", desc: "Evening, weekend, and self-paced options designed for working creatives." },
             ].map((f, i) => (
               <motion.div key={f.title} {...fadeUp} transition={{ duration: 0.5, delay: i * 0.05 }} className="card-premium p-7 card-hover">
                 <f.icon className="w-7 h-7 text-primary mb-5 opacity-80" strokeWidth={1.5} />
@@ -51,7 +51,7 @@ export default function Academy() {
 
       <section className="section-padding bg-card/50 border-y border-border/20">
         <div className="container-wide">
-          <SectionHeading badge="Learning Tracks" title="Programs for Every Creative Path" subtitle="Our curriculum covers the essential skills and knowledge areas that today's talent needs to succeed." />
+          <SectionHeading badge="Curriculum" title="Tracks Built for Every Creative Path" subtitle="Core skill areas and knowledge domains that today's talent needs to compete — and win." />
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
             {ACADEMY_TRACKS.map((track, i) => (
               <motion.div key={track} {...fadeUp} transition={{ duration: 0.4, delay: i * 0.03 }} className="bg-secondary/40 border border-border/30 rounded-sm px-4 py-4 text-center">
@@ -64,13 +64,13 @@ export default function Academy() {
 
       <section className="section-padding">
         <div className="container-wide">
-          <SectionHeading badge="Instructors" title="Learn from the Best" subtitle="Our instructors are active industry professionals who bring real-world experience to every session." />
+          <SectionHeading badge="Faculty" title="Learn from People Who Do the Work" subtitle="Our instructors aren't retired professionals — they're active practitioners who bring current industry reality to every session." />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {[
-              { name: "Instructor TBA", role: "Media & Broadcasting", desc: "Seasoned broadcaster with 10+ years in television and radio." },
-              { name: "Instructor TBA", role: "Social Media Strategy", desc: "Digital strategist who has grown brands to millions of followers." },
-              { name: "Instructor TBA", role: "Music & Performance", desc: "Producer and performer with international touring experience." },
-              { name: "Instructor TBA", role: "Public Speaking", desc: "Communication coach specializing in on-camera confidence." },
+              { name: "Instructor TBA", role: "Media & Broadcasting", desc: "Veteran broadcaster with over a decade in television, radio, and digital media." },
+              { name: "Instructor TBA", role: "Digital Strategy", desc: "Growth strategist who has built audiences in the millions across multiple platforms." },
+              { name: "Instructor TBA", role: "Music & Performance", desc: "Producer and performer with international touring and recording experience." },
+              { name: "Instructor TBA", role: "Public Speaking", desc: "Communication specialist focused on on-camera presence and executive delivery." },
             ].map((inst, i) => (
               <motion.div key={i} {...fadeUp} transition={{ duration: 0.5, delay: i * 0.05 }} className="card-premium p-7 text-center card-hover">
                 <div className="w-16 h-16 rounded-full bg-secondary/60 mx-auto mb-5 flex items-center justify-center">
@@ -87,13 +87,13 @@ export default function Academy() {
 
       <section className="section-padding bg-card/50 border-y border-border/20">
         <div className="container-narrow">
-          <SectionHeading badge="FAQ" title="Academy Questions" />
+          <SectionHeading badge="Common Questions" title="Academy FAQ" />
           <div className="space-y-3">
             {[
-              { q: "Do I need experience to join?", a: "No — our programs range from beginner to advanced. Everyone is welcome regardless of experience level." },
-              { q: "Are programs in-person or online?", a: "Both. Workshops and masterclasses are held in Addis Ababa, while tutorials and select courses are available online." },
-              { q: "Does completing a program guarantee representation?", a: "No. Academy participation and representation are separate processes. However, strong performance may lead to consideration." },
-              { q: "How much do programs cost?", a: "Pricing varies by program. Some introductory workshops are free. Detailed pricing is available on individual program pages." },
+              { q: "Do I need prior experience?", a: "No. Programs range from foundational to advanced. We meet you where you are and build from there." },
+              { q: "Are sessions in-person or online?", a: "Both. Workshops and masterclasses run in Addis Ababa. Tutorials and select courses are available online." },
+              { q: "Does completing a program lead to representation?", a: "Not automatically. Academy and representation are separate tracks. Strong performance may lead to consideration, but there's no guaranteed path." },
+              { q: "What do programs cost?", a: "Pricing varies. Some introductory workshops are free. Full pricing is available on individual program listings." },
             ].map((faq, i) => (
               <motion.div key={i} {...fadeUp} transition={{ duration: 0.4, delay: i * 0.04 }} className="card-premium p-6 sm:p-7">
                 <h4 className="font-display text-base font-semibold text-foreground mb-2">{faq.q}</h4>
@@ -107,9 +107,9 @@ export default function Academy() {
       <section className="section-padding">
         <div className="container-narrow text-center">
           <motion.div {...fadeUp}>
-            <span className="badge-label mb-5 block">Get Started</span>
-            <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground leading-[1.1]">Ready to Begin?</h2>
-            <p className="mt-5 text-muted-foreground text-base max-w-lg mx-auto font-light">Browse our upcoming classes, explore online tutorials, or get in touch to learn more.</p>
+            <span className="badge-label mb-5 block">Start Now</span>
+            <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground leading-[1.1]">Your Craft Deserves Investment</h2>
+            <p className="mt-5 text-muted-foreground text-base max-w-lg mx-auto font-light">Browse upcoming programs, explore our online tutorials, or reach out to learn which track fits your goals.</p>
             <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
               <Button variant="hero" size="xl" asChild><Link to="/classes-workshops">Browse Programs</Link></Button>
               <Button variant="hero-outline" size="xl" asChild><Link to="/tutorials">Online Tutorials</Link></Button>

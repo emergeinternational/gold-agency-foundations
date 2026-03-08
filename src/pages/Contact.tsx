@@ -24,7 +24,7 @@ export default function Contact() {
 
   return (
     <Layout>
-      <PageHero badge="Contact" title="Get in Touch" subtitle="Whether you have a question, opportunity, or want to learn more — we'd love to hear from you." />
+      <PageHero badge="Contact" title="Let's Talk" subtitle="Whether you have a question, an opportunity, or simply want to learn more — we're listening." />
       <section className="section-padding">
         <div className="container-wide">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
@@ -41,7 +41,7 @@ export default function Contact() {
                     <div><label className="block text-sm font-medium text-foreground mb-1.5">Name *</label><input className={inputClass} value={form.name} onChange={e => update("name", e.target.value)} placeholder="Your name" />{errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}</div>
                     <div><label className="block text-sm font-medium text-foreground mb-1.5">Email *</label><input className={inputClass} type="email" value={form.email} onChange={e => update("email", e.target.value)} placeholder="you@email.com" />{errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}</div>
                   </div>
-                  <div><label className="block text-sm font-medium text-foreground mb-1.5">Subject</label><input className={inputClass} value={form.subject} onChange={e => update("subject", e.target.value)} placeholder="What is this about?" /></div>
+                  <div><label className="block text-sm font-medium text-foreground mb-1.5">Subject</label><input className={inputClass} value={form.subject} onChange={e => update("subject", e.target.value)} placeholder="What is this regarding?" /></div>
                   <div><label className="block text-sm font-medium text-foreground mb-1.5">Message *</label><textarea className={`${inputClass} min-h-[150px]`} value={form.message} onChange={e => update("message", e.target.value)} placeholder="Your message" maxLength={3000} />{errors.message && <p className="text-xs text-destructive mt-1">{errors.message}</p>}</div>
                   <Button type="submit" variant="gold" size="lg">Send Message</Button>
                 </form>

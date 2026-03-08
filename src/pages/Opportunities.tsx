@@ -1,6 +1,5 @@
 import Layout from "@/components/Layout";
 import PageHero from "@/components/PageHero";
-import SectionHeading from "@/components/SectionHeading";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -14,25 +13,25 @@ const fadeUp = {
 };
 
 const opportunities = [
-  { type: "Open Call", title: "New Faces — 2026 Talent Search", desc: "We're looking for fresh faces across all talent categories. Open to beginners and emerging professionals.", status: "Active" },
-  { type: "Showcase", title: "Addis Creative Showcase", desc: "A curated evening of live performances, presentations, and networking with industry professionals.", status: "Upcoming" },
-  { type: "Internal Casting", title: "Brand Campaign — Spring 2026", desc: "Internal casting for a major brand campaign. Represented talent will be considered first.", status: "Active" },
-  { type: "Partner Opportunity", title: "East Africa Media Fellowship", desc: "A partnership opportunity for media-focused talent to gain exposure and mentorship through regional networks.", status: "Upcoming" },
-  { type: "Academy-Linked", title: "Academy Spotlight Series", desc: "Outstanding academy participants may be featured in our spotlight content series across digital platforms.", status: "Ongoing" },
-  { type: "Talent Spotlight", title: "Monthly Featured Talent", desc: "Each month, we spotlight one emerging talent across our channels and partner networks.", status: "Ongoing" },
+  { type: "Open Call", title: "New Faces — 2026 Talent Search", desc: "Seeking fresh talent across all categories. Open to emerging creatives and first-time applicants.", status: "Active" },
+  { type: "Showcase", title: "Addis Creative Showcase", desc: "A curated evening of live performance, industry networking, and creative presentation.", status: "Upcoming" },
+  { type: "Internal Casting", title: "Brand Campaign — Spring 2026", desc: "Internal casting for a major commercial campaign. Priority given to represented talent.", status: "Active" },
+  { type: "Partner Opportunity", title: "East Africa Media Fellowship", desc: "A regional mentorship and exposure program for media-focused talent, in partnership with industry networks.", status: "Upcoming" },
+  { type: "Academy-Linked", title: "Academy Spotlight Series", desc: "Standout academy participants may be featured in our digital spotlight content series.", status: "Ongoing" },
+  { type: "Talent Spotlight", title: "Monthly Featured Creative", desc: "Each month, one emerging talent is spotlighted across our channels and partner networks.", status: "Ongoing" },
 ];
 
 export default function Opportunities() {
   return (
     <Layout>
-      <PageHero badge="Opportunities" title="Real Opportunities. Honest Expectations." subtitle="Explore current openings, showcases, and pathways. We believe in transparency — visibility of an opportunity does not guarantee selection." />
+      <PageHero badge="Opportunities" title="Current Openings & Pathways" subtitle="Explore active opportunities, showcases, and talent calls. We believe in transparency — listing does not guarantee selection." />
 
       <section className="section-padding">
         <div className="container-wide">
           <div className="card-premium p-6 mb-10 flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
             <p className="text-sm text-muted-foreground">
-              <strong className="text-foreground">Important:</strong> Visibility of an opportunity on this page does not guarantee selection or participation. All opportunities are subject to review, eligibility criteria, and availability. Apply only to opportunities that match your current readiness.
+              <strong className="text-foreground">Please note:</strong> All opportunities are subject to eligibility, review, and availability. Listing on this page does not constitute an offer or guarantee of participation. Apply only to opportunities that match your current level of readiness.
             </p>
           </div>
 
@@ -57,10 +56,10 @@ export default function Opportunities() {
       <section className="section-padding bg-card">
         <div className="container-narrow text-center">
           <motion.div {...fadeUp}>
-            <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground">Don't See What You're Looking For?</h2>
-            <p className="mt-4 text-muted-foreground text-lg">Submit your talent profile and we'll match you with relevant opportunities as they become available.</p>
+            <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground">Nothing Here for You Yet?</h2>
+            <p className="mt-4 text-muted-foreground text-lg font-light">Submit your profile and we'll match you with relevant opportunities as they become available.</p>
             <div className="mt-8">
-              <Button variant="hero" size="xl" asChild><Link to="/submit">Submit Your Talent</Link></Button>
+              <Button variant="hero" size="xl" asChild><Link to="/submit">Submit Your Profile</Link></Button>
             </div>
           </motion.div>
         </div>

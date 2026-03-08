@@ -14,12 +14,12 @@ export default function SubmissionSuccess() {
             <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="w-10 h-10 text-primary" />
             </div>
-            <h1 className="font-display text-4xl sm:text-5xl font-semibold text-foreground mb-4">Submission Received</h1>
-            <p className="text-muted-foreground text-lg max-w-lg mx-auto mb-2">Thank you for submitting your talent to {BRAND.name}. Our team will review your application carefully.</p>
-            <p className="text-sm text-muted-foreground max-w-md mx-auto mb-8">Please note that review timelines may vary. Submission does not guarantee representation. We will contact you if your profile is selected for further consideration.</p>
+            <h1 className="font-display text-4xl sm:text-5xl font-semibold text-foreground mb-4">Application Received</h1>
+            <p className="text-muted-foreground text-lg max-w-lg mx-auto mb-2">Thank you for applying to {BRAND.name}. Your submission is now under review.</p>
+            <p className="text-sm text-muted-foreground max-w-md mx-auto mb-8">Review timelines vary by category and volume. We will reach out directly if your profile is selected for further consideration. Submission does not guarantee representation.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="gold" size="lg" asChild><Link to="/">Return Home</Link></Button>
-              <Button variant="gold-outline" size="lg" asChild><Link to="/academy">Explore Academy</Link></Button>
+              <Button variant="gold-outline" size="lg" asChild><Link to="/academy">Explore the Academy</Link></Button>
             </div>
           </motion.div>
         </div>

@@ -26,7 +26,7 @@ export default function BookTalent() {
     if (!form.companyName.trim()) e.companyName = "Required";
     if (!form.contactPerson.trim()) e.contactPerson = "Required";
     if (!form.email.trim()) e.email = "Required";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Valid email required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Please enter a valid email";
     if (!form.projectType.trim()) e.projectType = "Required";
     if (!form.projectDescription.trim()) e.projectDescription = "Required";
     setErrors(e);
@@ -44,17 +44,17 @@ export default function BookTalent() {
 
   return (
     <Layout>
-      <PageHero badge="Book Talent" title="Access Our Roster" subtitle={`${BRAND.name} connects brands, event organizers, media houses, and production teams with exceptional talent. Tell us about your project.`} />
+      <PageHero badge="Book Talent" title="Hire from Our Roster" subtitle={`${BRAND.name} connects brands, event producers, media teams, and campaign directors with vetted, professional talent. Tell us about your project.`} />
 
       <section className="section-padding">
         <div className="container-narrow">
           <form onSubmit={handleSubmit} className="space-y-8">
             <fieldset>
-              <legend className="font-display text-xl font-semibold text-foreground mb-6">Your Details</legend>
+              <legend className="font-display text-xl font-semibold text-foreground mb-6">Your Organization</legend>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className={labelClass}>Company / Organization *</label>
-                  <input className={inputClass} value={form.companyName} onChange={e => update("companyName", e.target.value)} placeholder="Company name" />
+                  <input className={inputClass} value={form.companyName} onChange={e => update("companyName", e.target.value)} placeholder="Organization name" />
                   {errors.companyName && <p className={errorClass}>{errors.companyName}</p>}
                 </div>
                 <div>
@@ -85,7 +85,7 @@ export default function BookTalent() {
                     <option value="event">Event / Live Appearance</option>
                     <option value="media-production">Media Production</option>
                     <option value="casting">Casting / Audition</option>
-                    <option value="endorsement">Endorsement</option>
+                    <option value="endorsement">Endorsement / Ambassador</option>
                     <option value="other">Other</option>
                   </select>
                   {errors.projectType && <p className={errorClass}>{errors.projectType}</p>}
@@ -95,7 +95,7 @@ export default function BookTalent() {
                   <input className={inputClass} value={form.talentType} onChange={e => update("talentType", e.target.value)} placeholder="e.g., Host, Model, Musician" />
                 </div>
                 <div>
-                  <label className={labelClass}>Date</label>
+                  <label className={labelClass}>Project Date</label>
                   <input className={inputClass} type="date" value={form.date} onChange={e => update("date", e.target.value)} />
                 </div>
                 <div>
@@ -111,7 +111,7 @@ export default function BookTalent() {
                     <option value="5000-15000">$5,000 – $15,000</option>
                     <option value="15000-50000">$15,000 – $50,000</option>
                     <option value="50000+">$50,000+</option>
-                    <option value="negotiable">Negotiable</option>
+                    <option value="negotiable">To Be Discussed</option>
                   </select>
                 </div>
                 <div>
@@ -124,14 +124,14 @@ export default function BookTalent() {
                 </div>
                 <div className="sm:col-span-2">
                   <label className={labelClass}>Project Description *</label>
-                  <textarea className={`${inputClass} min-h-[120px]`} value={form.projectDescription} onChange={e => update("projectDescription", e.target.value)} placeholder="Describe the project, goals, and what you're looking for in talent." maxLength={3000} />
+                  <textarea className={`${inputClass} min-h-[120px]`} value={form.projectDescription} onChange={e => update("projectDescription", e.target.value)} placeholder="Describe the project scope, creative direction, and what you need from talent" maxLength={3000} />
                   {errors.projectDescription && <p className={errorClass}>{errors.projectDescription}</p>}
                 </div>
                 <div className="sm:col-span-2">
                   <label className={labelClass}>Attach Brief or Reference (Optional)</label>
                   <label className="flex flex-col items-center justify-center border-2 border-dashed border-border rounded-lg p-6 cursor-pointer hover:border-primary/40 transition-colors bg-secondary/30">
                     <Upload className="w-6 h-6 text-muted-foreground mb-2" />
-                    <span className="text-xs text-muted-foreground">{file ? file.name : "Choose file (PDF, image)"}</span>
+                    <span className="text-xs text-muted-foreground">{file ? file.name : "Select file · PDF or image"}</span>
                     <input type="file" accept=".pdf,image/*" className="hidden" onChange={e => setFile(e.target.files?.[0] || null)} />
                   </label>
                 </div>
@@ -139,7 +139,7 @@ export default function BookTalent() {
             </fieldset>
 
             <Button type="submit" variant="hero" size="xl" className="w-full sm:w-auto">
-              Submit Booking Request
+              Submit Booking Inquiry
             </Button>
           </form>
         </div>

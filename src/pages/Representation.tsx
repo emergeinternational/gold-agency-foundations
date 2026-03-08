@@ -15,14 +15,14 @@ const fadeUp = {
 };
 
 const services = [
-  { icon: TrendingUp, title: "Talent Positioning", desc: "Strategic career direction tailored to your unique strengths and market opportunities." },
-  { icon: Sparkles, title: "Brand Development", desc: "Building a compelling personal brand that resonates with industry and audiences." },
-  { icon: Camera, title: "Campaign Access", desc: "Connecting talent with brand campaigns, editorial projects, and commercial opportunities." },
-  { icon: Users, title: "Booking Management", desc: "Professional booking coordination for events, productions, and partnerships." },
-  { icon: Megaphone, title: "Media Development", desc: "Press strategy, media training, and public profile management." },
-  { icon: Globe, title: "International Exposure", desc: "Preparing talent for cross-border opportunities and global market readiness." },
-  { icon: Shield, title: "Partnership Pathways", desc: "Facilitating brand partnerships, endorsements, and collaborative ventures." },
-  { icon: Laptop, title: "Digital Strategy", desc: "Social media optimization, content strategy, and digital presence management." },
+  { icon: TrendingUp, title: "Career Strategy", desc: "Tailored direction built around your strengths, market position, and long-term trajectory." },
+  { icon: Sparkles, title: "Brand Architecture", desc: "Developing a compelling personal brand that resonates with industry and audiences alike." },
+  { icon: Camera, title: "Campaign Placement", desc: "Connecting talent with brand campaigns, editorial projects, and commercial productions." },
+  { icon: Users, title: "Booking Coordination", desc: "Professional management of event, production, and partnership bookings." },
+  { icon: Megaphone, title: "Media Strategy", desc: "Press positioning, media training, and public profile development." },
+  { icon: Globe, title: "Global Readiness", desc: "Preparing talent for cross-border opportunities and international market standards." },
+  { icon: Shield, title: "Partnership Development", desc: "Facilitating endorsements, brand partnerships, and collaborative ventures with credible partners." },
+  { icon: Laptop, title: "Digital Positioning", desc: "Social media optimization, content strategy, and digital presence management." },
 ];
 
 export default function Representation() {
@@ -30,14 +30,14 @@ export default function Representation() {
     <Layout>
       <PageHero
         badge="Representation"
-        title="Selective. Strategic. High-Trust."
-        subtitle={`${BRAND.name} represents talent who are ready — or becoming ready — for the global stage. Our approach is built on trust, strategy, and genuine investment in every talent's long-term success.`}
-        cta={{ label: "Submit for Representation", href: "/submit" }}
+        title="Selective. Strategic. Substantive."
+        subtitle={`${BRAND.name} represents talent who are ready — or actively becoming ready — for the demands of a global stage. Our approach is built on trust, strategy, and genuine investment in every career we take on.`}
+        cta={{ label: "Apply for Representation", href: "/submit" }}
       />
 
       <section className="section-padding">
         <div className="container-wide">
-          <SectionHeading badge="What We Offer" title="Comprehensive Talent Support" />
+          <SectionHeading badge="Services" title="What Representation Includes" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {services.map((s, i) => (
               <motion.div
@@ -58,13 +58,13 @@ export default function Representation() {
       <section className="section-padding bg-card">
         <div className="container-narrow text-center">
           <motion.div {...fadeUp}>
-            <SectionHeading badge="How to Join" title="Becoming a Represented Talent" subtitle="Representation is selective and merit-based. Submission does not guarantee signing, but every application is reviewed by our team." />
+            <SectionHeading badge="Next Step" title="How to Join Our Roster" subtitle="Representation is selective and merit-based. Submission does not guarantee signing — but every application is reviewed with care." />
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="hero" size="xl" asChild>
-                <Link to="/submit">Begin Your Submission</Link>
+                <Link to="/submit">Begin Your Application</Link>
               </Button>
               <Button variant="hero-outline" size="xl" asChild>
-                <Link to="/academy">Develop Through the Academy</Link>
+                <Link to="/academy">Prepare Through the Academy</Link>
               </Button>
             </div>
           </motion.div>

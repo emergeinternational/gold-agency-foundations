@@ -1,28 +1,27 @@
 import Layout from "@/components/Layout";
 import PageHero from "@/components/PageHero";
-import SectionHeading from "@/components/SectionHeading";
 import { motion } from "framer-motion";
 import { BRAND } from "@/lib/brand";
 
 const fadeUp = { initial: { opacity: 0, y: 24 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-60px" }, transition: { duration: 0.7 as const } };
 
 const faqs = [
-  { q: "Who can submit for representation?", a: "Anyone with a genuine talent or creative practice can submit. We welcome all experience levels and categories — from emerging beginners to seasoned professionals." },
-  { q: "Does submission guarantee representation?", a: "No. Submission is an application for consideration. Our team reviews every submission carefully, but representation is selective and based on multiple factors." },
-  { q: "Do classes or workshops guarantee signing?", a: "No. Academy participation and representation are separate processes. Strong performance may lead to consideration, but there is no automatic pathway from classes to signing." },
-  { q: "Who can join workshops and classes?", a: "Our programs are open to anyone interested in professional development — whether or not they are pursuing representation." },
-  { q: "Are beginners welcome?", a: "Absolutely. Many of our programs are specifically designed for emerging talent and beginners. We believe everyone starts somewhere." },
-  { q: "Can minors apply?", a: "Yes, with guardian consent. Applicants under 18 must include guardian information in their submission and have a guardian agree to participation terms." },
-  { q: "How do bookings work?", a: "Brands, event organizers, and production teams can submit a booking request through our Book Talent page. Our team matches projects with available talent from our roster." },
-  { q: "How do partnerships work?", a: "We collaborate with brands, studios, media houses, educators, and institutions. Visit our Partnerships page to submit an inquiry." },
-  { q: `Where is ${BRAND.name} based?`, a: `Our headquarters are in ${BRAND.locationPrimary}, Ethiopia. Our strategic vision is global, with particular ambition tied to ${BRAND.locationVision} and international markets.` },
-  { q: "How is international ambition framed?", a: "We prepare talent for global opportunities by combining local development with international industry standards, media training, and cross-border partnership pathways." },
+  { q: "Who can submit for representation?", a: "Anyone with a genuine creative practice is welcome to apply. We review talent across all categories and experience levels — from emerging artists to established professionals." },
+  { q: "Does submitting guarantee representation?", a: "No. A submission is an application for consideration. Our team reviews every application, but representation is selective and based on readiness, fit, and potential." },
+  { q: "Do academy programs guarantee signing?", a: "No. Academy participation and representation are separate processes. Exceptional performance may lead to further consideration, but there is no automatic connection between the two." },
+  { q: "Who can join workshops and classes?", a: "Anyone interested in professional development — whether or not they're seeking representation. Our programs are open to all creatives who want to grow." },
+  { q: "Are beginners welcome?", a: "Yes. Many of our programs are designed specifically for emerging talent. Everyone starts somewhere — what matters is your commitment to the work." },
+  { q: "Can applicants under 18 apply?", a: "Yes, with guardian consent. Applicants under 18 must include guardian information and have a guardian agree to all participation terms." },
+  { q: "How does talent booking work?", a: "Brands, event organizers, and production teams can submit a booking inquiry through our Book Talent page. Our team matches project needs with available talent from our roster." },
+  { q: "How do partnerships work?", a: "We collaborate with brands, studios, media organizations, educators, and cultural institutions. Visit the Partnerships page to submit an inquiry about working together." },
+  { q: `Where is ${BRAND.name} based?`, a: `Our headquarters are in ${BRAND.locationPrimary}, Ethiopia. Our strategic ambition is global, with particular focus on ${BRAND.locationVision} and international markets.` },
+  { q: "What does 'global vision' mean in practice?", a: "It means we prepare talent for international opportunities — through industry-standard training, cross-border partnership pathways, and media positioning that resonates beyond local markets." },
 ];
 
 export default function FAQ() {
   return (
     <Layout>
-      <PageHero badge="FAQ" title="Frequently Asked Questions" subtitle="Clear answers to the most common questions about our agency, academy, and processes." />
+      <PageHero badge="FAQ" title="Common Questions, Straight Answers" subtitle="What you need to know about our agency, academy, and processes — without the fine print." />
       <section className="section-padding">
         <div className="container-narrow">
           <div className="space-y-4">

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Layout from "@/components/Layout";
 import PageHero from "@/components/PageHero";
-import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Play, Clock, Tag } from "lucide-react";
 
@@ -13,15 +12,15 @@ const fadeUp = {
 };
 
 const tutorials = [
-  { id: 1, title: "Building Your Personal Brand from Zero", category: "Branding", duration: "18 min", type: "Free" },
-  { id: 2, title: "Social Media Content Calendar Mastery", category: "Digital", duration: "24 min", type: "Premium" },
-  { id: 3, title: "How to Nail Your First On-Camera Audition", category: "Performance", duration: "15 min", type: "Free" },
-  { id: 4, title: "Understanding Music Licensing & Royalties", category: "Music", duration: "22 min", type: "Premium" },
-  { id: 5, title: "Pitch Yourself: The 60-Second Elevator Pitch", category: "Business", duration: "12 min", type: "Free" },
-  { id: 6, title: "Instagram Reels Strategy for Creatives", category: "Digital", duration: "20 min", type: "Free" },
-  { id: 7, title: "Working with Agents & Managers", category: "Business", duration: "28 min", type: "Premium" },
+  { id: 1, title: "Building a Personal Brand from Zero", category: "Branding", duration: "18 min", type: "Free" },
+  { id: 2, title: "Content Calendar Mastery for Creatives", category: "Digital", duration: "24 min", type: "Premium" },
+  { id: 3, title: "Nailing Your First On-Camera Audition", category: "Performance", duration: "15 min", type: "Free" },
+  { id: 4, title: "Music Licensing & Royalties Explained", category: "Music", duration: "22 min", type: "Premium" },
+  { id: 5, title: "The 60-Second Pitch: How to Sell Yourself", category: "Business", duration: "12 min", type: "Free" },
+  { id: 6, title: "Reels Strategy That Actually Works", category: "Digital", duration: "20 min", type: "Free" },
+  { id: 7, title: "How to Work with Agents & Managers", category: "Business", duration: "28 min", type: "Premium" },
   { id: 8, title: "Vocal Warm-Ups for Presenters & Hosts", category: "Performance", duration: "10 min", type: "Free" },
-  { id: 9, title: "Portfolio Photography: What Agencies Want", category: "Modeling", duration: "16 min", type: "Premium" },
+  { id: 9, title: "Portfolio Photography: What Agencies Look For", category: "Modeling", duration: "16 min", type: "Premium" },
 ];
 
 const categories = ["All", "Branding", "Digital", "Performance", "Music", "Business", "Modeling"];
@@ -32,7 +31,7 @@ export default function Tutorials() {
 
   return (
     <Layout>
-      <PageHero badge="Online Tutorials" title="Learn at Your Own Pace" subtitle="A growing library of video tutorials and guides covering everything from branding to performance — available anytime, anywhere." />
+      <PageHero badge="Online Tutorials" title="Learn on Your Terms" subtitle="A growing library of professional tutorials and guides — from branding to performance — available anytime, from anywhere." />
 
       <section className="section-padding">
         <div className="container-wide">
@@ -68,12 +67,12 @@ export default function Tutorials() {
 
           {filtered.length === 0 && (
             <div className="text-center py-16">
-              <p className="text-muted-foreground">No tutorials in this category yet. Check back soon for new content.</p>
+              <p className="text-muted-foreground">No tutorials in this category yet. New content is added regularly.</p>
             </div>
           )}
 
           <div className="text-center mt-12">
-            <p className="text-sm text-muted-foreground">More tutorials are added regularly. Video content will be available once the media platform is connected.</p>
+            <p className="text-sm text-muted-foreground/60">New tutorials are published regularly. Full video playback will be available once the media platform is connected.</p>
           </div>
         </div>
       </section>
