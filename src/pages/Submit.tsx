@@ -48,9 +48,9 @@ export default function Submit() {
     if (validate()) navigate("/submission-success");
   };
 
-  const inputClass = "w-full px-4 py-3 bg-secondary border border-border rounded-md text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-colors text-sm";
-  const labelClass = "block text-sm font-medium text-foreground mb-1.5";
-  const errorClass = "text-xs text-destructive mt-1";
+  const inputClass = "w-full px-4 py-3 bg-secondary/60 border border-border/60 rounded-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary/40 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-sm";
+  const labelClass = "block text-xs font-medium text-foreground/80 mb-1.5 tracking-wide uppercase";
+  const errorClass = "text-[11px] text-destructive mt-1";
 
   return (
     <Layout>
@@ -62,7 +62,7 @@ export default function Submit() {
 
       <section className="section-padding">
         <div className="container-narrow">
-          <div className="bg-card border border-border rounded-lg p-6 sm:p-10 mb-8">
+          <div className="card-premium p-6 sm:p-8 mb-10">
             <div className="flex items-start gap-3 mb-6">
               <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
               <div>
@@ -80,7 +80,7 @@ export default function Submit() {
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Personal Info */}
             <fieldset>
-              <legend className="font-display text-xl font-semibold text-foreground mb-6">Personal Information</legend>
+              <legend className="font-display text-xl font-semibold text-foreground mb-8">Personal Information</legend>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className={labelClass}>Full Name *</label>

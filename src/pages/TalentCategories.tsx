@@ -30,7 +30,7 @@ export default function TalentCategories() {
                 key={cat.id}
                 {...fadeUp}
                 transition={{ duration: 0.7, delay: i * 0.05 }}
-                className="bg-card border border-border rounded-lg p-8 card-hover group relative overflow-hidden"
+                className="card-premium p-8 card-hover group relative overflow-hidden"
               >
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-8 translate-x-8 group-hover:bg-primary/10 transition-colors" />
                 <div className="relative">

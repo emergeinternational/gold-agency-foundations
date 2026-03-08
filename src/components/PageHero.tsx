@@ -16,35 +16,35 @@ interface PageHeroProps {
 export default function PageHero({ title, subtitle, badge, backgroundImage, cta, secondaryCta, overlay = true, tall = false }: PageHeroProps) {
   return (
     <section
-      className={`relative flex items-center justify-center overflow-hidden ${tall ? "min-h-[85vh]" : "min-h-[50vh]"}`}
+      className={`relative flex items-end overflow-hidden ${tall ? "min-h-[85vh]" : "min-h-[45vh]"}`}
       style={backgroundImage ? {
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       } : undefined}
     >
-      {overlay && <div className="absolute inset-0 bg-background/80" />}
-      <div className="relative z-10 container-wide section-padding text-center">
+      {overlay && <div className="absolute inset-0 bg-background/85" />}
+      {!backgroundImage && <div className="absolute inset-0 bg-card" />}
+      <div className="relative z-10 container-wide px-5 sm:px-8 lg:px-12 py-16 sm:py-20 lg:py-24">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" as const }}
+          transition={{ duration: 0.7, ease: "easeOut" as const }}
+          className="max-w-3xl"
         >
           {badge && (
-            <span className="inline-block text-[11px] tracking-[0.3em] uppercase text-primary font-body font-semibold mb-4">
-              {badge}
-            </span>
+            <span className="badge-label mb-5 block">{badge}</span>
           )}
-          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold text-foreground leading-[1.1] text-balance max-w-4xl mx-auto">
+          <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-[3.5rem] font-semibold text-foreground leading-[1.1] text-balance">
             {title}
           </h1>
           {subtitle && (
-            <p className="mt-6 text-muted-foreground text-base sm:text-lg lg:text-xl max-w-2xl mx-auto leading-relaxed">
+            <p className="mt-5 text-muted-foreground text-base sm:text-[17px] max-w-2xl leading-relaxed">
               {subtitle}
             </p>
           )}
           {(cta || secondaryCta) && (
-            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="mt-10 flex flex-col sm:flex-row gap-3">
               {cta && (
                 <Button variant="hero" size="xl" asChild>
                   <Link to={cta.href}>{cta.label}</Link>

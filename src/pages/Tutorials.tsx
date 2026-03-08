@@ -49,7 +49,7 @@ export default function Tutorials() {
           {/* Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((t, i) => (
-              <motion.div key={t.id} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.04 }} className="bg-card border border-border rounded-lg overflow-hidden card-hover group">
+              <motion.div key={t.id} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.04 }} className="card-premium overflow-hidden card-hover group">
                 <div className="aspect-video bg-secondary flex items-center justify-center relative">
                   <Play className="w-12 h-12 text-muted-foreground group-hover:text-primary transition-colors" />
                   <span className="absolute top-3 right-3 text-[10px] uppercase tracking-widest bg-background/80 px-2 py-0.5 rounded text-foreground">{t.type}</span>
