@@ -29,7 +29,7 @@ export default function Opportunities() {
 
       <section className="section-padding">
         <div className="container-wide">
-          <div className="bg-card border border-border rounded-lg p-6 mb-10 flex items-start gap-3">
+          <div className="card-premium p-6 mb-10 flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
             <p className="text-sm text-muted-foreground">
               <strong className="text-foreground">Important:</strong> Visibility of an opportunity on this page does not guarantee selection or participation. All opportunities are subject to review, eligibility criteria, and availability. Apply only to opportunities that match your current readiness.
