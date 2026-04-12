@@ -7,6 +7,9 @@ import { motion } from "framer-motion";
 import { Shield, TrendingUp, Globe, Camera, Users, Sparkles, Megaphone, Laptop } from "lucide-react";
 import { BRAND } from "@/lib/brand";
 
+const managementBanner =
+  "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=2200&q=80";
+
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
   whileInView: { opacity: 1, y: 0 },
@@ -32,6 +35,8 @@ export default function Representation() {
         badge="Management"
         title="Management & Representation"
         subtitle="Selective. Strategic. Invested."
+        backgroundImage={managementBanner}
+        backgroundPosition="center 30%"
         cta={{ label: "Submit for Review", href: "/submit" }}
       />
 

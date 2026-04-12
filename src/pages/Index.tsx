@@ -21,11 +21,17 @@ export default function Index() {
   return (
     <Layout>
       {/* ─── HERO ─── */}
-      <section className="relative min-h-screen flex items-center overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${heroImage})` }} />
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/92 to-background/50" />
+      <section className="relative min-h-screen flex items-start overflow-hidden">
+        <motion.div
+          initial={{ scale: 1.03, opacity: 0.94 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 1.2, ease: "easeOut" as const }}
+          className="absolute inset-0 bg-cover"
+          style={{ backgroundImage: `url(${heroImage})`, backgroundPosition: "center 32%" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/86 to-background/45" />
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
-        <div className="relative z-10 container-wide px-5 sm:px-8 lg:px-12 py-32 sm:py-40">
+        <div className="relative z-10 container-wide px-5 sm:px-8 lg:px-12 pt-24 sm:pt-32 lg:pt-36 pb-16 sm:pb-20">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
