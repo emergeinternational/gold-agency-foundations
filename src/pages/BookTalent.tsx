@@ -74,6 +74,7 @@ export default function BookTalent() {
         subtitle="We connect brands, production teams, event producers, and campaign directors worldwide with vetted professional talent across every creative discipline — locally and internationally."
         backgroundImage={bookingHero}
         backgroundPosition="center 24%"
+        overlayVariant="enhanced"
       />
 
       <section className="section-padding">

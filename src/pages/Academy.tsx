@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { BRAND, ACADEMY_TRACKS } from "@/lib/brand";
-import academyImage from "@/assets/academy.jpg";
 import { BookOpen, Users, Video, Award, Clock, GraduationCap } from "lucide-react";
+
+const developmentBanner =
+  "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=2200&q=80";
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -22,10 +24,11 @@ export default function Academy() {
         badge="Development Programs"
         title="Preparation Is the Advantage"
         subtitle={`${BRAND.name} offers structured training designed to support talent progressing toward representation readiness — led by active industry professionals.`}
-        backgroundImage={academyImage}
+        backgroundImage={developmentBanner}
         cta={{ label: "Browse Programs", href: "/classes-workshops" }}
         secondaryCta={{ label: "Online Tutorials", href: "/tutorials" }}
         backgroundPosition="center 24%"
+        overlayVariant="enhanced"
       />
 
       <section className="section-padding">
