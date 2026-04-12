@@ -8,7 +8,7 @@ import { BRAND } from "@/lib/brand";
 import { Handshake, Building, Mic, MapPin, BookOpen, TrendingUp } from "lucide-react";
 
 const partnershipBanner =
-  "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=2200&q=80";
+  "https://images.unsplash.com/photo-1474631245212-32dc3c8310c6?auto=format&fit=crop&w=2200&q=80";
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
@@ -55,7 +55,7 @@ export default function Partnerships() {
         title="Collaborate With Purpose"
         subtitle={`${BRAND.name} works with forward-thinking brands, institutions, and creative leaders invested in elevating talent and culture at the highest level.`}
         backgroundImage={partnershipBanner}
-        backgroundPosition="center 28%"
+        backgroundPosition="center 22%"
       />
 
       <section className="section-padding">

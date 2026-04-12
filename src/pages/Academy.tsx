@@ -25,6 +25,7 @@ export default function Academy() {
         backgroundImage={academyImage}
         cta={{ label: "Browse Programs", href: "/classes-workshops" }}
         secondaryCta={{ label: "Online Tutorials", href: "/tutorials" }}
+        backgroundPosition="center 24%"
       />
 
       <section className="section-padding">

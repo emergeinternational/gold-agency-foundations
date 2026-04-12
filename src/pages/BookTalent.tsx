@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Upload } from "lucide-react";
 import { BRAND } from "@/lib/brand";
-import bookingHero from "@/assets/booking-hero.jpg";
 
 const CURRENCIES = [
   { value: "USD", label: "USD ($)" },
@@ -27,6 +26,9 @@ const BUDGET_RANGES = [
   { value: "50000+", label: "50,000+" },
   { value: "discuss", label: "Prefer to discuss" },
 ];
+
+const bookingHero =
+  "https://images.unsplash.com/photo-1497032205916-ac775f0649ae?auto=format&fit=crop&w=2200&q=80";
 
 export default function BookTalent() {
   const navigate = useNavigate();
@@ -71,6 +73,7 @@ export default function BookTalent() {
         title="Book From Our Roster"
         subtitle="We connect brands, production teams, event producers, and campaign directors worldwide with vetted professional talent across every creative discipline — locally and internationally."
         backgroundImage={bookingHero}
+        backgroundPosition="center 24%"
       />
 
       <section className="section-padding">
