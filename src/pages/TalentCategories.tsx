@@ -45,7 +45,7 @@ export default function TalentCategories() {
                   </h3>
                   <p className="text-muted-foreground leading-relaxed mb-6">{cat.description}</p>
                   <Button variant="gold-outline" size="sm" asChild>
-                    <Link to="/submit">
+                    <Link to={`/submit?category=${cat.id}`}>
                       Submit for Representation Consideration <ArrowRight className="w-3 h-3 ml-1" />
                     </Link>
                   </Button>
