@@ -8,7 +8,7 @@ import { Shield, TrendingUp, Globe, Camera, Users, Sparkles, Megaphone, Laptop }
 import { BRAND } from "@/lib/brand";
 
 const managementBanner =
-  "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=2200&q=80";
+  "https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=2200&q=80";
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
@@ -36,7 +36,7 @@ export default function Representation() {
         title="Management & Representation"
         subtitle="Selective. Strategic. Invested."
         backgroundImage={managementBanner}
-        backgroundPosition="center 30%"
+        backgroundPosition="center 24%"
         cta={{ label: "Submit for Review", href: "/submit" }}
       />
 
