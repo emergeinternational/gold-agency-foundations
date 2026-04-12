@@ -7,25 +7,41 @@ interface PageHeroProps {
   subtitle?: string;
   badge?: string;
   backgroundImage?: string;
+  backgroundPosition?: string;
   cta?: { label: string; href: string };
   secondaryCta?: { label: string; href: string };
   overlay?: boolean;
   tall?: boolean;
 }
 
-export default function PageHero({ title, subtitle, badge, backgroundImage, cta, secondaryCta, overlay = true, tall = false }: PageHeroProps) {
+export default function PageHero({
+  title,
+  subtitle,
+  badge,
+  backgroundImage,
+  backgroundPosition = "center 30%",
+  cta,
+  secondaryCta,
+  overlay = true,
+  tall = false,
+}: PageHeroProps) {
   return (
-    <section
-      className={`relative flex items-end overflow-hidden ${tall ? "min-h-[85vh]" : "min-h-[44vh]"}`}
-      style={backgroundImage ? {
-        backgroundImage: `url(${backgroundImage})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      } : undefined}
-    >
-      {overlay && <div className="absolute inset-0 bg-background/85" />}
+    <section className={`relative flex items-start overflow-hidden ${tall ? "min-h-[82vh]" : "min-h-[42vh]"}`}>
+      {backgroundImage && (
+        <motion.div
+          initial={{ scale: 1.04, opacity: 0.94 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 1.1, ease: "easeOut" as const }}
+          className="absolute inset-0 bg-cover"
+          style={{
+            backgroundImage: `url(${backgroundImage})`,
+            backgroundPosition,
+          }}
+        />
+      )}
+      {overlay && <div className="absolute inset-0 bg-gradient-to-br from-background/88 via-background/80 to-background/72" />}
       {!backgroundImage && <div className="absolute inset-0 bg-card" />}
-      <div className="relative z-10 container-wide px-5 sm:px-8 lg:px-12 py-14 sm:py-18 lg:py-22">
+      <div className="relative z-10 container-wide px-5 sm:px-8 lg:px-12 pt-24 sm:pt-28 lg:pt-32 pb-10 sm:pb-14 lg:pb-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

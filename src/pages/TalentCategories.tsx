@@ -6,6 +6,9 @@ import { motion } from "framer-motion";
 import { TALENT_CATEGORIES } from "@/lib/brand";
 import { ArrowRight } from "lucide-react";
 
+const representationBanner =
+  "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=2200&q=80";
+
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
   whileInView: { opacity: 1, y: 0 },
@@ -20,6 +23,8 @@ export default function TalentCategories() {
         badge="Disciplines"
         title="Areas of Representation"
         subtitle="We represent and develop talent across the full spectrum of creative industries — from broadcast media to digital storytelling."
+        backgroundImage={representationBanner}
+        backgroundPosition="center 35%"
       />
 
       <section className="section-padding">

@@ -7,6 +7,9 @@ import { motion } from "framer-motion";
 import { BRAND } from "@/lib/brand";
 import { Handshake, Building, Mic, MapPin, BookOpen, TrendingUp } from "lucide-react";
 
+const partnershipBanner =
+  "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=2200&q=80";
+
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
   whileInView: { opacity: 1, y: 0 },
@@ -47,7 +50,13 @@ export default function Partnerships() {
 
   return (
     <Layout>
-      <PageHero badge="Partnerships" title="Collaborate With Purpose" subtitle={`${BRAND.name} works with forward-thinking brands, institutions, and creative leaders invested in elevating talent and culture at the highest level.`} />
+      <PageHero
+        badge="Partnerships"
+        title="Collaborate With Purpose"
+        subtitle={`${BRAND.name} works with forward-thinking brands, institutions, and creative leaders invested in elevating talent and culture at the highest level.`}
+        backgroundImage={partnershipBanner}
+        backgroundPosition="center 28%"
+      />
 
       <section className="section-padding">
         <div className="container-wide">
