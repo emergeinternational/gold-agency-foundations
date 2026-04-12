@@ -12,6 +12,7 @@ interface PageHeroProps {
   cta?: { label: string; href: string };
   secondaryCta?: { label: string; href: string };
   overlay?: boolean;
+  overlayVariant?: "default" | "enhanced";
   tall?: boolean;
 }
 
@@ -24,9 +25,12 @@ export default function PageHero({
   cta,
   secondaryCta,
   overlay = true,
+  overlayVariant = "default",
   tall = false,
   textZone = "left",
 }: PageHeroProps) {
+  const isEnhancedOverlay = overlayVariant === "enhanced";
+
   return (
     <section className={`relative flex items-start overflow-hidden ${tall ? "min-h-[82vh]" : "min-h-[42vh]"}`}>
       {backgroundImage && (
@@ -43,12 +47,12 @@ export default function PageHero({
       )}
       {overlay && (
         <>
-          <div className="absolute inset-0 bg-background/58" />
+          <div className={`absolute inset-0 ${isEnhancedOverlay ? "bg-background/66" : "bg-background/58"}`} />
           <div
-            className={`absolute inset-y-0 ${textZone === "center" ? "left-0 right-0" : "left-0 right-[28%]"} bg-gradient-to-r from-background/90 via-background/82 to-transparent`}
+            className={`absolute inset-y-0 ${textZone === "center" ? "left-0 right-0" : "left-0 right-[28%]"} bg-gradient-to-r ${isEnhancedOverlay ? "from-background via-background/88 to-transparent" : "from-background/90 via-background/82 to-transparent"}`}
           />
-          <div className="absolute inset-x-0 top-0 h-36 sm:h-44 bg-gradient-to-b from-background/88 via-background/54 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 h-20 sm:h-24 bg-gradient-to-t from-background/45 to-transparent" />
+          <div className={`absolute inset-x-0 top-0 h-36 sm:h-44 bg-gradient-to-b ${isEnhancedOverlay ? "from-background via-background/62 to-transparent" : "from-background/88 via-background/54 to-transparent"}`} />
+          <div className={`absolute inset-x-0 bottom-0 h-20 sm:h-24 bg-gradient-to-t ${isEnhancedOverlay ? "from-background/58 to-transparent" : "from-background/45 to-transparent"}`} />
         </>
       )}
       {!backgroundImage && <div className="absolute inset-0 bg-card" />}

@@ -7,7 +7,7 @@ import { TALENT_CATEGORIES } from "@/lib/brand";
 import { ArrowRight } from "lucide-react";
 
 const representationBanner =
-  "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?auto=format&fit=crop&w=2200&q=80";
+  "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=2200&q=80";
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
@@ -25,6 +25,7 @@ export default function TalentCategories() {
         subtitle="We represent and develop talent across the full spectrum of creative industries — from broadcast media to digital storytelling."
         backgroundImage={representationBanner}
         backgroundPosition="center 22%"
+        overlayVariant="enhanced"
       />
 
       <section className="section-padding">

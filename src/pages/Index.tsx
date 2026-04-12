@@ -23,16 +23,16 @@ export default function Index() {
       {/* ─── HERO ─── */}
       <section className="relative min-h-screen flex items-start overflow-hidden">
         <motion.div
-          initial={{ scale: 1.03, opacity: 0.94 }}
+          initial={{ scale: 1.03, opacity: 0.92 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 1.2, ease: "easeOut" as const }}
           className="absolute inset-0 bg-cover"
           style={{ backgroundImage: `url(${heroImage})`, backgroundPosition: "center 32%" }}
         />
-        <div className="absolute inset-0 bg-background/56" />
-        <div className="absolute inset-y-0 left-0 right-[30%] bg-gradient-to-r from-background/94 via-background/84 to-transparent" />
-        <div className="absolute inset-x-0 top-0 h-40 sm:h-48 bg-gradient-to-b from-background/90 via-background/56 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-background/52 to-transparent" />
+        <div className="absolute inset-0 bg-background/62" />
+        <div className="absolute inset-y-0 left-0 right-[30%] bg-gradient-to-r from-background via-background/90 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-40 sm:h-48 bg-gradient-to-b from-background via-background/62 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-background/58 to-transparent" />
         <div className="relative z-10 container-wide px-5 sm:px-8 lg:px-12 pt-20 sm:pt-24 lg:pt-28 pb-16 sm:pb-20">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
