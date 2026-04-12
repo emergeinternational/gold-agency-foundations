@@ -6,8 +6,7 @@ import { motion } from "framer-motion";
 import { TALENT_CATEGORIES } from "@/lib/brand";
 import { ArrowRight } from "lucide-react";
 
-const representationBanner =
-  "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=2200&q=80";
+const representationBanner = "/AreasOfrepresentation";
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },

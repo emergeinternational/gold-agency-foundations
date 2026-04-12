@@ -7,8 +7,7 @@ import { motion } from "framer-motion";
 import { BRAND, ACADEMY_TRACKS } from "@/lib/brand";
 import { BookOpen, Users, Video, Award, Clock, GraduationCap } from "lucide-react";
 
-const developmentBanner =
-  "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=2200&q=80";
+const developmentBanner = "/Development.PNG";
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
