@@ -18,7 +18,7 @@ export default function About() {
       <PageHero
         badge="About"
         title="Built for Talent That Demands More"
-        subtitle={`${BRAND.name} is a development-stage talent representation agency — rooted in ${BRAND.locationPrimary}, affiliated with ${BRAND.poweredBy}, and designed to close the gap between potential and the global stage.`}
+        subtitle={`${BRAND.name} is a development-stage talent representation agency and Development Division of Emerge Globally, designed to close the gap between potential and the global stage.`}
         backgroundImage={addisImage}
       />
 
@@ -34,10 +34,10 @@ export default function About() {
                   {BRAND.name} was built to address a specific gap: extraordinary creative talent exists across Ethiopia and beyond, but the infrastructure to develop, position, and represent that talent at the highest level rarely does.
                 </p>
                 <p>
-                  Headquartered in {BRAND.locationPrimary} with strategic ambition rooted in {BRAND.locationVision}, we operate at the intersection of African creative excellence and international industry standards. Our model combines selective representation with structured development — because visibility without readiness is a wasted opportunity.
+                  Serving talent across Africa and global markets, we operate at the intersection of African creative excellence and international industry standards. Our model combines selective representation with structured development — because visibility without readiness is a wasted opportunity.
                 </p>
                 <p>
-                  As {BRAND.poweredByLine.toLowerCase()}, we bring together industry expertise, media access, and development infrastructure for talent who want lasting careers — not just moments of attention.
+                  As a Development Division of Emerge Globally, we bring together industry expertise, media access, and development infrastructure for talent who want lasting careers — not just moments of attention.
                 </p>
               </div>
             </motion.div>
@@ -89,10 +89,10 @@ export default function About() {
         <div className="container-narrow text-center">
           <motion.div {...fadeUp}>
             <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground/40">
-              {BRAND.poweredByLine} · A subsidiary of {BRAND.legalEntity}
+              Development Division of Emerge Globally
             </p>
             <p className="mt-2 text-xs text-muted-foreground/30">
-              Headquartered in {BRAND.locationPrimary} · Strategic presence in {BRAND.locationVision}
+              Ascend Elite Agency operates as a development division of Emerge Globally, a New York–based company.
             </p>
           </motion.div>
         </div>

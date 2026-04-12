@@ -31,13 +31,13 @@ export default function Representation() {
       <PageHero
         badge="Representation"
         title="Selective. Strategic. Invested."
-        subtitle={`Representation at ${BRAND.name} is selective and intentional. We take on selected talent we believe in — and back that belief with strategy, infrastructure, and access that moves careers forward.`}
-        cta={{ label: "Apply for Representation", href: "/submit" }}
+        subtitle={`Representation at ${BRAND.name} is selective and intentional. Submission does not guarantee representation. Selected talent may be invited to further development and positioning opportunities.`}
+        cta={{ label: "Submit for Review", href: "/submit" }}
       />
 
       <section className="section-padding">
         <div className="container-wide">
-          <SectionHeading badge="What's Included" title="The Full Scope of Representation" />
+          <SectionHeading badge="What's Included" title="The Full Scope of Representation" subtitle="Aligned with global casting, media, and distribution standards." />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {services.map((s, i) => (
               <motion.div
@@ -58,15 +58,16 @@ export default function Representation() {
       <section className="section-padding bg-card">
         <div className="container-narrow text-center">
           <motion.div {...fadeUp}>
-            <SectionHeading badge="How to Apply" title="Joining Our Roster" subtitle="Representation is earned through review, not guaranteed by application. Every submission is evaluated with care — readiness and fit determine the outcome." />
+            <SectionHeading badge="How to Apply" title="Joining Our Roster" subtitle="Representation is earned through review, not guaranteed by application. Submission does not guarantee representation. Selected talent may be invited to further development and positioning opportunities." />
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="hero" size="xl" asChild>
-                <Link to="/submit">Apply for Representation</Link>
+                <Link to="/submit">Submit for Review</Link>
               </Button>
               <Button variant="hero-outline" size="xl" asChild>
-                <Link to="/academy">Prepare Through Development Programs</Link>
+                <Link to="/academy">Explore Development Pathways</Link>
               </Button>
             </div>
+            <p className="mt-4 text-xs text-muted-foreground">Serious applicants only.</p>
           </motion.div>
         </div>
       </section>

@@ -56,8 +56,8 @@ export default function Submit() {
     <Layout>
       <PageHero
         badge="Representation Review"
-        title="Apply for Representation"
-        subtitle="We review talent with genuine potential across all categories. This is your introduction — take it seriously, and so will we. Submission does not guarantee representation."
+        title="Submit for Review"
+        subtitle="We review talent with genuine potential across all categories. This is your introduction — take it seriously, and so will we. Submission does not guarantee representation. Selected talent may be invited to further development and positioning opportunities."
       />
 
       <section className="section-padding">
@@ -70,9 +70,10 @@ export default function Submit() {
                 <ul className="text-xs text-muted-foreground mt-1 space-y-1 list-disc list-inside">
                   <li>This is an application for representation review — not a guarantee of representation</li>
                   <li>Response timelines vary depending on volume and category demand</li>
-                  <li>Development program enrollment and representation are separate processes</li>
+                  <li>Development and representation are separate tracks with structured progression</li>
                   <li>All talent categories and experience levels may apply</li>
                 </ul>
+                <p className="text-xs text-muted-foreground mt-3">Certain development pathways include structured program participation.</p>
               </div>
             </div>
           </div>
@@ -242,8 +243,9 @@ export default function Submit() {
             </div>
 
             <Button type="submit" variant="hero" size="xl" className="w-full sm:w-auto">
-              Submit Application
+              Submit for Review
             </Button>
+            <p className="text-xs text-muted-foreground/70">Reviewed by our representation team.</p>
           </form>
         </div>
       </section>

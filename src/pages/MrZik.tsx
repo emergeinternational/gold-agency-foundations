@@ -131,7 +131,7 @@ export default function MrZik() {
       <section className="section-padding">
         <div className="container-narrow text-center">
           <motion.div {...fadeUp}>
-            <span className="badge-label mb-5 block">Join the Agency</span>
+            <span className="badge-label mb-5 block">Take the Next Step</span>
             <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground leading-[1.1]">
               Built on Substance. Selective by Design.
             </h2>
@@ -140,10 +140,10 @@ export default function MrZik() {
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
               <Button variant="hero" size="xl" asChild>
-                <Link to="/submit">Apply for Representation <ArrowRight className="w-4 h-4 ml-2" /></Link>
+                <Link to="/submit">Submit for Review <ArrowRight className="w-4 h-4 ml-2" /></Link>
               </Button>
               <Button variant="hero-outline" size="xl" asChild>
-                <Link to="/academy">Explore Development Programs</Link>
+                <Link to="/academy">Explore Development Pathways</Link>
               </Button>
             </div>
           </motion.div>

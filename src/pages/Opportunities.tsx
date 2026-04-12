@@ -13,7 +13,7 @@ const fadeUp = {
 };
 
 const opportunities = [
-  { type: "Representation Review", title: "New Faces — 2026 Talent Search", desc: "Seeking fresh creative talent across all categories. Open to emerging professionals and first-time applicants with genuine potential.", status: "Active" },
+  { type: "Representation Review", title: "New Faces — 2026 Talent Search", desc: "Seeking fresh creative talent across all categories. Submission does not guarantee representation. Selected talent may be invited to further development and positioning opportunities.", status: "Active" },
   { type: "Showcase", title: "Addis Creative Showcase", desc: "A curated evening of live performance, industry introductions, and creative presentation in Addis Ababa.", status: "Upcoming" },
   { type: "Internal Casting", title: "Brand Campaign — Spring 2026", desc: "Internal casting for a major commercial campaign. Priority consideration for represented talent.", status: "Active" },
   { type: "Partner Opportunity", title: "East Africa Media Fellowship", desc: "A regional mentorship and exposure program for media-focused talent, developed with industry partners.", status: "Upcoming" },
@@ -24,7 +24,7 @@ const opportunities = [
 export default function Opportunities() {
   return (
     <Layout>
-      <PageHero badge="Opportunities" title="Active Openings & Pathways" subtitle="Current opportunities, showcases, and talent calls. We believe in transparency — listing does not guarantee selection." />
+      <PageHero badge="Opportunities" title="Active Openings & Pathways" subtitle="Current opportunities, showcases, and talent calls. We believe in transparency — listing does not guarantee selection. Aligned with global casting, media, and distribution standards." />
 
       <section className="section-padding">
         <div className="container-wide">
@@ -45,7 +45,7 @@ export default function Opportunities() {
                 <h3 className="font-display text-xl font-semibold text-foreground mb-2">{opp.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed flex-1 mb-4">{opp.desc}</p>
                 <Button variant="gold-outline" size="sm" asChild>
-                  <Link to="/submit">Express Interest</Link>
+                  <Link to="/submit">Submit for Review</Link>
                 </Button>
               </motion.div>
             ))}
@@ -57,10 +57,11 @@ export default function Opportunities() {
         <div className="container-narrow text-center">
           <motion.div {...fadeUp}>
             <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground">Nothing Here That Fits?</h2>
-            <p className="mt-4 text-muted-foreground text-lg font-light">Submit your profile and we'll match you with relevant opportunities as they come up.</p>
+            <p className="mt-4 text-muted-foreground text-lg font-light">Submit your profile and we'll match you with relevant opportunities as they come up, including advanced preparation pathways where appropriate.</p>
             <div className="mt-8">
-              <Button variant="hero" size="xl" asChild><Link to="/submit">Apply for Representation</Link></Button>
+              <Button variant="hero" size="xl" asChild><Link to="/submit">Submit for Review</Link></Button>
             </div>
+            <p className="mt-3 text-xs text-muted-foreground/70">Selection is limited.</p>
           </motion.div>
         </div>
       </section>
