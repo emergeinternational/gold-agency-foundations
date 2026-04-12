@@ -5,8 +5,8 @@ const footerLinks = {
   Agency: [
     { label: "About", href: "/about" },
     { label: "Mr. Zik", href: "/mr-zik" },
-    { label: "Representation", href: "/representation" },
-    { label: "Talent Categories", href: "/talent-categories" },
+    { label: "Management", href: "/representation" },
+    { label: "Areas of Representation", href: "/talent-categories" },
     { label: "Partnerships", href: "/partnerships" },
   ],
   Programs: [

@@ -18,7 +18,7 @@ export default function TalentCategories() {
     <Layout>
       <PageHero
         badge="Disciplines"
-        title="Ten Disciplines. One Standard."
+        title="Areas of Representation"
         subtitle="We represent and develop talent across the full spectrum of creative industries — from broadcast media to digital storytelling."
       />
 
@@ -40,7 +40,7 @@ export default function TalentCategories() {
                   <p className="text-muted-foreground leading-relaxed mb-6">{cat.description}</p>
                   <Button variant="gold-outline" size="sm" asChild>
                     <Link to="/submit">
-                      Apply in This Category <ArrowRight className="w-3 h-3 ml-1" />
+                      Submit for Representation Consideration <ArrowRight className="w-3 h-3 ml-1" />
                     </Link>
                   </Button>
                 </div>
