@@ -8,7 +8,7 @@ import { Shield, TrendingUp, Globe, Camera, Users, Sparkles, Megaphone, Laptop }
 import { BRAND } from "@/lib/brand";
 
 const managementBanner =
-  "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=2200&q=80";
+  "/Management.PNG";
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
