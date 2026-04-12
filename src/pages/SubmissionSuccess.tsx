@@ -17,6 +17,13 @@ export default function SubmissionSuccess() {
             <h1 className="font-display text-4xl sm:text-5xl font-semibold text-foreground mb-4">Application Received</h1>
             <p className="text-muted-foreground text-lg max-w-lg mx-auto mb-2">Thank you for applying to {BRAND.name}. Your submission is now under review.</p>
             <p className="text-sm text-muted-foreground max-w-md mx-auto mb-8">Review timelines vary by category and volume. We will reach out directly if your profile is selected for further consideration. Submission does not guarantee representation.</p>
+            <p className="text-sm text-muted-foreground max-w-md mx-auto mb-8">
+              Select candidates may be advanced for{" "}
+              <a href={BRAND.poweredByUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-gold-light transition-colors">
+                Emerge Globally
+              </a>{" "}
+              review.
+            </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="gold" size="lg" asChild><Link to="/">Return Home</Link></Button>
               <Button variant="gold-outline" size="lg" asChild><Link to="/academy">Explore Development Pathways</Link></Button>

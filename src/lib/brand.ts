@@ -3,6 +3,7 @@ export const BRAND = {
   name: "Ascend Elite Agency",
   tagline: "Development-Stage Talent Representation",
   poweredBy: "Emerge Globally",
+  poweredByUrl: "https://emergeglobally.com",
   poweredByLine: "Development Division of Emerge Globally",
   legalEntity: "Casa Noir LLC",
   legalRelationship: "Ascend Elite Agency operates as a development division of Emerge Globally, a New York–based company.",
