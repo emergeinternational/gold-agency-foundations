@@ -27,8 +27,7 @@ const BUDGET_RANGES = [
   { value: "discuss", label: "Prefer to discuss" },
 ];
 
-const bookingHero =
-  "https://images.unsplash.com/photo-1497032205916-ac775f0649ae?auto=format&fit=crop&w=2200&q=80";
+const bookingHero = "/booktalent";
 
 export default function BookTalent() {
   const navigate = useNavigate();
