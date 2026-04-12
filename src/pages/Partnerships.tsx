@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { BRAND } from "@/lib/brand";
 import { Handshake, Building, Mic, MapPin, BookOpen, TrendingUp } from "lucide-react";
 
-const partnershipBanner = "/partnerwithus";
+const partnershipBanner = "/partnerwithus.PNG";
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
