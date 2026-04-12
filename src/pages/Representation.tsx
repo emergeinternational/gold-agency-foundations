@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Shield, TrendingUp, Globe, Camera, Users, Sparkles, Megaphone, Laptop } from "lucide-react";
+import { BRAND } from "@/lib/brand";
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
@@ -58,6 +59,13 @@ export default function Representation() {
         <div className="container-narrow text-center">
           <motion.div {...fadeUp}>
             <SectionHeading badge="How to Apply" title="Joining Our Roster" subtitle="Representation is earned through review, not guaranteed by application. Submission does not guarantee representation. Selected talent may be invited to further development and positioning opportunities." />
+            <p className="text-sm text-muted-foreground">
+              Advanced talent may be considered for{" "}
+              <a href={BRAND.poweredByUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-gold-light transition-colors">
+                Emerge Globally
+              </a>
+              .
+            </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="hero" size="xl" asChild>
                 <Link to="/submit">Submit for Review</Link>

@@ -40,7 +40,10 @@ export default function Footer() {
                 {BRAND.name}
               </h3>
               <p className="text-[8px] tracking-[0.25em] text-muted-foreground/50 uppercase mt-1">
-                {BRAND.poweredByLine}
+                Development Division of{" "}
+                <a href={BRAND.poweredByUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                  {BRAND.poweredBy}
+                </a>
               </p>
             </Link>
             <p className="text-xs text-muted-foreground/50 mt-5 max-w-xs leading-relaxed">
@@ -90,7 +93,11 @@ export default function Footer() {
               © {new Date().getFullYear()} {BRAND.name}. All rights reserved.
             </p>
             <p className="text-[10px] text-muted-foreground/25 text-center sm:text-right tracking-wider">
-              {BRAND.legalRelationship}
+              Ascend Elite Agency operates as a development division of{" "}
+              <a href={BRAND.poweredByUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                {BRAND.poweredBy}
+              </a>
+              , a New York–based company.
             </p>
           </div>
         </div>
