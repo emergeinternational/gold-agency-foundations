@@ -36,20 +36,20 @@ export default function Index() {
               Rooted in {BRAND.locationPrimary} · Built for the World
             </span>
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground leading-[1.05] tracking-tight">
-              Premier Talent Representation & Development
+              Development-Stage Talent Representation
             </h1>
             <p className="mt-8 text-lg sm:text-xl text-secondary-foreground/80 leading-relaxed max-w-lg font-light">
-              We identify, develop, and position exceptional creative professionals for careers that transcend borders.
+              We represent and develop creators, artists, and talent building toward international positioning across media, music, fashion, and entertainment.
             </p>
             <p className="mt-3 text-[11px] tracking-[0.3em] uppercase text-muted-foreground/50">
-              Powered by {BRAND.poweredBy}
+              {BRAND.poweredByLine}
             </p>
             <div className="mt-12 flex flex-col sm:flex-row gap-3">
               <Button variant="hero" size="xl" asChild>
-                <Link to="/submit">Submit for Review</Link>
+                <Link to="/submit">Apply for Representation</Link>
               </Button>
               <Button variant="hero-outline" size="xl" asChild>
-                <Link to="/representation">How We Represent</Link>
+                <Link to="/opportunities">Explore Opportunities</Link>
               </Button>
             </div>
           </motion.div>
@@ -64,9 +64,9 @@ export default function Index() {
             <span className="text-primary/40">✦</span>
             <span>Development</span>
             <span className="text-primary/40">✦</span>
-            <span>Academy</span>
+            <span>Talent Booking</span>
             <span className="text-primary/40">✦</span>
-            <span>Booking</span>
+            <span>Development Programs</span>
             <span className="text-primary/40">✦</span>
             <span>{BRAND.locationPrimary} to Global</span>
           </div>
@@ -103,7 +103,7 @@ export default function Index() {
               className="hidden lg:flex justify-end"
             >
               <div className="w-72 xl:w-80 aspect-[3/4] rounded-sm overflow-hidden border border-primary/10">
-                <img src={mrZikImage} alt="Mr. Zik — Ambassador of The Gold Agency" className="w-full h-full object-cover" loading="lazy" />
+                <img src={mrZikImage} alt={`Mr. Zik — Ambassador of ${BRAND.name}`} className="w-full h-full object-cover" loading="lazy" />
               </div>
             </motion.div>
           </div>
@@ -115,8 +115,8 @@ export default function Index() {
         <div className="container-wide">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
             {[
-              { title: "Representation", desc: "We manage careers — not just bookings. If your talent is ready for serious positioning, this is where it starts.", href: "/submit", cta: "Submit for Review" },
-              { title: "The Academy", desc: "Structured training designed by working professionals. From camera confidence to contract literacy — preparation with purpose.", href: "/academy", cta: "Explore Programs" },
+              { title: "Representation", desc: "We manage careers — not just bookings. If your talent is ready for serious positioning, this is where it starts.", href: "/submit", cta: "Apply for Representation" },
+              { title: "Development Programs", desc: "Structured training designed by working professionals. From camera confidence to contract literacy — preparation tied to representation readiness.", href: "/academy", cta: "Explore Programs" },
               { title: "Talent Booking", desc: "Brands, productions, and event teams can access our curated roster for campaigns, appearances, and creative collaborations.", href: "/book-talent", cta: "Inquire About Talent" },
             ].map((item, i) => (
               <motion.div
@@ -143,10 +143,10 @@ export default function Index() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
             {[
               { icon: Star, title: "Curation", desc: "Selective, merit-based talent management built on standards." },
-              { icon: Users, title: "Access", desc: "Open submissions across all categories and experience levels." },
-              { icon: BookOpen, title: "Development", desc: "Professional training tied directly to career readiness." },
+              { icon: Users, title: "Consideration", desc: "Representation review for selected talent with genuine potential." },
+              { icon: BookOpen, title: "Development", desc: "Structured training tied directly to career readiness." },
               { icon: Briefcase, title: "Opportunity", desc: "Booking, casting, and campaign placement for our roster." },
-              { icon: Globe, title: "Reach", desc: "Ethiopia-first with infrastructure built for international markets." },
+              { icon: Globe, title: "Reach", desc: "Ethiopia-rooted with infrastructure for international markets." },
             ].map((pillar, i) => (
               <motion.div
                 key={pillar.title}
@@ -169,7 +169,7 @@ export default function Index() {
           <SectionHeading
             badge="Disciplines"
             title="Ten Disciplines. One Standard of Excellence."
-            subtitle="From broadcast media to digital storytelling — we champion talent that shapes culture and commands attention."
+            subtitle="We represent talent across creators, media, music, entertainment, and fashion — building individuals with global potential."
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {TALENT_CATEGORIES.map((cat, i) => (
@@ -191,16 +191,16 @@ export default function Index() {
         </div>
       </section>
 
-      {/* ─── ACADEMY ─── */}
+      {/* ─── DEVELOPMENT PROGRAMS ─── */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${academyImage})` }} />
         <div className="absolute inset-0 bg-background/90" />
         <div className="relative z-10 section-padding">
           <div className="container-wide">
             <SectionHeading
-              badge="The Academy"
+              badge="Development Programs"
               title="Preparation Is the Advantage"
-              subtitle="Industry-led masterclasses, workshops, and mentorship tracks — built for creatives serious about making their craft a career."
+              subtitle="Structured training designed to support talent progressing toward representation readiness."
             />
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
               {ACADEMY_TRACKS.map((track, i) => (
@@ -216,7 +216,7 @@ export default function Index() {
             </div>
             <div className="text-center mt-12">
               <Button variant="hero" size="xl" asChild>
-                <Link to="/academy">Explore the Academy</Link>
+                <Link to="/academy">Explore Development Programs</Link>
               </Button>
             </div>
           </div>
@@ -226,13 +226,13 @@ export default function Index() {
       {/* ─── HOW IT WORKS ─── */}
       <section className="section-padding">
         <div className="container-wide">
-          <SectionHeading badge="The Process" title="From Submission to Stage" />
+          <SectionHeading badge="The Process" title="From Application to Advancement" />
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12">
             {[
-              { step: "01", title: "Explore", desc: "Browse categories, programs, and current opportunities across the platform." },
-              { step: "02", title: "Submit", desc: "Apply for representation review or enroll in a development track." },
-              { step: "03", title: "Develop", desc: "Refine your craft with industry-led training and strategic guidance." },
-              { step: "04", title: "Perform", desc: "Access bookings, brand campaigns, and career-defining placements." },
+              { step: "01", title: "Apply", desc: "Submit for representation or development consideration." },
+              { step: "02", title: "Review", desc: "Applications are evaluated based on positioning and potential." },
+              { step: "03", title: "Develop", desc: "Selected talent undergo structured development and positioning." },
+              { step: "04", title: "Advance", desc: "Access opportunities, placements, and global exposure." },
             ].map((item, i) => (
               <motion.div key={item.step} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.08 }} className="text-center">
                 <span className="font-display text-4xl sm:text-5xl font-light text-primary/20">{item.step}</span>
@@ -252,7 +252,7 @@ export default function Index() {
             {[
               { quote: "They didn't just sign me — they repositioned my entire career. The strategy behind every decision was clear and intentional.", name: "Represented Talent", role: "Media Personality" },
               { quote: "Working with their roster was seamless. The talent arrived prepared, professional, and exactly right for the campaign.", name: "Brand Partner", role: "Campaign Director" },
-              { quote: "The academy didn't teach me tricks — it gave me a framework. I walked out thinking differently about my entire craft.", name: "Academy Graduate", role: "Digital Creator" },
+              { quote: "The development program gave me a framework. I walked out thinking differently about my entire craft and career direction.", name: "Program Graduate", role: "Digital Creator" },
             ].map((t, i) => (
               <motion.div key={i} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.08 }} className="card-premium p-8 sm:p-10">
                 <div className="flex gap-0.5 mb-6">
@@ -296,17 +296,17 @@ export default function Index() {
           <motion.div {...fadeUp}>
             <span className="badge-label mb-5 block">Get Started</span>
             <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground leading-[1.1]">
-              The Platform Is Ready. Are You?
+              Representation Starts with the Right Positioning
             </h2>
             <p className="mt-5 text-muted-foreground text-base sm:text-lg max-w-lg mx-auto font-light">
-              Whether you're seeking representation, sharpening your craft, or hiring exceptional talent — your next step begins here.
+              Whether you're applying for representation or building toward it — your next step begins here.
             </p>
             <div className="mt-12 flex flex-col sm:flex-row gap-3 justify-center">
               <Button variant="hero" size="xl" asChild>
-                <Link to="/submit">Submit for Review</Link>
+                <Link to="/submit">Apply for Representation</Link>
               </Button>
               <Button variant="hero-outline" size="xl" asChild>
-                <Link to="/book-talent">Book Talent</Link>
+                <Link to="/opportunities">Explore Ascend Opportunities</Link>
               </Button>
             </div>
           </motion.div>

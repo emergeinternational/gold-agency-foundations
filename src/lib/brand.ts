@@ -1,20 +1,21 @@
 // Centralized brand configuration — change the flagship name here and it updates everywhere
 export const BRAND = {
-  name: "The Gold Agency",
-  tagline: "Premier Talent Representation & Development",
+  name: "Ascend Elite Agency",
+  tagline: "Development-Stage Talent Representation",
   poweredBy: "Emerge Globally",
+  poweredByLine: "An Emerge Globally Affiliated Agency",
   legalEntity: "Casa Noir LLC",
   legalRelationship: "Emerge Globally, a subsidiary of Casa Noir LLC",
   locationPrimary: "Addis Ababa",
   locationVision: "New York City",
-  email: "info@thegoldagency.com",
+  email: "info@ascendeliteagency.com",
   phone: "+251 000 000 000",
   socialLinks: {
-    instagram: "https://instagram.com/thegoldagency",
-    twitter: "https://x.com/thegoldagency",
-    youtube: "https://youtube.com/@thegoldagency",
-    linkedin: "https://linkedin.com/company/thegoldagency",
-    tiktok: "https://tiktok.com/@thegoldagency",
+    instagram: "https://instagram.com/ascendeliteagency",
+    twitter: "https://x.com/ascendeliteagency",
+    youtube: "https://youtube.com/@ascendeliteagency",
+    linkedin: "https://linkedin.com/company/ascendeliteagency",
+    tiktok: "https://tiktok.com/@ascendeliteagency",
   },
 } as const;
 

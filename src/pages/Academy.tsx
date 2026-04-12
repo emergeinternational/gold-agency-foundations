@@ -19,9 +19,9 @@ export default function Academy() {
   return (
     <Layout>
       <PageHero
-        badge="The Academy"
+        badge="Development Programs"
         title="Preparation Is the Advantage"
-        subtitle={`The ${BRAND.name} Academy offers intensive programs, masterclasses, and professional workshops designed by active industry leaders — for creatives who treat their growth as seriously as their talent.`}
+        subtitle={`${BRAND.name} offers structured training designed to support talent progressing toward representation readiness — led by active industry professionals.`}
         backgroundImage={academyImage}
         cta={{ label: "Browse Programs", href: "/classes-workshops" }}
         secondaryCta={{ label: "Online Tutorials", href: "/tutorials" }}
@@ -29,7 +29,7 @@ export default function Academy() {
 
       <section className="section-padding">
         <div className="container-wide">
-          <SectionHeading badge="Why This Academy" title="Development With Clear Direction" />
+          <SectionHeading badge="Why This Matters" title="Development With Clear Direction" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {[
               { icon: GraduationCap, title: "Structured Progression", desc: "Clear learning tracks from foundational skills to advanced industry readiness — nothing left to guesswork." },
@@ -87,12 +87,12 @@ export default function Academy() {
 
       <section className="section-padding bg-card/50 border-y border-border/20">
         <div className="container-narrow">
-          <SectionHeading badge="Questions" title="Academy FAQ" />
+          <SectionHeading badge="Questions" title="Development Programs FAQ" />
           <div className="space-y-3">
             {[
               { q: "Do I need prior experience?", a: "No. Programs range from foundational to advanced. We meet you where you are and build from there." },
               { q: "Are sessions in-person or online?", a: "Both. Workshops and masterclasses run in person in Addis Ababa, with select programs available online for participants anywhere in the world. Each listing clearly indicates its delivery format and location." },
-              { q: "Does completing a program lead to representation?", a: "Not automatically. The academy and representation operate as separate tracks. Strong performance may lead to consideration, but there is no guaranteed pathway." },
+              { q: "Does completing a program lead to representation?", a: "Not automatically. Development programs and representation operate as separate tracks. Strong performance may lead to consideration, but there is no guaranteed pathway." },
               { q: "What do programs cost?", a: "Pricing varies by program. Some introductory workshops are free. Full pricing details are listed on individual program pages." },
             ].map((faq, i) => (
               <motion.div key={i} {...fadeUp} transition={{ duration: 0.4, delay: i * 0.04 }} className="card-premium p-6 sm:p-7">

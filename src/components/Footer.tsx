@@ -10,8 +10,8 @@ const footerLinks = {
     { label: "Partnerships", href: "/partnerships" },
   ],
   Programs: [
-    { label: "Open Submissions", href: "/submit" },
-    { label: "Academy", href: "/academy" },
+    { label: "Apply for Representation", href: "/submit" },
+    { label: "Development Programs", href: "/academy" },
     { label: "Classes & Workshops", href: "/classes-workshops" },
     { label: "Online Tutorials", href: "/tutorials" },
     { label: "Opportunities", href: "/opportunities" },
@@ -40,11 +40,11 @@ export default function Footer() {
                 {BRAND.name}
               </h3>
               <p className="text-[8px] tracking-[0.25em] text-muted-foreground/50 uppercase mt-1">
-                Powered by {BRAND.poweredBy}
+                {BRAND.poweredByLine}
               </p>
             </Link>
             <p className="text-xs text-muted-foreground/50 mt-5 max-w-xs leading-relaxed">
-              Premier talent representation and development. Based in {BRAND.locationPrimary}, built for the world.
+              Development-stage talent representation agency based in {BRAND.locationPrimary}, built for global opportunity.
             </p>
             <div className="flex gap-4 mt-5">
               {Object.entries(BRAND.socialLinks).map(([platform, url]) => (
@@ -90,7 +90,7 @@ export default function Footer() {
               © {new Date().getFullYear()} {BRAND.name}. All rights reserved.
             </p>
             <p className="text-[10px] text-muted-foreground/25 text-center sm:text-right tracking-wider">
-              {BRAND.poweredBy} · {BRAND.legalEntity}
+              {BRAND.poweredByLine} · {BRAND.legalEntity}
             </p>
           </div>
         </div>

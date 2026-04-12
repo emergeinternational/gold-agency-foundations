@@ -11,13 +11,13 @@ export default function Terms() {
           <div className="gold-line mb-10" />
           <div className="space-y-6 text-muted-foreground leading-relaxed text-sm">
             <p><strong className="text-foreground">Effective Date:</strong> March 1, 2026</p>
-            <p>By accessing and using the {BRAND.name} website, you agree to the following terms and conditions. {BRAND.name} is powered by {BRAND.poweredBy} ({BRAND.legalRelationship}).</p>
+            <p>By accessing and using the {BRAND.name} website, you agree to the following terms and conditions. {BRAND.name} is {BRAND.poweredByLine.toLowerCase()} ({BRAND.legalRelationship}).</p>
             <h2 className="font-display text-xl text-foreground mt-8">Use of the Site</h2>
-            <p>This website is for informational purposes and to facilitate talent submissions, academy enrollment, booking requests, and partnership inquiries. You agree not to misuse the site or submit false information.</p>
+            <p>This website is for informational purposes and to facilitate talent submissions, development program enrollment, booking requests, and partnership inquiries. You agree not to misuse the site or submit false information.</p>
             <h2 className="font-display text-xl text-foreground mt-8">Intellectual Property</h2>
             <p>All content on this site — including text, images, design, and branding — is the property of {BRAND.poweredBy} and {BRAND.legalEntity}. Unauthorized reproduction or distribution is prohibited.</p>
             <h2 className="font-display text-xl text-foreground mt-8">No Guarantees</h2>
-            <p>Submission to {BRAND.name} does not guarantee representation, employment, or any specific outcome. Academy participation does not guarantee signing or career advancement. All opportunities are subject to review and selection processes.</p>
+            <p>Submission to {BRAND.name} does not guarantee representation, employment, or any specific outcome. Development program participation does not guarantee signing or career advancement. All opportunities are subject to review and selection processes.</p>
             <h2 className="font-display text-xl text-foreground mt-8">Limitation of Liability</h2>
             <p>{BRAND.name}, {BRAND.poweredBy}, and {BRAND.legalEntity} are not liable for any damages arising from the use of this website or participation in any programs, submissions, or partnerships.</p>
             <h2 className="font-display text-xl text-foreground mt-8">Modifications</h2>
