@@ -4,7 +4,6 @@ import SectionHeading from "@/components/SectionHeading";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { BRAND } from "@/lib/brand";
 import { Shield, TrendingUp, Globe, Camera, Users, Sparkles, Megaphone, Laptop } from "lucide-react";
 
 const fadeUp = {
@@ -29,9 +28,9 @@ export default function Representation() {
   return (
     <Layout>
       <PageHero
-        badge="Representation"
-        title="Selective. Strategic. Invested."
-        subtitle={`Representation at ${BRAND.name} is selective and intentional. Submission does not guarantee representation. Selected talent may be invited to further development and positioning opportunities.`}
+        badge="Management"
+        title="Management & Representation"
+        subtitle="Selective. Strategic. Invested."
         cta={{ label: "Submit for Review", href: "/submit" }}
       />
 

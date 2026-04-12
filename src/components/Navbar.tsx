@@ -5,15 +5,12 @@ import { Menu, X } from "lucide-react";
 import { BRAND } from "@/lib/brand";
 
 const navLinks = [
-  { label: "About", href: "/about" },
-  { label: "Mr. Zik", href: "/mr-zik" },
-  { label: "Representation", href: "/representation" },
-  { label: "Talent", href: "/talent-categories" },
-  { label: "Roster", href: "/roster" },
+  { label: "Home", href: "/" },
+  { label: "Management", href: "/representation" },
   { label: "Development", href: "/academy" },
-  { label: "Apply", href: "/submit" },
+  { label: "Areas of Representation", href: "/talent-categories" },
   { label: "Book Talent", href: "/book-talent" },
-  { label: "Contact", href: "/contact" },
+  { label: "Partner With Us", href: "/partnerships" },
 ];
 
 export default function Navbar() {
