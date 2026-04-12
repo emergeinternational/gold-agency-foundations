@@ -10,7 +10,7 @@ const footerLinks = {
     { label: "Partnerships", href: "/partnerships" },
   ],
   Programs: [
-    { label: "Apply for Representation", href: "/submit" },
+    { label: "Submit for Review", href: "/submit" },
     { label: "Development Programs", href: "/academy" },
     { label: "Classes & Workshops", href: "/classes-workshops" },
     { label: "Online Tutorials", href: "/tutorials" },
@@ -44,7 +44,7 @@ export default function Footer() {
               </p>
             </Link>
             <p className="text-xs text-muted-foreground/50 mt-5 max-w-xs leading-relaxed">
-              Development-stage talent representation agency based in {BRAND.locationPrimary}, built for global opportunity.
+              Serving talent across Africa and global markets.
             </p>
             <div className="flex gap-4 mt-5">
               {Object.entries(BRAND.socialLinks).map(([platform, url]) => (
@@ -90,7 +90,7 @@ export default function Footer() {
               © {new Date().getFullYear()} {BRAND.name}. All rights reserved.
             </p>
             <p className="text-[10px] text-muted-foreground/25 text-center sm:text-right tracking-wider">
-              {BRAND.poweredByLine} · {BRAND.legalEntity}
+              {BRAND.legalRelationship}
             </p>
           </div>
         </div>

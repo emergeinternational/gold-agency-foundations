@@ -32,26 +32,25 @@ export default function Index() {
             transition={{ duration: 1, ease: "easeOut" as const }}
             className="max-w-2xl"
           >
-            <span className="badge-label mb-8 block">
-              Rooted in {BRAND.locationPrimary} · Built for the World
-            </span>
+            <span className="badge-label mb-8 block">Serving talent across Africa and global markets.</span>
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground leading-[1.05] tracking-tight">
               Development-Stage Talent Representation
             </h1>
             <p className="mt-8 text-lg sm:text-xl text-secondary-foreground/80 leading-relaxed max-w-lg font-light">
-              We represent and develop creators, artists, and talent building toward international positioning across media, music, fashion, and entertainment.
+              We represent and develop creators, artists, and talent building toward international positioning across media, music, fashion, and entertainment. Aligned with global casting, media, and distribution standards.
             </p>
             <p className="mt-3 text-[11px] tracking-[0.3em] uppercase text-muted-foreground/50">
               {BRAND.poweredByLine}
             </p>
             <div className="mt-12 flex flex-col sm:flex-row gap-3">
               <Button variant="hero" size="xl" asChild>
-                <Link to="/submit">Apply for Representation</Link>
+                <Link to="/submit">Submit for Review</Link>
               </Button>
               <Button variant="hero-outline" size="xl" asChild>
-                <Link to="/opportunities">Explore Opportunities</Link>
+                <Link to="/academy">Explore Development Pathways</Link>
               </Button>
             </div>
+            <p className="mt-3 text-[11px] tracking-[0.2em] uppercase text-muted-foreground/45">Reviewed by our representation team.</p>
           </motion.div>
         </div>
       </section>
@@ -68,7 +67,7 @@ export default function Index() {
             <span className="text-primary/40">✦</span>
             <span>Development Programs</span>
             <span className="text-primary/40">✦</span>
-            <span>{BRAND.locationPrimary} to Global</span>
+            <span>Africa to Global</span>
           </div>
         </div>
       </section>
@@ -115,8 +114,8 @@ export default function Index() {
         <div className="container-wide">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
             {[
-              { title: "Representation", desc: "We manage careers — not just bookings. If your talent is ready for serious positioning, this is where it starts.", href: "/submit", cta: "Apply for Representation" },
-              { title: "Development Programs", desc: "Structured training designed by working professionals. From camera confidence to contract literacy — preparation tied to representation readiness.", href: "/academy", cta: "Explore Programs" },
+              { title: "Representation", desc: "We manage careers — not just bookings. Submission does not guarantee representation. Selected talent may be invited to further development and positioning opportunities.", href: "/submit", cta: "Submit for Review" },
+              { title: "Development Programs", desc: "Structured development programs with professional positioning support, career-building resources and services, and advanced preparation pathways.", href: "/academy", cta: "Explore Development Pathways" },
               { title: "Talent Booking", desc: "Brands, productions, and event teams can access our curated roster for campaigns, appearances, and creative collaborations.", href: "/book-talent", cta: "Inquire About Talent" },
             ].map((item, i) => (
               <motion.div
@@ -200,7 +199,7 @@ export default function Index() {
             <SectionHeading
               badge="Development Programs"
               title="Preparation Is the Advantage"
-              subtitle="Structured training designed to support talent progressing toward representation readiness."
+              subtitle="Structured development programs designed to support talent progressing toward representation readiness."
             />
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
               {ACADEMY_TRACKS.map((track, i) => (
@@ -216,9 +215,10 @@ export default function Index() {
             </div>
             <div className="text-center mt-12">
               <Button variant="hero" size="xl" asChild>
-                <Link to="/academy">Explore Development Programs</Link>
+                <Link to="/academy">Explore Development Pathways</Link>
               </Button>
             </div>
+            <p className="text-center mt-4 text-xs text-muted-foreground/70">Certain development pathways include structured program participation.</p>
           </div>
         </div>
       </section>
@@ -226,10 +226,10 @@ export default function Index() {
       {/* ─── HOW IT WORKS ─── */}
       <section className="section-padding">
         <div className="container-wide">
-          <SectionHeading badge="The Process" title="From Application to Advancement" />
+          <SectionHeading badge="The Process" title="From Application to Advancement" subtitle="Explore → Submit → Review → Develop → Advance" />
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12">
             {[
-              { step: "01", title: "Apply", desc: "Submit for representation or development consideration." },
+              { step: "01", title: "Submit", desc: "After you explore fit, submit for representation or development consideration." },
               { step: "02", title: "Review", desc: "Applications are evaluated based on positioning and potential." },
               { step: "03", title: "Develop", desc: "Selected talent undergo structured development and positioning." },
               { step: "04", title: "Advance", desc: "Access opportunities, placements, and global exposure." },
@@ -241,6 +241,7 @@ export default function Index() {
               </motion.div>
             ))}
           </div>
+          <p className="text-center text-xs text-muted-foreground mt-10">Selected talent progresses through structured development and positioning phases before advancing to booking and representation opportunities.</p>
         </div>
       </section>
 
@@ -294,7 +295,7 @@ export default function Index() {
       <section className="section-padding bg-card border-t border-border/20">
         <div className="container-narrow text-center">
           <motion.div {...fadeUp}>
-            <span className="badge-label mb-5 block">Get Started</span>
+            <span className="badge-label mb-5 block">Next Step</span>
             <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground leading-[1.1]">
               Representation Starts with the Right Positioning
             </h2>
@@ -303,12 +304,13 @@ export default function Index() {
             </p>
             <div className="mt-12 flex flex-col sm:flex-row gap-3 justify-center">
               <Button variant="hero" size="xl" asChild>
-                <Link to="/submit">Apply for Representation</Link>
+                <Link to="/submit">Submit for Review</Link>
               </Button>
               <Button variant="hero-outline" size="xl" asChild>
-                <Link to="/opportunities">Explore Ascend Opportunities</Link>
+                <Link to="/academy">Explore Development Pathways</Link>
               </Button>
             </div>
+            <p className="mt-3 text-xs text-muted-foreground/70">Selection is limited.</p>
           </motion.div>
         </div>
       </section>

@@ -19,7 +19,7 @@ export default function SubmissionSuccess() {
             <p className="text-sm text-muted-foreground max-w-md mx-auto mb-8">Review timelines vary by category and volume. We will reach out directly if your profile is selected for further consideration. Submission does not guarantee representation.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="gold" size="lg" asChild><Link to="/">Return Home</Link></Button>
-              <Button variant="gold-outline" size="lg" asChild><Link to="/academy">Explore Development Programs</Link></Button>
+              <Button variant="gold-outline" size="lg" asChild><Link to="/academy">Explore Development Pathways</Link></Button>
             </div>
           </motion.div>
         </div>

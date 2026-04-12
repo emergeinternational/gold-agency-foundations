@@ -76,7 +76,7 @@ export default function BookTalent() {
       <section className="section-padding">
         <div className="container-narrow">
           <p className="text-muted-foreground text-sm mb-10 max-w-2xl">
-            We welcome inquiries from any market. Whether your project is based in Addis Ababa, across the continent, or anywhere globally — our team will respond with availability, recommendations, and next steps.
+            We welcome inquiries from any market. Whether your project serves audiences across Africa and global markets — our team will respond with availability, recommendations, and next steps.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-8">
