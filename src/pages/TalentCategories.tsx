@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { TALENT_CATEGORIES } from "@/lib/brand";
 import { ArrowRight } from "lucide-react";
 
-const representationBanner = "/AreasOfrepresentation";
+const representationBanner = "/AreasOfrepresentation.PNG";
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },

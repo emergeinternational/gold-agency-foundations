@@ -27,7 +27,7 @@ const BUDGET_RANGES = [
   { value: "discuss", label: "Prefer to discuss" },
 ];
 
-const bookingHero = "/booktalent";
+const bookingHero = "/booktalent.PNG";
 
 export default function BookTalent() {
   const navigate = useNavigate();
