@@ -30,9 +30,9 @@ export default function Representation() {
     <Layout>
       <PageHero
         badge="Representation"
-        title="Curated. Strategic. Invested."
-        subtitle={`Representation at ${BRAND.name} is selective and intentional. We take on talent we believe in — and back that belief with strategy, infrastructure, and access that moves careers forward.`}
-        cta={{ label: "Submit for Review", href: "/submit" }}
+        title="Selective. Strategic. Invested."
+        subtitle={`Representation at ${BRAND.name} is selective and intentional. We take on selected talent we believe in — and back that belief with strategy, infrastructure, and access that moves careers forward.`}
+        cta={{ label: "Apply for Representation", href: "/submit" }}
       />
 
       <section className="section-padding">
@@ -61,10 +61,10 @@ export default function Representation() {
             <SectionHeading badge="How to Apply" title="Joining Our Roster" subtitle="Representation is earned through review, not guaranteed by application. Every submission is evaluated with care — readiness and fit determine the outcome." />
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="hero" size="xl" asChild>
-                <Link to="/submit">Submit for Review</Link>
+                <Link to="/submit">Apply for Representation</Link>
               </Button>
               <Button variant="hero-outline" size="xl" asChild>
-                <Link to="/academy">Prepare Through the Academy</Link>
+                <Link to="/academy">Prepare Through Development Programs</Link>
               </Button>
             </div>
           </motion.div>

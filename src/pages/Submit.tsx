@@ -55,9 +55,9 @@ export default function Submit() {
   return (
     <Layout>
       <PageHero
-        badge="Open Submissions"
+        badge="Representation Review"
         title="Apply for Representation"
-        subtitle="We welcome talent at every level across all categories. This is your introduction — take it seriously, and so will we. Submission does not guarantee representation."
+        subtitle="We review talent with genuine potential across all categories. This is your introduction — take it seriously, and so will we. Submission does not guarantee representation."
       />
 
       <section className="section-padding">
@@ -68,9 +68,9 @@ export default function Submit() {
               <div>
                 <p className="text-sm text-foreground font-medium">Before you begin</p>
                 <ul className="text-xs text-muted-foreground mt-1 space-y-1 list-disc list-inside">
-                  <li>This is an application for review — not a guarantee of representation</li>
+                  <li>This is an application for representation review — not a guarantee of representation</li>
                   <li>Response timelines vary depending on volume and category demand</li>
-                  <li>Academy enrollment and representation are separate processes</li>
+                  <li>Development program enrollment and representation are separate processes</li>
                   <li>All talent categories and experience levels may apply</li>
                 </ul>
               </div>
@@ -171,7 +171,7 @@ export default function Submit() {
                 </div>
                 <div className="sm:col-span-2">
                   <label className={labelClass}>Why are you seeking representation? *</label>
-                  <textarea className={`${inputClass} min-h-[100px]`} value={form.whyRepresentation} onChange={e => update("whyRepresentation", e.target.value)} placeholder="Your goals and why this platform is the right fit for your career direction" maxLength={2000} />
+                  <textarea className={`${inputClass} min-h-[100px]`} value={form.whyRepresentation} onChange={e => update("whyRepresentation", e.target.value)} placeholder="Your goals and why this agency is the right fit for your career direction" maxLength={2000} />
                   {errors.whyRepresentation && <p className={errorClass}>{errors.whyRepresentation}</p>}
                 </div>
               </div>
@@ -196,7 +196,7 @@ export default function Submit() {
                   </div>
                 ))}
               </div>
-              <p className="text-xs text-muted-foreground/60 mt-3">File uploads will be fully active once the platform backend is connected.</p>
+              <p className="text-xs text-muted-foreground/60 mt-3">File uploads will be fully active once the backend is connected.</p>
             </fieldset>
 
             {/* Guardian Info */}

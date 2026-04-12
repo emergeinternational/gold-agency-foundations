@@ -20,8 +20,8 @@ export default function SubmissionTerms() {
             <p>You confirm that all information provided is accurate and truthful. Submission of false or misleading information may result in disqualification.</p>
             <h2 className="font-display text-xl text-foreground mt-8">Minor Participation</h2>
             <p>If you are under 18, a parent or legal guardian must consent to your submission and participation. Guardian information is required as part of the submission process.</p>
-            <h2 className="font-display text-xl text-foreground mt-8">Academy & Classes</h2>
-            <p>Enrollment in academy classes, workshops, or tutorials is separate from representation. Participation in educational programs does not guarantee signing or representation by {BRAND.name}.</p>
+            <h2 className="font-display text-xl text-foreground mt-8">Development Programs</h2>
+            <p>Enrollment in development programs, workshops, or tutorials is separate from representation. Participation in development programs does not guarantee signing or representation by {BRAND.name}.</p>
             <h2 className="font-display text-xl text-foreground mt-8">Review Timeline</h2>
             <p>Review timelines vary based on submission volume. We aim to review all submissions in a timely manner but cannot guarantee specific response times.</p>
             <h2 className="font-display text-xl text-foreground mt-8">Data Use</h2>

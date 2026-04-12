@@ -19,7 +19,7 @@ const partnerTypes = [
   { icon: Handshake, title: "Brand Collaborators", desc: "Co-create campaigns, content, and cultural experiences with professionals from our curated roster." },
   { icon: Mic, title: "Studios & Venues", desc: "Host or co-produce events, live programming, and creative productions through our network." },
   { icon: MapPin, title: "Media Partners", desc: "Access our talent pool for editorial, broadcast, digital, and branded content opportunities." },
-  { icon: BookOpen, title: "Educators & Mentors", desc: "Contribute to our academy as guest instructors, curriculum advisors, or mentorship leads." },
+  { icon: BookOpen, title: "Educators & Mentors", desc: "Contribute to our development programs as guest instructors, curriculum advisors, or mentorship leads." },
   { icon: TrendingUp, title: "Investors & Institutions", desc: "Support the growth of Ethiopia's creative economy through strategic, long-term collaboration." },
 ];
 

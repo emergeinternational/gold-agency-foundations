@@ -10,8 +10,8 @@ const navLinks = [
   { label: "Representation", href: "/representation" },
   { label: "Talent", href: "/talent-categories" },
   { label: "Roster", href: "/roster" },
-  { label: "Academy", href: "/academy" },
-  { label: "Submissions", href: "/submit" },
+  { label: "Development", href: "/academy" },
+  { label: "Apply", href: "/submit" },
   { label: "Book Talent", href: "/book-talent" },
   { label: "Contact", href: "/contact" },
 ];
@@ -27,7 +27,6 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setMobileOpen(false);
   }, [location.pathname]);
@@ -40,11 +39,10 @@ export default function Navbar() {
             {BRAND.name}
           </span>
           <span className="text-[7px] sm:text-[8px] tracking-[0.2em] text-muted-foreground/50 uppercase">
-            Powered by {BRAND.poweredBy}
+            {BRAND.poweredByLine}
           </span>
         </Link>
 
-        {/* Desktop nav */}
         <div className="hidden lg:flex items-center gap-0">
           {navLinks.map((link) => (
             <Link
@@ -61,7 +59,6 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* Mobile toggle */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
           className="lg:hidden p-2 text-foreground"
@@ -71,7 +68,6 @@ export default function Navbar() {
         </button>
       </nav>
 
-      {/* Mobile menu */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
