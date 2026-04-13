@@ -40,6 +40,42 @@ type AdminNote = {
   submission_id: string | null;
 };
 
+const GENERIC_EVALUATION_CRITERIA = ["potential", "professionalism", "market_fit"] as const;
+
+const CATEGORY_EVALUATION_CRITERIA: Record<string, readonly string[]> = {
+  model: ["presence", "versatility", "market_fit"],
+  musician: ["artistry", "consistency", "market_fit"],
+  "host/media": ["on_camera_presence", "communication", "market_fit"],
+  influencer: ["content_quality", "audience_alignment", "market_fit"],
+  actor: ["performance_range", "training_readiness", "market_fit"],
+  voice: ["vocal_quality", "clarity", "market_fit"],
+};
+
+export function normalizeCategory(category: string): string {
+  const normalized = category.trim().toLowerCase();
+  if (!normalized) return "";
+
+  const compact = normalized.replace(/[_\s-]+/g, "");
+
+  if (["model", "models", "modeling"].includes(compact)) return "model";
+  if (["musician", "musicians", "music", "artist", "artists", "singer", "singers"].includes(compact)) return "musician";
+  if (["host", "hosts", "media", "presenter", "presenters", "mediahosts", "mediapersonalities"].includes(compact)) {
+    return "host/media";
+  }
+  if (["influencer", "influencers", "creator", "creators", "digitalcreator", "digitalcreators"].includes(compact)) {
+    return "influencer";
+  }
+  if (["actor", "actors", "performer", "performers", "actorsperformers"].includes(compact)) return "actor";
+  if (["voice", "voices", "voiceover", "voicenarration", "narration"].includes(compact)) return "voice";
+
+  return normalized;
+}
+
+const getEvaluationCriteria = (category: string | null): readonly string[] => {
+  const normalizedCategory = normalizeCategory(category ?? "");
+  return CATEGORY_EVALUATION_CRITERIA[normalizedCategory] ?? GENERIC_EVALUATION_CRITERIA;
+};
+
 const normalizeStatus = (value: string | null): ReviewStatus => {
   if (value && STATUS_OPTIONS.includes(value as ReviewStatus)) {
     return value as ReviewStatus;
@@ -192,7 +228,9 @@ export default function AdminReview() {
   };
 
   const categoryOptions = useMemo(
-    () => [...new Set(rows.map((row) => row.category).filter(Boolean) as string[])].sort(),
+    () =>
+      [...new Set(rows.map((row) => normalizeCategory(row.category ?? "")).filter(Boolean))]
+        .sort(),
     [rows],
   );
   const sourceOptions = useMemo(
@@ -204,13 +242,14 @@ export default function AdminReview() {
     () =>
       rows.filter((row) => {
         const rowStatus = normalizeStatus(row.status);
-        const categoryMatch = filterCategory === "all" || row.category === filterCategory;
+        const normalizedCategory = normalizeCategory(row.category ?? "");
+        const categoryMatch = filterCategory === "all" || normalizedCategory === filterCategory;
         const statusMatch = filterStatus === "all" || rowStatus === filterStatus;
         const sourceMatch = filterSource === "all" || row.source === filterSource;
         const searchTerm = search.trim().toLowerCase();
         const searchMatch =
           searchTerm.length === 0 ||
-          [row.full_name, row.email, row.phone, row.city, row.category]
+          [row.full_name, row.email, row.phone, row.city, row.category, normalizedCategory]
             .filter(Boolean)
             .some((value) => value?.toLowerCase().includes(searchTerm));
         return categoryMatch && statusMatch && sourceMatch && searchMatch;
@@ -304,6 +343,7 @@ export default function AdminReview() {
                 <th className="px-3 py-2 font-medium">Phone</th>
                 <th className="px-3 py-2 font-medium">City</th>
                 <th className="px-3 py-2 font-medium">Category</th>
+                <th className="px-3 py-2 font-medium">Evaluation Criteria</th>
                 <th className="px-3 py-2 font-medium">Country</th>
                 <th className="px-3 py-2 font-medium">Assignee</th>
                 <th className="px-3 py-2 font-medium">Status</th>
@@ -318,6 +358,8 @@ export default function AdminReview() {
               {filteredRows.map((row) => {
                 const pq = row.prequalification_results?.[0];
                 const notes = notesBySubmission[row.id] ?? [];
+                const normalizedCategory = normalizeCategory(row.category ?? "");
+                const evaluationCriteria = getEvaluationCriteria(row.category);
 
                 return (
                   <tr key={row.id} className="border-t border-border/60 align-top hover:bg-secondary/30">
@@ -328,7 +370,16 @@ export default function AdminReview() {
                     <td className="px-3 py-2">{row.email ?? "—"}</td>
                     <td className="px-3 py-2">{row.phone ?? "—"}</td>
                     <td className="px-3 py-2">{row.city ?? "—"}</td>
-                    <td className="px-3 py-2">{row.category ?? "—"}</td>
+                    <td className="px-3 py-2">{normalizedCategory || "—"}</td>
+                    <td className="px-3 py-2 min-w-56">
+                      <div className="flex flex-wrap gap-1">
+                        {evaluationCriteria.map((criterion) => (
+                          <span key={criterion} className="inline-flex rounded-full border border-border px-2 py-0.5 text-xs">
+                            {criterion}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
                     <td className="px-3 py-2">{row.country ?? "—"}</td>
                     <td className="px-3 py-2 min-w-48">
                       <div className="flex gap-2">
