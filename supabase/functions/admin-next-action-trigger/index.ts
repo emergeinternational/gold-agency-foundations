@@ -31,13 +31,24 @@ const ACTIONABLE_ACTIONS = new Set([
 
 const ALLOWED_ACTIONS = new Set([...ACTIONABLE_ACTIONS, "hold", "reject"]);
 
+const ACTION_HEADERS: Record<string, string> = {
+  schedule_audition: "🎤 Audition Scheduling Required",
+  enroll_training: "📚 Training Enrollment Required",
+  request_more_content: "📎 More Content Needed",
+  refer_to_emerge: "🚀 Referred for Emerge Review",
+};
+
 const formatActionMessage = (action: string, submission: SubmissionRecord) => {
+  const priority = submission.emerge_ready === true ? "HIGH" : "STANDARD";
+  const header = ACTION_HEADERS[action] ?? "📌 Submission Action Required";
+
   const lines = [
-    `📌 Submission next_action: ${action}`,
-    `id: ${submission.id ?? "n/a"}`,
+    header,
+    "",
+    `Priority: ${priority}`,
+    "",
     `full_name: ${submission.full_name ?? "n/a"}`,
     `category: ${submission.category ?? "n/a"}`,
-    `source: ${submission.source ?? "n/a"}`,
     `status: ${submission.status ?? "n/a"}`,
     `level: ${submission.level ?? "n/a"}`,
     `emerge_ready: ${String(submission.emerge_ready ?? "n/a")}`,
