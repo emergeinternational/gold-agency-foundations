@@ -2337,6 +2337,47 @@ export type Database = {
         }
         Relationships: []
       }
+      prequalification_results: {
+        Row: {
+          answers: Json | null
+          category: string | null
+          created_at: string
+          critical_pass: boolean | null
+          id: string
+          outcome: string | null
+          score: number | null
+          submission_id: string | null
+        }
+        Insert: {
+          answers?: Json | null
+          category?: string | null
+          created_at?: string
+          critical_pass?: boolean | null
+          id?: string
+          outcome?: string | null
+          score?: number | null
+          submission_id?: string | null
+        }
+        Update: {
+          answers?: Json | null
+          category?: string | null
+          created_at?: string
+          critical_pass?: boolean | null
+          id?: string
+          outcome?: string | null
+          score?: number | null
+          submission_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prequalification_results_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           admin_notes: string | null
@@ -2843,6 +2884,69 @@ export type Database = {
           id?: string
           key?: string
           value?: string | null
+        }
+        Relationships: []
+      }
+      submissions: {
+        Row: {
+          category: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          email: string | null
+          experience_level: string | null
+          full_name: string | null
+          id: string
+          instagram: string | null
+          notes: string | null
+          phone: string | null
+          portfolio_url: string | null
+          sample_url: string | null
+          source: string | null
+          status: string | null
+          tiktok: string | null
+          website: string | null
+          youtube: string | null
+        }
+        Insert: {
+          category?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          experience_level?: string | null
+          full_name?: string | null
+          id?: string
+          instagram?: string | null
+          notes?: string | null
+          phone?: string | null
+          portfolio_url?: string | null
+          sample_url?: string | null
+          source?: string | null
+          status?: string | null
+          tiktok?: string | null
+          website?: string | null
+          youtube?: string | null
+        }
+        Update: {
+          category?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          experience_level?: string | null
+          full_name?: string | null
+          id?: string
+          instagram?: string | null
+          notes?: string | null
+          phone?: string | null
+          portfolio_url?: string | null
+          sample_url?: string | null
+          source?: string | null
+          status?: string | null
+          tiktok?: string | null
+          website?: string | null
+          youtube?: string | null
         }
         Relationships: []
       }
