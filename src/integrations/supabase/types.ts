@@ -2929,6 +2929,7 @@ export type Database = {
           full_name: string | null
           id: string
           instagram: string | null
+          level: string | null
           notes: string | null
           phone: string | null
           portfolio_url: string | null
@@ -2951,6 +2952,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           instagram?: string | null
+          level?: string | null
           notes?: string | null
           phone?: string | null
           portfolio_url?: string | null
@@ -2973,6 +2975,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           instagram?: string | null
+          level?: string | null
           notes?: string | null
           phone?: string | null
           portfolio_url?: string | null
