@@ -8,12 +8,22 @@ set search_path = public
 as $$
 declare
   request_id bigint;
+  supabase_url text;
+  anon_key text;
   function_url text;
 begin
-  function_url := current_setting('app.settings.supabase_url', true) || '/functions/v1/admin-next-action-trigger';
+  supabase_url := current_setting('app.settings.supabase_url', true);
+  anon_key := current_setting('app.settings.supabase_anon_key', true);
 
-  if function_url is null then
+  function_url := supabase_url || '/functions/v1/admin-next-action-trigger';
+
+  if supabase_url is null or supabase_url = '' then
     raise warning 'Skipping next_action webhook: app.settings.supabase_url is not configured';
+    return new;
+  end if;
+
+  if anon_key is null or anon_key = '' then
+    raise warning 'Skipping next_action webhook: app.settings.supabase_anon_key is not configured';
     return new;
   end if;
 
@@ -21,7 +31,8 @@ begin
     net.http_post(
       url := function_url,
       headers := jsonb_build_object(
-        'Content-Type', 'application/json'
+        'Content-Type', 'application/json',
+        'Authorization', 'Bearer ' || anon_key
       ),
       body := jsonb_build_object(
         'type', tg_op,

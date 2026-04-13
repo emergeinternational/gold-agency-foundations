@@ -22,10 +22,14 @@ type WebhookPayload = {
   old_record?: SubmissionRecord | null;
 };
 
-const TELEGRAM_BOT_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN");
-const TELEGRAM_CHAT_ID = Deno.env.get("TELEGRAM_CHAT_ID");
+const ACTIONABLE_ACTIONS = new Set([
+  "schedule_audition",
+  "enroll_training",
+  "request_more_content",
+  "refer_to_emerge",
+]);
 
-const TELEGRAM_ENABLED = Boolean(TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID);
+const ALLOWED_ACTIONS = new Set([...ACTIONABLE_ACTIONS, "hold", "reject"]);
 
 const formatActionMessage = (action: string, submission: SubmissionRecord) => {
   const lines = [
@@ -64,32 +68,40 @@ const buildStructuredPayload = (action: string, submission: SubmissionRecord) =>
 });
 
 const sendTelegramMessage = async (message: string) => {
-  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+  const telegramBotToken = Deno.env.get("TELEGRAM_BOT_TOKEN");
+  const telegramChatId = Deno.env.get("TELEGRAM_CHAT_ID");
+
+  if (!telegramBotToken || !telegramChatId) {
     return { sent: false, reason: "missing_telegram_secrets" };
   }
 
   const response = await fetch(
-    `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+    `https://api.telegram.org/bot${telegramBotToken}/sendMessage`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        chat_id: TELEGRAM_CHAT_ID,
+        chat_id: telegramChatId,
         text: message,
       }),
     },
   );
 
+  const responseBody = await response.text();
+  console.info("Telegram API response", {
+    status: response.status,
+    body: responseBody,
+  });
+
   if (!response.ok) {
-    const errorBody = await response.text();
-    throw new Error(`Telegram send failed (${response.status}): ${errorBody}`);
+    throw new Error(`Telegram send failed (${response.status}): ${responseBody}`);
   }
 
   return { sent: true };
 };
 
-const processAction = async (action: string, submission: SubmissionRecord) => {
-  if (action === "hold" || action === "reject") {
+const processAction = async (action: string, submission: SubmissionRecord, telegramEnabled: boolean) => {
+  if (!ACTIONABLE_ACTIONS.has(action)) {
     console.info("No external action configured for next_action", {
       action,
       submission_id: submission.id ?? null,
@@ -99,7 +111,7 @@ const processAction = async (action: string, submission: SubmissionRecord) => {
 
   const structuredPayload = buildStructuredPayload(action, submission);
 
-  if (!TELEGRAM_ENABLED) {
+  if (!telegramEnabled) {
     console.info("Telegram credentials unavailable. Action payload logged.", {
       delivery: "log_only",
       ...structuredPayload,
@@ -131,11 +143,25 @@ serve(async (req) => {
 
   try {
     payload = await req.json();
-  } catch {
+  } catch (parseError) {
+    console.error("Invalid JSON payload", {
+      error: parseError instanceof Error ? parseError.message : String(parseError),
+    });
     return Response.json({ ok: false, error: "invalid_json_payload" }, { status: 400 });
   }
 
   const eventType = payload.type?.toUpperCase();
+  const record = payload.record;
+  const oldRecord = payload.old_record;
+
+  console.info("Incoming next_action webhook payload summary", {
+    eventType,
+    schema: payload.schema,
+    table: payload.table,
+    record_id: record?.id ?? null,
+    new_next_action: record?.next_action ?? null,
+    old_next_action: oldRecord?.next_action ?? null,
+  });
 
   if (eventType !== "INSERT" && eventType !== "UPDATE") {
     return Response.json({ ok: true, skipped: "unsupported_event_type", eventType });
@@ -145,10 +171,11 @@ serve(async (req) => {
     return Response.json({ ok: true, skipped: "unsupported_target", target: { schema: payload.schema, table: payload.table } });
   }
 
-  const record = payload.record;
-  const oldRecord = payload.old_record;
+  if (!record) {
+    return Response.json({ ok: true, skipped: "missing_record" });
+  }
 
-  if (!record?.next_action) {
+  if (!record.next_action) {
     return Response.json({ ok: true, skipped: "missing_next_action" });
   }
 
@@ -158,16 +185,7 @@ serve(async (req) => {
     return Response.json({ ok: true, skipped: "next_action_unchanged" });
   }
 
-  const allowedActions = new Set([
-    "schedule_audition",
-    "enroll_training",
-    "request_more_content",
-    "refer_to_emerge",
-    "hold",
-    "reject",
-  ]);
-
-  if (!allowedActions.has(record.next_action)) {
+  if (!ALLOWED_ACTIONS.has(record.next_action)) {
     return Response.json({
       ok: false,
       error: "unsupported_next_action",
@@ -175,8 +193,19 @@ serve(async (req) => {
     }, { status: 400 });
   }
 
+  const telegramEnabled = Boolean(Deno.env.get("TELEGRAM_BOT_TOKEN") && Deno.env.get("TELEGRAM_CHAT_ID"));
+  const isActionable = ACTIONABLE_ACTIONS.has(record.next_action);
+
+  console.info("next_action processing decision", {
+    record_id: record.id ?? null,
+    new_next_action: record.next_action,
+    old_next_action: oldRecord?.next_action ?? null,
+    actionable: isActionable,
+    telegram_secrets_present: telegramEnabled,
+  });
+
   try {
-    const result = await processAction(record.next_action, record);
+    const result = await processAction(record.next_action, record, telegramEnabled);
 
     return Response.json({
       ok: true,
