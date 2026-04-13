@@ -22,6 +22,12 @@ type WebhookPayload = {
   old_record?: SubmissionRecord | null;
 };
 
+// Internal action definitions for admin workflow consistency:
+// schedule_audition -> candidate ready for immediate audition scheduling
+// enroll_training -> candidate not ready but suitable for development
+// request_more_content -> insufficient data, requires additional submission
+// refer_to_emerge -> high-value candidate for escalation
+
 const ACTIONABLE_ACTIONS = new Set([
   "schedule_audition",
   "enroll_training",
@@ -36,6 +42,40 @@ const ACTION_HEADERS: Record<string, string> = {
   enroll_training: "📚 Training Enrollment Required",
   request_more_content: "📎 More Content Needed",
   refer_to_emerge: "🚀 Referred for Emerge Review",
+};
+
+const logDecision = (params: {
+  decision_path: "actionable" | "skipped";
+  record_id: string | null;
+  next_action: string | null;
+  emerge_ready: boolean | null;
+  reason: string;
+  extra?: Record<string, unknown>;
+}) => {
+  const { decision_path, record_id, next_action, emerge_ready, reason, extra } = params;
+  console.info("submission next_action decision", {
+    record_id,
+    next_action,
+    emerge_ready,
+    decision_path,
+    reason,
+    ...(extra ?? {}),
+  });
+};
+
+const withDefaultAction = (record: SubmissionRecord): SubmissionRecord => {
+  const status = (record.status ?? "").toLowerCase();
+  const normalizedAction = record.next_action ?? null;
+
+  if (normalizedAction) {
+    return record;
+  }
+
+  const fallbackAction = status === "rejected" ? "reject" : "request_more_content";
+  return {
+    ...record,
+    next_action: fallbackAction,
+  };
 };
 
 const formatActionMessage = (action: string, submission: SubmissionRecord) => {
@@ -86,17 +126,15 @@ const sendTelegramMessage = async (message: string) => {
     return { sent: false, reason: "missing_telegram_secrets" };
   }
 
-  const response = await fetch(
-    `https://api.telegram.org/bot${telegramBotToken}/sendMessage`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: telegramChatId,
-        text: message,
-      }),
-    },
-  );
+  const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: telegramChatId,
+      text: message,
+    }),
+    signal: AbortSignal.timeout(3500),
+  });
 
   const responseBody = await response.text();
   console.info("Telegram API response", {
@@ -162,7 +200,7 @@ serve(async (req) => {
   }
 
   const eventType = payload.type?.toUpperCase();
-  const record = payload.record;
+  const record = payload.record ? withDefaultAction(payload.record) : null;
   const oldRecord = payload.old_record;
 
   console.info("Incoming next_action webhook payload summary", {
@@ -175,24 +213,50 @@ serve(async (req) => {
   });
 
   if (eventType !== "INSERT" && eventType !== "UPDATE") {
+    logDecision({
+      decision_path: "skipped",
+      record_id: record?.id ?? null,
+      next_action: record?.next_action ?? null,
+      emerge_ready: record?.emerge_ready ?? null,
+      reason: "unsupported_event_type",
+      extra: { eventType },
+    });
     return Response.json({ ok: true, skipped: "unsupported_event_type", eventType });
   }
 
   if (payload.schema !== "public" || payload.table !== "submissions") {
+    logDecision({
+      decision_path: "skipped",
+      record_id: record?.id ?? null,
+      next_action: record?.next_action ?? null,
+      emerge_ready: record?.emerge_ready ?? null,
+      reason: "unsupported_target",
+      extra: { schema: payload.schema, table: payload.table },
+    });
     return Response.json({ ok: true, skipped: "unsupported_target", target: { schema: payload.schema, table: payload.table } });
   }
 
   if (!record) {
+    logDecision({
+      decision_path: "skipped",
+      record_id: null,
+      next_action: null,
+      emerge_ready: null,
+      reason: "missing_record",
+    });
     return Response.json({ ok: true, skipped: "missing_record" });
-  }
-
-  if (!record.next_action) {
-    return Response.json({ ok: true, skipped: "missing_next_action" });
   }
 
   const nextActionChanged = !oldRecord || record.next_action !== oldRecord.next_action;
 
   if (!nextActionChanged) {
+    logDecision({
+      decision_path: "skipped",
+      record_id: record.id ?? null,
+      next_action: record.next_action ?? null,
+      emerge_ready: record.emerge_ready ?? null,
+      reason: "next_action_unchanged",
+    });
     return Response.json({ ok: true, skipped: "next_action_unchanged" });
   }
 
@@ -207,12 +271,16 @@ serve(async (req) => {
   const telegramEnabled = Boolean(Deno.env.get("TELEGRAM_BOT_TOKEN") && Deno.env.get("TELEGRAM_CHAT_ID"));
   const isActionable = ACTIONABLE_ACTIONS.has(record.next_action);
 
-  console.info("next_action processing decision", {
+  logDecision({
+    decision_path: isActionable ? "actionable" : "skipped",
     record_id: record.id ?? null,
-    new_next_action: record.next_action,
-    old_next_action: oldRecord?.next_action ?? null,
-    actionable: isActionable,
-    telegram_secrets_present: telegramEnabled,
+    next_action: record.next_action ?? null,
+    emerge_ready: record.emerge_ready ?? null,
+    reason: isActionable ? "next_action_actionable" : "next_action_not_actionable",
+    extra: {
+      old_next_action: oldRecord?.next_action ?? null,
+      telegram_secrets_present: telegramEnabled,
+    },
   });
 
   try {
@@ -228,8 +296,16 @@ serve(async (req) => {
       error: error instanceof Error ? error.message : String(error),
       submission_id: record.id ?? null,
       next_action: record.next_action,
+      emerge_ready: record.emerge_ready ?? null,
+      decision_path: isActionable ? "actionable" : "skipped",
     });
 
-    return Response.json({ ok: false, error: "action_processing_failed" }, { status: 500 });
+    return Response.json({
+      ok: true,
+      warning: "action_processing_failed",
+      record_id: record.id ?? null,
+      next_action: record.next_action ?? null,
+      emerge_ready: record.emerge_ready ?? null,
+    });
   }
 });
