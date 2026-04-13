@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
 type Submission = {
@@ -22,6 +24,7 @@ export default function AdminReview() {
   const [rows, setRows] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -39,10 +42,20 @@ export default function AdminReview() {
     })();
   }, []);
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate("/sign-in", { replace: true });
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground p-6 sm:p-10">
-      <h1 className="text-2xl font-semibold mb-1">Submission Review</h1>
-      <p className="text-sm text-muted-foreground mb-6">Internal — read-only view of all submissions.</p>
+      <div className="mb-6 flex items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold mb-1">Submission Review</h1>
+          <p className="text-sm text-muted-foreground">Internal — read-only view of all submissions.</p>
+        </div>
+        <Button variant="outline" onClick={handleSignOut}>Sign out</Button>
+      </div>
 
       {loading && <p className="text-sm text-muted-foreground">Loading…</p>}
       {error && <p className="text-sm text-destructive">Error: {error}</p>}
