@@ -2924,6 +2924,7 @@ export type Database = {
           country: string | null
           created_at: string
           email: string | null
+          evaluation_scores: Json
           experience_level: string | null
           full_name: string | null
           id: string
@@ -2945,6 +2946,7 @@ export type Database = {
           country?: string | null
           created_at?: string
           email?: string | null
+          evaluation_scores?: Json
           experience_level?: string | null
           full_name?: string | null
           id?: string
@@ -2966,6 +2968,7 @@ export type Database = {
           country?: string | null
           created_at?: string
           email?: string | null
+          evaluation_scores?: Json
           experience_level?: string | null
           full_name?: string | null
           id?: string

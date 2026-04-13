@@ -20,6 +20,7 @@ type Submission = {
   country: string | null;
   source: string | null;
   status: string | null;
+  evaluation_scores: Record<string, number> | null;
   portfolio_url: string | null;
   sample_url: string | null;
   instagram: string | null;
@@ -43,12 +44,12 @@ type AdminNote = {
 const GENERIC_EVALUATION_CRITERIA = ["potential", "professionalism", "market_fit"] as const;
 
 const CATEGORY_EVALUATION_CRITERIA: Record<string, readonly string[]> = {
-  model: ["presence", "versatility", "market_fit"],
-  musician: ["artistry", "consistency", "market_fit"],
-  "host/media": ["on_camera_presence", "communication", "market_fit"],
-  influencer: ["content_quality", "audience_alignment", "market_fit"],
-  actor: ["performance_range", "training_readiness", "market_fit"],
-  voice: ["vocal_quality", "clarity", "market_fit"],
+  model: ["look", "presence", "walk", "proportions", "potential"],
+  musician: ["sound_quality", "originality", "performance", "market_fit", "potential"],
+  "host/media": ["communication", "energy", "clarity", "presence", "professionalism"],
+  influencer: ["content_quality", "engagement", "consistency", "brand_fit", "potential"],
+  actor: ["performance", "range", "presence", "emotional_depth", "professionalism"],
+  voice: ["clarity", "tone", "delivery", "versatility", "professionalism"],
 };
 
 export function normalizeCategory(category: string): string {
@@ -58,15 +59,21 @@ export function normalizeCategory(category: string): string {
   const compact = normalized.replace(/[_\s-]+/g, "");
 
   if (["model", "models", "modeling"].includes(compact)) return "model";
-  if (["musician", "musicians", "music", "artist", "artists", "singer", "singers"].includes(compact)) return "musician";
+  if (["musician", "musicians", "music", "artist", "artists", "singer", "singers"].includes(compact)) {
+    return "musician";
+  }
   if (["host", "hosts", "media", "presenter", "presenters", "mediahosts", "mediapersonalities"].includes(compact)) {
     return "host/media";
   }
   if (["influencer", "influencers", "creator", "creators", "digitalcreator", "digitalcreators"].includes(compact)) {
     return "influencer";
   }
-  if (["actor", "actors", "performer", "performers", "actorsperformers"].includes(compact)) return "actor";
-  if (["voice", "voices", "voiceover", "voicenarration", "narration"].includes(compact)) return "voice";
+  if (["actor", "actors", "performer", "performers", "actorsperformers"].includes(compact)) {
+    return "actor";
+  }
+  if (["voice", "voices", "voiceover", "voiceovers", "voicenarration", "narration"].includes(compact)) {
+    return "voice";
+  }
 
   return normalized;
 }
@@ -83,12 +90,18 @@ const normalizeStatus = (value: string | null): ReviewStatus => {
   return "new";
 };
 
+const formatCriterionLabel = (value: string) =>
+  value
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+
 export default function AdminReview() {
   const [rows, setRows] = useState<Submission[]>([]);
   const [notesBySubmission, setNotesBySubmission] = useState<Record<string, AdminNote[]>>({});
   const [statusDrafts, setStatusDrafts] = useState<Record<string, ReviewStatus>>({});
   const [assigneeDrafts, setAssigneeDrafts] = useState<Record<string, string>>({});
   const [noteDrafts, setNoteDrafts] = useState<Record<string, string>>({});
+  const [evaluationDrafts, setEvaluationDrafts] = useState<Record<string, Record<string, number>>>({});
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterSource, setFilterSource] = useState("ascend");
@@ -96,15 +109,21 @@ export default function AdminReview() {
   const [savingStatusId, setSavingStatusId] = useState<string | null>(null);
   const [savingAssigneeId, setSavingAssigneeId] = useState<string | null>(null);
   const [savingNoteId, setSavingNoteId] = useState<string | null>(null);
+  const [savingEvaluationId, setSavingEvaluationId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    (async () => {
+    const load = async () => {
+      setLoading(true);
+      setError(null);
+
       const { data, error: submissionsError } = await supabase
         .from("submissions")
-        .select("id, assignee, created_at, full_name, email, phone, city, category, country, source, status, portfolio_url, sample_url, instagram, tiktok, youtube, website, prequalification_results(outcome, score, critical_pass)")
+        .select(
+          "id, assignee, created_at, full_name, email, phone, city, category, country, source, status, evaluation_scores, portfolio_url, sample_url, instagram, tiktok, youtube, website, prequalification_results(outcome, score, critical_pass)",
+        )
         .order("created_at", { ascending: false });
 
       if (submissionsError) {
@@ -113,14 +132,20 @@ export default function AdminReview() {
         return;
       }
 
-      const submissionRows = (data as Submission[]) ?? [];
+      const submissionRows = ((data as Submission[]) ?? []).map((row) => ({
+        ...row,
+        evaluation_scores: row.evaluation_scores ?? {},
+      }));
+
       setRows(submissionRows);
+
       setStatusDrafts(
         submissionRows.reduce<Record<string, ReviewStatus>>((acc, row) => {
           acc[row.id] = normalizeStatus(row.status);
           return acc;
         }, {}),
       );
+
       setAssigneeDrafts(
         submissionRows.reduce<Record<string, string>>((acc, row) => {
           acc[row.id] = row.assignee ?? "";
@@ -128,9 +153,25 @@ export default function AdminReview() {
         }, {}),
       );
 
-      const ascendSource = [...new Set(submissionRows.map((row) => row.source).filter(Boolean) as string[])].find(
-        (option) => option.toLowerCase() === "ascend",
+      setEvaluationDrafts(
+        submissionRows.reduce<Record<string, Record<string, number>>>((acc, row) => {
+          const criteria = getEvaluationCriteria(row.category);
+          const existingScores = row.evaluation_scores ?? {};
+
+          acc[row.id] = criteria.reduce<Record<string, number>>((criteriaAcc, key) => {
+            const value = existingScores[key];
+            if (typeof value === "number" && value >= 1 && value <= 5) {
+              criteriaAcc[key] = value;
+            }
+            return criteriaAcc;
+          }, {});
+
+          return acc;
+        }, {}),
       );
+
+      const uniqueSources = [...new Set(submissionRows.map((row) => row.source).filter(Boolean) as string[])];
+      const ascendSource = uniqueSources.find((option) => option.toLowerCase() === "ascend");
       setFilterSource(ascendSource ?? "all");
 
       if (submissionRows.length > 0) {
@@ -141,7 +182,9 @@ export default function AdminReview() {
           .in("submission_id", ids)
           .order("created_at", { ascending: false });
 
-        if (!notesError && notesData) {
+        if (notesError) {
+          setError(notesError.message);
+        } else if (notesData) {
           const grouped = notesData.reduce<Record<string, AdminNote[]>>((acc, note) => {
             if (!note.submission_id) return acc;
             const current = acc[note.submission_id] ?? [];
@@ -153,7 +196,9 @@ export default function AdminReview() {
       }
 
       setLoading(false);
-    })();
+    };
+
+    void load();
   }, []);
 
   const handleSignOut = async () => {
@@ -166,16 +211,16 @@ export default function AdminReview() {
     if (!status) return;
 
     setSavingStatusId(submissionId);
-    const { error: updateError } = await supabase
-      .from("submissions")
-      .update({ status })
-      .eq("id", submissionId);
+    setError(null);
+
+    const { error: updateError } = await supabase.from("submissions").update({ status }).eq("id", submissionId);
 
     if (updateError) {
       setError(updateError.message);
     } else {
       setRows((prev) => prev.map((row) => (row.id === submissionId ? { ...row, status } : row)));
     }
+
     setSavingStatusId(null);
   };
 
@@ -184,6 +229,8 @@ export default function AdminReview() {
     if (!note) return;
 
     setSavingNoteId(submissionId);
+    setError(null);
+
     const { data: inserted, error: noteError } = await supabase
       .from("admin_notes")
       .insert({ submission_id: submissionId, note })
@@ -199,23 +246,80 @@ export default function AdminReview() {
       }));
       setNoteDrafts((prev) => ({ ...prev, [submissionId]: "" }));
     }
+
     setSavingNoteId(null);
   };
 
   const handleAssigneeSave = async (submissionId: string) => {
     const assignee = assigneeDrafts[submissionId]?.trim() || null;
+
     setSavingAssigneeId(submissionId);
-    const { error: updateError } = await supabase
-      .from("submissions")
-      .update({ assignee })
-      .eq("id", submissionId);
+    setError(null);
+
+    const { error: updateError } = await supabase.from("submissions").update({ assignee }).eq("id", submissionId);
 
     if (updateError) {
       setError(updateError.message);
     } else {
       setRows((prev) => prev.map((row) => (row.id === submissionId ? { ...row, assignee } : row)));
     }
+
     setSavingAssigneeId(null);
+  };
+
+  const handleEvaluationScoreChange = (submissionId: string, key: string, value: number | null) => {
+    setEvaluationDrafts((prev) => {
+      const next = { ...(prev[submissionId] ?? {}) };
+
+      if (value === null || Number.isNaN(value)) {
+        delete next[key];
+      } else {
+        next[key] = value;
+      }
+
+      return {
+        ...prev,
+        [submissionId]: next,
+      };
+    });
+  };
+
+  const handleEvaluationSave = async (submission: Submission) => {
+    const criteria = getEvaluationCriteria(submission.category);
+    const draft = evaluationDrafts[submission.id] ?? {};
+
+    const sanitizedScores = criteria.reduce<Record<string, number>>((acc, key) => {
+      const score = draft[key];
+      if (typeof score === "number" && score >= 1 && score <= 5) {
+        acc[key] = score;
+      }
+      return acc;
+    }, {});
+
+    setSavingEvaluationId(submission.id);
+    setError(null);
+
+    const { error: updateError } = await supabase
+      .from("submissions")
+      .update({ evaluation_scores: sanitizedScores })
+      .eq("id", submission.id);
+
+    if (updateError) {
+      setError(updateError.message);
+    } else {
+      setRows((prev) =>
+        prev.map((row) =>
+          row.id === submission.id
+            ? {
+                ...row,
+                evaluation_scores: sanitizedScores,
+              }
+            : row,
+        ),
+      );
+    }
+
+    setSavingEvaluationId(null);
   };
 
   const renderAge = (createdAt: string) => {
@@ -223,16 +327,16 @@ export default function AdminReview() {
     const now = new Date();
     const diffMs = now.getTime() - createdDate.getTime();
     const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
     if (days <= 0) return "Today";
     return `${days}d`;
   };
 
   const categoryOptions = useMemo(
-    () =>
-      [...new Set(rows.map((row) => normalizeCategory(row.category ?? "")).filter(Boolean))]
-        .sort(),
+    () => [...new Set(rows.map((row) => normalizeCategory(row.category ?? "")).filter(Boolean))].sort(),
     [rows],
   );
+
   const sourceOptions = useMemo(
     () => [...new Set(rows.map((row) => row.source).filter(Boolean) as string[])].sort(),
     [rows],
@@ -243,30 +347,36 @@ export default function AdminReview() {
       rows.filter((row) => {
         const rowStatus = normalizeStatus(row.status);
         const normalizedCategory = normalizeCategory(row.category ?? "");
+        const normalizedSource = row.source ?? "";
+        const searchTerm = search.trim().toLowerCase();
+
         const categoryMatch = filterCategory === "all" || normalizedCategory === filterCategory;
         const statusMatch = filterStatus === "all" || rowStatus === filterStatus;
-        const sourceMatch = filterSource === "all" || row.source === filterSource;
-        const searchTerm = search.trim().toLowerCase();
+        const sourceMatch = filterSource === "all" || normalizedSource === filterSource;
         const searchMatch =
           searchTerm.length === 0 ||
           [row.full_name, row.email, row.phone, row.city, row.category, normalizedCategory]
             .filter(Boolean)
             .some((value) => value?.toLowerCase().includes(searchTerm));
+
         return categoryMatch && statusMatch && sourceMatch && searchMatch;
       }),
     [rows, filterCategory, filterStatus, filterSource, search],
   );
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-6 sm:p-10">
+    <div className="min-h-screen bg-background p-6 text-foreground sm:p-10">
       <div className="mb-6 flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold mb-1">Submission Review</h1>
+          <h1 className="mb-1 text-2xl font-semibold">Submission Review</h1>
           <p className="text-sm text-muted-foreground">
-            Internal only — founder/admin review workspace. Source is shown prominently to keep Ascend and Emerge separated.
+            Internal only — founder/admin review workspace. Source is shown prominently to keep Ascend and Emerge
+            separated.
           </p>
         </div>
-        <Button variant="outline" onClick={handleSignOut}>Sign out</Button>
+        <Button variant="outline" onClick={handleSignOut}>
+          Sign out
+        </Button>
       </div>
 
       <div className="mb-4 grid gap-3 sm:grid-cols-4">
@@ -279,7 +389,9 @@ export default function AdminReview() {
           >
             <option value="all">All categories</option>
             {categoryOptions.map((option) => (
-              <option key={option} value={option}>{option}</option>
+              <option key={option} value={option}>
+                {formatCriterionLabel(option)}
+              </option>
             ))}
           </select>
         </div>
@@ -293,7 +405,9 @@ export default function AdminReview() {
           >
             <option value="all">All statuses</option>
             {STATUS_OPTIONS.map((status) => (
-              <option key={status} value={status}>{status}</option>
+              <option key={status} value={status}>
+                {formatCriterionLabel(status)}
+              </option>
             ))}
           </select>
         </div>
@@ -307,7 +421,9 @@ export default function AdminReview() {
           >
             <option value="all">All sources</option>
             {sourceOptions.map((option) => (
-              <option key={option} value={option}>{option}</option>
+              <option key={option} value={option}>
+                {option}
+              </option>
             ))}
           </select>
         </div>
@@ -331,7 +447,7 @@ export default function AdminReview() {
       )}
 
       {!loading && filteredRows.length > 0 && (
-        <div className="overflow-x-auto border border-border rounded-md">
+        <div className="overflow-x-auto rounded-md border border-border">
           <table className="w-full text-sm">
             <thead className="bg-secondary/60 text-left">
               <tr>
@@ -351,6 +467,7 @@ export default function AdminReview() {
                 <th className="px-3 py-2 font-medium">Score</th>
                 <th className="px-3 py-2 font-medium">Critical</th>
                 <th className="px-3 py-2 font-medium">Evidence</th>
+                <th className="px-3 py-2 font-medium">Evaluation</th>
                 <th className="px-3 py-2 font-medium">Admin Notes</th>
               </tr>
             </thead>
@@ -359,29 +476,37 @@ export default function AdminReview() {
                 const pq = row.prequalification_results?.[0];
                 const notes = notesBySubmission[row.id] ?? [];
                 const normalizedCategory = normalizeCategory(row.category ?? "");
-                const evaluationCriteria = getEvaluationCriteria(row.category);
+                const criteria = getEvaluationCriteria(row.category);
+                const draftScores = evaluationDrafts[row.id] ?? {};
+                const scoreValues = criteria
+                  .map((key) => draftScores[key])
+                  .filter((value): value is number => typeof value === "number");
+                const averageScore =
+                  scoreValues.length > 0
+                    ? (scoreValues.reduce((sum, value) => sum + value, 0) / scoreValues.length).toFixed(1)
+                    : null;
 
                 return (
-                  <tr key={row.id} className="border-t border-border/60 align-top hover:bg-secondary/30">
-                    <td className="px-3 py-2 whitespace-nowrap">{new Date(row.created_at).toLocaleDateString()}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-xs text-muted-foreground">{renderAge(row.created_at)}</td>
+                  <tr key={row.id} className="align-top hover:bg-secondary/30 border-t border-border/60">
+                    <td className="whitespace-nowrap px-3 py-2">{new Date(row.created_at).toLocaleDateString()}</td>
+                    <td className="whitespace-nowrap px-3 py-2 text-xs text-muted-foreground">{renderAge(row.created_at)}</td>
                     <td className="px-3 py-2 font-semibold uppercase tracking-wide">{row.source ?? "—"}</td>
                     <td className="px-3 py-2">{row.full_name ?? "—"}</td>
                     <td className="px-3 py-2">{row.email ?? "—"}</td>
                     <td className="px-3 py-2">{row.phone ?? "—"}</td>
                     <td className="px-3 py-2">{row.city ?? "—"}</td>
-                    <td className="px-3 py-2">{normalizedCategory || "—"}</td>
-                    <td className="px-3 py-2 min-w-56">
+                    <td className="px-3 py-2">{normalizedCategory ? formatCriterionLabel(normalizedCategory) : "—"}</td>
+                    <td className="min-w-56 px-3 py-2">
                       <div className="flex flex-wrap gap-1">
-                        {evaluationCriteria.map((criterion) => (
+                        {criteria.map((criterion) => (
                           <span key={criterion} className="inline-flex rounded-full border border-border px-2 py-0.5 text-xs">
-                            {criterion}
+                            {formatCriterionLabel(criterion)}
                           </span>
                         ))}
                       </div>
                     </td>
                     <td className="px-3 py-2">{row.country ?? "—"}</td>
-                    <td className="px-3 py-2 min-w-48">
+                    <td className="min-w-48 px-3 py-2">
                       <div className="flex gap-2">
                         <input
                           className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
@@ -404,7 +529,7 @@ export default function AdminReview() {
                         </Button>
                       </div>
                     </td>
-                    <td className="px-3 py-2 min-w-48">
+                    <td className="min-w-48 px-3 py-2">
                       <div className="flex gap-2">
                         <select
                           className="h-9 rounded-md border border-input bg-background px-2 text-sm"
@@ -417,7 +542,9 @@ export default function AdminReview() {
                           }
                         >
                           {STATUS_OPTIONS.map((status) => (
-                            <option key={status} value={status}>{status}</option>
+                            <option key={status} value={status}>
+                              {formatCriterionLabel(status)}
+                            </option>
                           ))}
                         </select>
                         <Button
@@ -441,11 +568,11 @@ export default function AdminReview() {
                       </span>
                     </td>
                     <td className="px-3 py-2">
-                      <span className="inline-flex rounded-full px-2 py-0.5 text-xs font-medium border border-border">
+                      <span className="inline-flex rounded-full border border-border px-2 py-0.5 text-xs font-medium">
                         {pq?.critical_pass === true ? "Pass" : pq?.critical_pass === false ? "Fail" : "—"}
                       </span>
                     </td>
-                    <td className="px-3 py-2 min-w-56">
+                    <td className="min-w-56 px-3 py-2">
                       <div className="flex flex-wrap gap-2">
                         {[
                           { label: "Portfolio", value: row.portfolio_url },
@@ -475,7 +602,44 @@ export default function AdminReview() {
                           !row.website && <span className="text-xs text-muted-foreground">—</span>}
                       </div>
                     </td>
-                    <td className="px-3 py-2 min-w-72">
+                    <td className="min-w-80 px-3 py-2">
+                      <div className="space-y-2">
+                        <div className="grid grid-cols-1 gap-2">
+                          {criteria.map((key) => (
+                            <label key={key} className="flex items-center justify-between gap-3 text-xs">
+                              <span className="font-medium text-foreground">{formatCriterionLabel(key)}</span>
+                              <select
+                                className="h-8 w-20 rounded-md border border-input bg-background px-2 text-xs"
+                                value={draftScores[key] ?? ""}
+                                onChange={(event) => {
+                                  const value = event.target.value;
+                                  handleEvaluationScoreChange(row.id, key, value ? Number(value) : null);
+                                }}
+                              >
+                                <option value="">—</option>
+                                {[1, 2, 3, 4, 5].map((score) => (
+                                  <option key={score} value={score}>
+                                    {score}
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
+                          ))}
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs text-muted-foreground">Average: {averageScore ?? "—"}</p>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={savingEvaluationId === row.id}
+                            onClick={() => handleEvaluationSave(row)}
+                          >
+                            Save scores
+                          </Button>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="min-w-72 px-3 py-2">
                       <div className="space-y-2">
                         {notes.length > 0 ? (
                           <div className="max-h-28 overflow-y-auto rounded-md border border-border/60 p-2">
