@@ -132,6 +132,22 @@ const CATEGORY_TO_GATE: Record<string, keyof typeof GATE_CONFIG> = {
   "speakers-storytellers": "speakers-storytellers",
 };
 
+const BLOCKED_FAKE_VALUES = new Set(["test", "abc", "123", "none", "na"]);
+const REQUIRED_LINK_ERROR = "Please provide at least one valid portfolio, sample, or social link.";
+
+const normalizeInput = (value: string) => value.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+const isBlockedFakeValue = (value: string) => BLOCKED_FAKE_VALUES.has(normalizeInput(value));
+
+const isValidHttpUrl = (value: string) => {
+  if (!value.trim()) return false;
+  try {
+    const parsed = new URL(value.trim());
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+};
+
 export default function Submit() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -195,15 +211,33 @@ export default function Submit() {
   const validate = () => {
     const e: Record<string, string> = {};
     if (!form.fullName.trim()) e.fullName = "Full name is required";
+    else if (isBlockedFakeValue(form.fullName)) e.fullName = "Please enter your real name";
     if (!form.email.trim()) e.email = "Email is required";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Please enter a valid email";
+    if (form.city.trim() && isBlockedFakeValue(form.city)) e.city = "Please enter a real city";
     if (!form.category) e.category = "Please select a category";
+    else if (isBlockedFakeValue(form.category)) e.category = "Please select a valid category";
     if (!form.shortBio.trim()) e.shortBio = "A short bio is required";
     if (!form.whyRepresentation.trim()) e.whyRepresentation = "Please share your goals";
     if (!consent) e.consent = "Consent is required to proceed";
     if (!agreeTerms) e.agreeTerms = "You must agree to submission terms";
     if (isMinor && !form.guardianName.trim()) e.guardianName = "Required for applicants under 18";
     if (isMinor && !form.guardianEmail.trim()) e.guardianEmail = "Required for applicants under 18";
+
+    const linkFields = [form.instagram, form.tiktok, form.youtube, form.website];
+    const portfolioLinks = form.portfolioLinks
+      .split(/\r?\n/)
+      .map((link) => link.trim())
+      .filter(Boolean);
+    const nonEmptyLinks = [...linkFields.map((link) => link.trim()).filter(Boolean), ...portfolioLinks];
+    const hasAtLeastOneValidLink = nonEmptyLinks.some(isValidHttpUrl);
+
+    if (!hasAtLeastOneValidLink) {
+      e.links = REQUIRED_LINK_ERROR;
+    } else if (nonEmptyLinks.some((link) => !isValidHttpUrl(link))) {
+      e.links = "All links must start with http:// or https://";
+    }
+
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -228,7 +262,7 @@ export default function Submit() {
           youtube: form.youtube || null,
           website: form.website || null,
           experience_level: form.experienceLevel || null,
-          portfolio_url: form.portfolioLinks || null,
+          portfolio_url: form.portfolioLinks.trim() || null,
           sample_url: null,
           source: outcome?.qualify ? "emerge" : "ascend",
           status: "new",
@@ -436,6 +470,7 @@ export default function Submit() {
                     <div>
                       <label className={labelClass}>City</label>
                       <input className={inputClass} value={form.city} onChange={e => update("city", e.target.value)} placeholder="Current city" />
+                      {errors.city && <p className={errorClass}>{errors.city}</p>}
                     </div>
                     <div>
                       <label className={labelClass}>Country</label>
@@ -478,6 +513,7 @@ export default function Submit() {
                       <textarea className={`${inputClass} min-h-[80px]`} value={form.portfolioLinks} onChange={e => update("portfolioLinks", e.target.value)} placeholder="Any other links to your work — one per line" />
                     </div>
                   </div>
+                  {errors.links && <p className={errorClass}>{errors.links}</p>}
                 </fieldset>
 
                 {/* Professional Info */}
