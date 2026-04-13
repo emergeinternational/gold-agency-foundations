@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { BRAND, TALENT_CATEGORIES } from "@/lib/brand";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Upload, CheckCircle } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 type Question = {
   id: string;
