@@ -779,6 +779,11 @@ export default function AdminReview() {
         </Button>
       </div>
 
+      <div className="mb-4 rounded-md border border-border/60 bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
+        <p>Review flow: Score talent → set level → confirm status → choose next action.</p>
+        <p>Emerge Ready updates automatically when Status = Approved, Level = Advanced/Elite, and average score is 3.8+.</p>
+      </div>
+
       {loading && <p className="text-sm text-muted-foreground">Loading…</p>}
       {error && <p className="text-sm text-destructive">Error: {error}</p>}
 
