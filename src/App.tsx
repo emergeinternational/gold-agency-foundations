@@ -26,7 +26,7 @@ import EnrollmentSuccess from "./pages/EnrollmentSuccess";
 import Roster from "./pages/Roster";
 import TalentProfile from "./pages/TalentProfile";
 import NotFound from "./pages/NotFound";
-
+import AdminReview from "./pages/AdminReview";
 const queryClient = new QueryClient();
 
 const App = () => (
