@@ -189,7 +189,6 @@ export default function AdminReview() {
   const [statusDrafts, setStatusDrafts] = useState<Record<string, ReviewStatus>>({});
   const [assigneeDrafts, setAssigneeDrafts] = useState<Record<string, string>>({});
   const [levelDrafts, setLevelDrafts] = useState<Record<string, SubmissionLevel | "">>({});
-  const [nextActionDrafts, setNextActionDrafts] = useState<Record<string, NextAction | "">>({});
   const [noteDrafts, setNoteDrafts] = useState<Record<string, string>>({});
   const [evaluationDrafts, setEvaluationDrafts] = useState<Record<string, Record<string, number>>>({});
   const [filterCategory, setFilterCategory] = useState("all");
@@ -531,24 +530,28 @@ export default function AdminReview() {
     setSavingEvaluationId(null);
   };
 
-  const handleNextActionSave = async (submissionId: string) => {
-    const nextAction = nextActionDrafts[submissionId] || null;
+  const handleNextActionChange = async (row: SubmissionRow, selectedValue: NextAction | "") => {
+    const nextAction = selectedValue || null;
 
-    setSavingNextActionId(submissionId);
+    setSavingNextActionId(row.id);
     setError(null);
+    console.log("Saving next_action:", selectedValue, row.id);
 
     const { error: updateError } = await supabase
       .from("submissions")
       .update({ next_action: nextAction })
-      .eq("id", submissionId);
+      .eq("id", row.id);
 
     if (updateError) {
+      console.error(updateError);
       setError(updateError.message);
     } else {
-      setRows((prev) => prev.map((row) => (row.id === submissionId ? { ...row, next_action: nextAction } : row)));
+      setRows((prevRows) =>
+        prevRows.map((prevRow) => (prevRow.id === row.id ? { ...prevRow, next_action: nextAction } : prevRow)),
+      );
     }
 
-    setSavingNextActionId(null);
+    setSavingNextActionId((prev) => (prev === row.id ? null : prev));
   };
 
   const renderAge = (createdAt: string) => {
@@ -1003,13 +1006,9 @@ export default function AdminReview() {
                         <div className="flex gap-2">
                           <select
                             className="h-9 rounded-md border border-input bg-background px-2 text-sm"
-                            value={nextActionDrafts[row.id] ?? normalizeNextAction(row.next_action)}
-                            onChange={(event) =>
-                              setNextActionDrafts((prev) => ({
-                                ...prev,
-                                [row.id]: event.target.value as NextAction | "",
-                              }))
-                            }
+                            disabled={savingNextActionId === row.id}
+                            value={normalizeNextAction(row.next_action)}
+                            onChange={(event) => handleNextActionChange(row, event.target.value as NextAction | "")}
                           >
                             <option value="">Select action</option>
                             {NEXT_ACTION_OPTIONS.map((action) => (
@@ -1018,14 +1017,6 @@ export default function AdminReview() {
                               </option>
                             ))}
                           </select>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            disabled={savingNextActionId === row.id}
-                            onClick={() => handleNextActionSave(row.id)}
-                          >
-                            Save
-                          </Button>
                         </div>
                         <p className="text-[11px] text-muted-foreground">
                           Suggested: {suggestedNextAction ? suggestedNextAction : "—"}
