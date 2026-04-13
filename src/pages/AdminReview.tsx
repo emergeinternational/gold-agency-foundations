@@ -224,6 +224,37 @@ export default function AdminReview() {
     setSavingStatusId(null);
   };
 
+  const handleQuickDecision = async (
+    submissionId: string,
+    updates: { status: ReviewStatus; source?: string | null },
+  ) => {
+    setSavingStatusId(submissionId);
+    setError(null);
+
+    const { error: updateError } = await supabase.from("submissions").update(updates).eq("id", submissionId);
+
+    if (updateError) {
+      setError(updateError.message);
+    } else {
+      setStatusDrafts((prev) => ({
+        ...prev,
+        [submissionId]: updates.status,
+      }));
+      setRows((prev) =>
+        prev.map((row) =>
+          row.id === submissionId
+            ? {
+                ...row,
+                ...updates,
+              }
+            : row,
+        ),
+      );
+    }
+
+    setSavingStatusId(null);
+  };
+
   const handleAddNote = async (submissionId: string) => {
     const note = noteDrafts[submissionId]?.trim();
     if (!note) return;
@@ -530,31 +561,72 @@ export default function AdminReview() {
                       </div>
                     </td>
                     <td className="min-w-48 px-3 py-2">
-                      <div className="flex gap-2">
-                        <select
-                          className="h-9 rounded-md border border-input bg-background px-2 text-sm"
-                          value={statusDrafts[row.id] ?? normalizeStatus(row.status)}
-                          onChange={(event) =>
-                            setStatusDrafts((prev) => ({
-                              ...prev,
-                              [row.id]: event.target.value as ReviewStatus,
-                            }))
-                          }
-                        >
-                          {STATUS_OPTIONS.map((status) => (
-                            <option key={status} value={status}>
-                              {formatCriterionLabel(status)}
-                            </option>
-                          ))}
-                        </select>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          disabled={savingStatusId === row.id}
-                          onClick={() => handleStatusSave(row.id)}
-                        >
-                          Save
-                        </Button>
+                      <div className="space-y-2">
+                        <div className="flex gap-2">
+                          <select
+                            className="h-9 rounded-md border border-input bg-background px-2 text-sm"
+                            value={statusDrafts[row.id] ?? normalizeStatus(row.status)}
+                            onChange={(event) =>
+                              setStatusDrafts((prev) => ({
+                                ...prev,
+                                [row.id]: event.target.value as ReviewStatus,
+                              }))
+                            }
+                          >
+                            {STATUS_OPTIONS.map((status) => (
+                              <option key={status} value={status}>
+                                {formatCriterionLabel(status)}
+                              </option>
+                            ))}
+                          </select>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={savingStatusId === row.id}
+                            onClick={() => handleStatusSave(row.id)}
+                          >
+                            Save
+                          </Button>
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            disabled={savingStatusId === row.id}
+                            onClick={() => handleQuickDecision(row.id, { status: "approved" })}
+                          >
+                            Accept
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            disabled={savingStatusId === row.id}
+                            onClick={() => handleQuickDecision(row.id, { status: "development" })}
+                          >
+                            Needs Dev
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            disabled={savingStatusId === row.id}
+                            onClick={() => handleQuickDecision(row.id, { status: "rejected" })}
+                          >
+                            Reject
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            disabled={savingStatusId === row.id}
+                            onClick={() =>
+                              handleQuickDecision(row.id, {
+                                status: "approved",
+                                source: "emerge_pipeline",
+                              })
+                            }
+                          >
+                            Refer → Emerge
+                          </Button>
+                        </div>
                       </div>
                     </td>
                     <td className="px-3 py-2">
