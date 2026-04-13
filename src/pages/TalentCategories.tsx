@@ -42,7 +42,7 @@ export default function TalentCategories() {
                   <h3 className="font-display text-2xl font-semibold text-foreground group-hover:text-primary transition-colors mb-3">
                     {cat.label}
                   </h3>
-                  <p className="text-muted-foreground leading-relaxed mb-6">{cat.description}</p>
+                  <p className="text-gray-300 leading-relaxed mb-6">{cat.description}</p>
                   <Button variant="gold-outline" size="sm" asChild>
                     <Link to={`/submit?category=${cat.id}`}>
                       Submit for Representation Consideration <ArrowRight className="w-3 h-3 ml-1" />
@@ -61,7 +61,7 @@ export default function TalentCategories() {
             <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground">
               Work Across Multiple Disciplines?
             </h2>
-            <p className="mt-4 text-muted-foreground text-lg font-light">
+            <p className="mt-4 text-gray-300 text-lg font-light">
               We welcome multidisciplinary talent. If your craft crosses categories, we still want to hear from you.
             </p>
             <div className="mt-8">

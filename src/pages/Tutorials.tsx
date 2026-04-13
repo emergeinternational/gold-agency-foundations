@@ -68,12 +68,12 @@ export default function Tutorials() {
 
           {filtered.length === 0 && (
             <div className="text-center py-16">
-              <p className="text-muted-foreground">No tutorials in this category yet. New content is added regularly.</p>
+              <p className="text-gray-300">No tutorials in this category yet. New content is added regularly.</p>
             </div>
           )}
 
           <div className="text-center mt-12">
-            <p className="text-sm text-muted-foreground/60">New tutorials are published regularly. Full video playback will be available once the media platform is connected.</p>
+            <p className="text-sm text-gray-200">New tutorials are published regularly. Full video playback will be available once the media platform is connected.</p>
           </div>
         </div>
       </section>

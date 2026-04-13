@@ -25,7 +25,7 @@ export default function SectionHeading({ badge, title, subtitle, children, align
         {title}
       </h2>
       {subtitle && (
-        <p className="mt-4 text-muted-foreground text-[15px] leading-relaxed font-light" style={align === "center" ? { marginLeft: "auto", marginRight: "auto", maxWidth: "40rem" } : { maxWidth: "40rem" }}>
+        <p className="mt-4 text-gray-300 text-[15px] leading-relaxed font-light" style={align === "center" ? { marginLeft: "auto", marginRight: "auto", maxWidth: "40rem" } : { maxWidth: "40rem" }}>
           {subtitle}
         </p>
       )}

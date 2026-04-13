@@ -33,7 +33,7 @@ export default function Contact() {
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center py-16">
                   <Send className="w-12 h-12 text-primary mx-auto mb-4" />
                   <h3 className="font-display text-2xl font-semibold text-foreground mb-2">Message Received</h3>
-                  <p className="text-muted-foreground">Thank you for reaching out. Our team will follow up shortly.</p>
+                  <p className="text-gray-300">Thank you for reaching out. Our team will follow up shortly.</p>
                 </motion.div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -55,11 +55,11 @@ export default function Contact() {
               ].map(c => (
                 <div key={c.label} className="flex items-start gap-3">
                   <c.icon className="w-5 h-5 text-primary mt-0.5" />
-                  <div><p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">{c.label}</p><p className="text-sm text-foreground">{c.value}</p></div>
+                  <div><p className="text-xs uppercase tracking-widest text-gray-300 mb-1">{c.label}</p><p className="text-sm text-foreground">{c.value}</p></div>
                 </div>
               ))}
               <div className="pt-4 border-t border-border">
-                <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">Follow Us</p>
+                <p className="text-xs uppercase tracking-widest text-gray-300 mb-3">Follow Us</p>
                 <div className="flex gap-3">
                   {Object.entries(BRAND.socialLinks).map(([p, url]) => (
                     <a key={p} href={url} target="_blank" rel="noopener noreferrer" className="text-xs uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">{p}</a>

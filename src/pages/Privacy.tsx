@@ -9,7 +9,7 @@ export default function Privacy() {
           <span className="inline-block text-[11px] tracking-[0.3em] uppercase text-primary font-body font-semibold mb-4">Legal</span>
           <h1 className="font-display text-4xl sm:text-5xl font-semibold text-foreground mb-6">Privacy Policy</h1>
           <div className="gold-line mb-10" />
-          <div className="prose prose-invert prose-sm max-w-none space-y-6 text-muted-foreground leading-relaxed">
+          <div className="prose prose-invert prose-sm max-w-none space-y-6 text-gray-300 leading-relaxed">
             <p><strong className="text-foreground">Effective Date:</strong> March 1, 2026</p>
             <p>{BRAND.name}, {BRAND.poweredByLine.toLowerCase()} ({BRAND.legalRelationship}), is committed to protecting your privacy. This policy explains how we collect, use, and safeguard your personal information.</p>
             <h2 className="font-display text-xl text-foreground mt-8">Information We Collect</h2>

@@ -47,7 +47,7 @@ export default function Index() {
             <p className="mt-8 text-lg sm:text-xl text-secondary-foreground/80 leading-relaxed max-w-lg font-light">
               We represent and develop creators, artists, and talent building toward international positioning across media, music, fashion, and entertainment. Aligned with global casting, media, and distribution standards.
             </p>
-            <p className="mt-3 text-[11px] tracking-[0.3em] uppercase text-muted-foreground/50">
+            <p className="mt-3 text-[11px] tracking-[0.3em] uppercase text-gray-200">
               {BRAND.poweredByLine}
             </p>
             <div className="mt-12 flex flex-col sm:flex-row gap-3">
@@ -58,7 +58,7 @@ export default function Index() {
                 <Link to="/academy">Explore Development Pathways</Link>
               </Button>
             </div>
-            <p className="mt-3 text-[11px] tracking-[0.2em] uppercase text-muted-foreground/45">Reviewed by our representation team.</p>
+            <p className="mt-3 text-[11px] tracking-[0.2em] uppercase text-gray-200">Reviewed by our representation team.</p>
           </motion.div>
         </div>
       </section>
@@ -95,7 +95,7 @@ export default function Index() {
               <p className="text-secondary-foreground/80 text-lg leading-relaxed mb-4 font-light">
                 The face of {BRAND.name} — connecting Ethiopia's creative talent with the infrastructure, visibility, and access the industry demands.
               </p>
-              <p className="text-muted-foreground text-base leading-relaxed mb-10">
+              <p className="text-gray-300 text-base leading-relaxed mb-10">
                 A media personality and talent advocate whose career in entertainment and creative strategy gives the agency its edge: credibility earned, not claimed.
               </p>
               <Button variant="gold-outline" size="lg" asChild>
@@ -133,7 +133,7 @@ export default function Index() {
                 className="card-premium p-8 sm:p-10 flex flex-col card-hover"
               >
                 <h3 className="font-display text-2xl font-semibold text-foreground mb-3">{item.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed mb-8 flex-1">{item.desc}</p>
+                <p className="text-gray-300 text-sm leading-relaxed mb-8 flex-1">{item.desc}</p>
                 <Button variant="gold" asChild>
                   <Link to={item.href}>{item.cta}</Link>
                 </Button>
@@ -163,7 +163,7 @@ export default function Index() {
               >
                 <pillar.icon className="w-6 h-6 text-primary mx-auto mb-4 opacity-80" strokeWidth={1.5} />
                 <h3 className="font-display text-base font-semibold text-foreground mb-1.5">{pillar.title}</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">{pillar.desc}</p>
+                <p className="text-xs text-gray-300 leading-relaxed">{pillar.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -185,7 +185,7 @@ export default function Index() {
                   <h3 className="font-display text-lg font-semibold text-foreground group-hover:text-primary transition-colors mb-2 leading-tight">
                     {cat.label}
                   </h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{cat.description}</p>
+                  <p className="text-xs text-gray-300 leading-relaxed">{cat.description}</p>
                 </Link>
               </motion.div>
             ))}
@@ -226,7 +226,7 @@ export default function Index() {
                 <Link to="/academy">Explore Development Pathways</Link>
               </Button>
             </div>
-            <p className="text-center mt-4 text-xs text-muted-foreground/70">Certain development pathways include structured program participation.</p>
+            <p className="text-center mt-4 text-xs text-gray-200">Certain development pathways include structured program participation.</p>
           </div>
         </div>
       </section>
@@ -245,11 +245,11 @@ export default function Index() {
               <motion.div key={item.step} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.08 }} className="text-center">
                 <span className="font-display text-4xl sm:text-5xl font-light text-primary/20">{item.step}</span>
                 <h3 className="font-display text-lg font-semibold text-foreground mt-3 mb-2">{item.title}</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+                <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
           </div>
-          <p className="text-center text-xs text-muted-foreground mt-10">Selected talent progresses through structured development and positioning phases before advancing to booking and representation opportunities.</p>
+          <p className="text-center text-xs text-gray-300 mt-10">Selected talent progresses through structured development and positioning phases before advancing to booking and representation opportunities.</p>
         </div>
       </section>
 
@@ -272,7 +272,7 @@ export default function Index() {
                 <p className="text-foreground/90 text-sm leading-relaxed mb-8 font-light italic">"{t.quote}"</p>
                 <div className="border-t border-border/30 pt-5">
                   <p className="text-sm font-medium text-foreground">{t.name}</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">{t.role}</p>
+                  <p className="text-[11px] text-gray-300 mt-0.5">{t.role}</p>
                 </div>
               </motion.div>
             ))}
@@ -307,7 +307,7 @@ export default function Index() {
             <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground leading-[1.1]">
               Representation Starts with the Right Positioning
             </h2>
-            <p className="mt-5 text-muted-foreground text-base sm:text-lg max-w-lg mx-auto font-light">
+            <p className="mt-5 text-gray-300 text-base sm:text-lg max-w-lg mx-auto font-light">
               Whether you're applying for representation or building toward it — your next step begins here.
             </p>
             <div className="mt-12 flex flex-col sm:flex-row gap-3 justify-center">
@@ -318,7 +318,7 @@ export default function Index() {
                 <Link to="/academy">Explore Development Pathways</Link>
               </Button>
             </div>
-            <p className="mt-3 text-xs text-muted-foreground/70">Selection is limited.</p>
+            <p className="mt-3 text-xs text-gray-200">Selection is limited.</p>
           </motion.div>
         </div>
       </section>

@@ -110,7 +110,7 @@ export default function Roster() {
                             </span>
                           ))}
                         </div>
-                        <p className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground/50">
+                        <p className="text-[10px] tracking-[0.15em] uppercase text-gray-200">
                           {talent.location}
                         </p>
                         <div className="mt-4 flex items-center gap-1 text-xs text-primary group-hover:gap-2 transition-all">
@@ -130,7 +130,7 @@ export default function Roster() {
                 <h2 className="font-display text-2xl sm:text-3xl font-semibold text-foreground mb-4">
                   Our Roster Is Being Curated
                 </h2>
-                <p className="text-muted-foreground text-sm leading-relaxed mb-8">
+                <p className="text-gray-300 text-sm leading-relaxed mb-8">
                   We are currently reviewing submissions and onboarding represented talent. Public profiles will appear here as our roster grows — every name carefully selected and verified.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -154,7 +154,7 @@ export default function Roster() {
             <h2 className="font-display text-2xl sm:text-3xl font-semibold text-foreground">
               Looking for Specific Talent?
             </h2>
-            <p className="mt-4 text-muted-foreground text-sm leading-relaxed max-w-lg mx-auto">
+            <p className="mt-4 text-gray-300 text-sm leading-relaxed max-w-lg mx-auto">
               If you have a booking inquiry or need talent for a specific project, our team can recommend the right match from our roster — even before all profiles are publicly listed.
             </p>
             <div className="mt-8">

@@ -54,7 +54,7 @@ export default function Representation() {
               >
                 <s.icon className="w-8 h-8 text-primary mb-4" />
                 <h3 className="font-display text-lg font-semibold text-foreground mb-2">{s.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
+                <p className="text-sm text-gray-300 leading-relaxed">{s.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -65,7 +65,7 @@ export default function Representation() {
         <div className="container-narrow text-center">
           <motion.div {...fadeUp}>
             <SectionHeading badge="How to Apply" title="Joining Our Roster" subtitle="Representation is earned through review, not guaranteed by application. Submission does not guarantee representation. Selected talent may be invited to further development and positioning opportunities." />
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-gray-300">
               Advanced talent may be considered for{" "}
               <a href={BRAND.poweredByUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-gold-light transition-colors">
                 Emerge Globally
@@ -80,7 +80,7 @@ export default function Representation() {
                 <Link to="/academy">Explore Development Pathways</Link>
               </Button>
             </div>
-            <p className="mt-4 text-xs text-muted-foreground">Serious applicants only.</p>
+            <p className="mt-4 text-xs text-gray-300">Serious applicants only.</p>
           </motion.div>
         </div>
       </section>

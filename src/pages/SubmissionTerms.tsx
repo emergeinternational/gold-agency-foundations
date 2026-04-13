@@ -9,7 +9,7 @@ export default function SubmissionTerms() {
           <span className="inline-block text-[11px] tracking-[0.3em] uppercase text-primary font-body font-semibold mb-4">Legal</span>
           <h1 className="font-display text-4xl sm:text-5xl font-semibold text-foreground mb-6">Submission Terms</h1>
           <div className="gold-line mb-10" />
-          <div className="space-y-6 text-muted-foreground leading-relaxed text-sm">
+          <div className="space-y-6 text-gray-300 leading-relaxed text-sm">
             <p><strong className="text-foreground">Effective Date:</strong> March 1, 2026</p>
             <p>By submitting materials to {BRAND.name}, you agree to the following terms.</p>
             <h2 className="font-display text-xl text-foreground mt-8">Submission is Not a Guarantee</h2>

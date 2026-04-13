@@ -47,7 +47,7 @@ export default function MrZik() {
                   Credibility Built in the Field
                 </h2>
                 <div className="gold-line mb-10" />
-                <div className="space-y-5 text-muted-foreground leading-[1.8] text-[15px]">
+                <div className="space-y-5 text-gray-300 leading-[1.8] text-[15px]">
                   <p>
                     Mr. Zik's career spans media production, entertainment, and talent advocacy — a rare combination that makes him uniquely qualified to lead the public identity of {BRAND.name}. He understands both sides of the industry because he's worked both sides.
                   </p>
@@ -96,7 +96,7 @@ export default function MrZik() {
             ].map((item, i) => (
               <motion.div key={item.title} {...fadeUp} transition={{ duration: 0.5, delay: i * 0.08 }} className="card-premium p-8 card-hover">
                 <h3 className="font-display text-xl font-semibold text-foreground mb-3">{item.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+                <p className="text-sm text-gray-300 leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -119,7 +119,7 @@ export default function MrZik() {
                 </div>
                 <div className="p-6 sm:p-7">
                   <h3 className="font-display text-lg font-semibold text-foreground mb-2">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+                  <p className="text-sm text-gray-300 leading-relaxed">{item.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -135,7 +135,7 @@ export default function MrZik() {
             <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground leading-[1.1]">
               Built on Substance. Selective by Design.
             </h2>
-            <p className="mt-5 text-muted-foreground text-base max-w-lg mx-auto font-light">
+            <p className="mt-5 text-gray-300 text-base max-w-lg mx-auto font-light">
               Mr. Zik invites serious creatives, collaborators, and industry partners to be part of an agency that earns its credibility every day.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">

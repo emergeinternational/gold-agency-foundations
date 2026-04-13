@@ -265,11 +265,11 @@ export default function Submit() {
               {gateDefinition && (
                 <div className="space-y-4">
                   <p className="text-sm font-medium text-foreground">Step 3 · Category readiness questions</p>
-                  {gateDefinition.helper && <p className="text-xs text-muted-foreground">{gateDefinition.helper}</p>}
+                  {gateDefinition.helper && <p className="text-xs text-gray-300">{gateDefinition.helper}</p>}
                   {gateDefinition.questions.map((q) => (
                     <div key={q.id} className="border border-border/70 rounded-sm p-4 bg-background/50">
                       <p className="text-sm text-foreground">{q.text}</p>
-                      {q.helper && <p className="text-xs text-muted-foreground mt-1">{q.helper}</p>}
+                      {q.helper && <p className="text-xs text-gray-300 mt-1">{q.helper}</p>}
                       <div className="mt-3 flex gap-2">
                         <Button
                           type="button"
@@ -316,14 +316,14 @@ export default function Submit() {
                       <p className="text-sm text-foreground">
                         Your profile may align with advanced representation standards. <a href={BRAND.poweredByUrl} target="_blank" rel="noreferrer" className="underline text-primary">Emerge Globally</a> is the higher-level pathway for advanced-ready profiles.
                       </p>
-                      <p className="text-xs text-muted-foreground">Proceed only if your responses are accurate and verifiable.</p>
+                      <p className="text-xs text-gray-300">Proceed only if your responses are accurate and verifiable.</p>
                     </>
                   ) : (
                     <>
                       <p className="text-sm text-foreground">
                         You are exactly where you should start. Ascend is built for development-stage talent to strengthen positioning, readiness, and access to international opportunities.
                       </p>
-                      <p className="text-xs text-muted-foreground">Continue below to submit your application and begin with the correct pathway.</p>
+                      <p className="text-xs text-gray-300">Continue below to submit your application and begin with the correct pathway.</p>
                     </>
                   )}
                 </div>
@@ -358,7 +358,7 @@ export default function Submit() {
                       <li>Development and representation are separate tracks with structured progression</li>
                       <li>All talent categories and experience levels may apply</li>
                     </ul>
-                    <p className="text-xs text-muted-foreground mt-3">Certain development pathways include structured program participation.</p>
+                    <p className="text-xs text-gray-300 mt-3">Certain development pathways include structured program participation.</p>
                   </div>
                 </div>
               </div>
@@ -482,7 +482,7 @@ export default function Submit() {
                       </div>
                     ))}
                   </div>
-                  <p className="text-xs text-muted-foreground/60 mt-3">File uploads will be fully active once the backend is connected.</p>
+                  <p className="text-xs text-gray-200 mt-3">File uploads will be fully active once the backend is connected.</p>
                 </fieldset>
 
                 {/* Guardian Info */}
@@ -530,7 +530,7 @@ export default function Submit() {
                 <Button type="submit" variant="hero" size="xl" className="w-full sm:w-auto">
                   Submit for Review
                 </Button>
-                <p className="text-xs text-muted-foreground/70">Reviewed by our representation team.</p>
+                <p className="text-xs text-gray-200">Reviewed by our representation team.</p>
               </form>
             </>
           )}

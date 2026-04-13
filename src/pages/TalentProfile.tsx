@@ -39,7 +39,7 @@ export default function TalentProfile() {
             <h1 className="font-display text-3xl sm:text-4xl font-semibold text-foreground mb-4">
               This Profile Is Not Yet Public
             </h1>
-            <p className="text-muted-foreground text-sm leading-relaxed mb-8 max-w-md mx-auto">
+            <p className="text-gray-300 text-sm leading-relaxed mb-8 max-w-md mx-auto">
               Our roster is being curated. Talent profiles become available once fully reviewed and approved for public representation.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -105,7 +105,7 @@ export default function TalentProfile() {
 
               <p className="text-foreground/80 text-base leading-relaxed mb-4">{talent.shortBio}</p>
               {talent.narrativeBio && (
-                <p className="text-muted-foreground text-sm leading-relaxed mb-8">{talent.narrativeBio}</p>
+                <p className="text-gray-300 text-sm leading-relaxed mb-8">{talent.narrativeBio}</p>
               )}
 
               <Button variant="hero" size="xl" asChild>
@@ -154,7 +154,7 @@ export default function TalentProfile() {
           {talent.profileEmphasis === "narrative" && (
             <motion.div {...fadeUp} className="max-w-2xl">
               <h2 className="font-display text-2xl font-semibold text-foreground mb-6">About</h2>
-              <p className="text-muted-foreground leading-relaxed">
+              <p className="text-gray-300 leading-relaxed">
                 {talent.narrativeBio || talent.shortBio}
               </p>
             </motion.div>
@@ -169,7 +169,7 @@ export default function TalentProfile() {
             <h2 className="font-display text-2xl sm:text-3xl font-semibold text-foreground">
               Interested in Working With {talent.name}?
             </h2>
-            <p className="mt-4 text-muted-foreground text-sm leading-relaxed max-w-md mx-auto">
+            <p className="mt-4 text-gray-300 text-sm leading-relaxed max-w-md mx-auto">
               All bookings are managed through our team. Send an inquiry and we will coordinate availability, terms, and logistics.
             </p>
             <div className="mt-8">
