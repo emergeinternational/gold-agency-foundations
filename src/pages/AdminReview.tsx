@@ -136,6 +136,38 @@ const normalizeNextAction = (value: string | null): NextAction | "" => {
   return "";
 };
 
+// Internal action definitions for admin workflow consistency:
+// schedule_audition -> candidate ready for immediate audition scheduling
+// enroll_training -> candidate not ready but suitable for development
+// request_more_content -> insufficient data, requires additional submission
+// refer_to_emerge -> high-value candidate for escalation
+
+const resolveConsistentNextAction = (params: {
+  status: ReviewStatus;
+  level: SubmissionLevel | "";
+  category: string | null;
+  evaluationScores: Record<string, number> | null;
+}): { nextAction: NextAction; emergeReady: boolean } => {
+  const { status, level, category, evaluationScores } = params;
+
+  if (status === "rejected") {
+    return { nextAction: "reject", emergeReady: false };
+  }
+
+  const emergeReady = isEmergeReady({
+    status,
+    level,
+    category,
+    evaluationScores,
+  });
+
+  if (emergeReady) return { nextAction: "refer_to_emerge", emergeReady: true };
+  if (status === "development") return { nextAction: "enroll_training", emergeReady: false };
+  if (status === "review" || status === "approved") return { nextAction: "schedule_audition", emergeReady: false };
+
+  return { nextAction: "request_more_content", emergeReady: false };
+};
+
 const getSuggestedNextAction = (row: Submission): NextAction | null => {
   if (row.emerge_ready) return "refer_to_emerge";
   if (row.status === "development") return "enroll_training";
@@ -312,11 +344,11 @@ export default function AdminReview() {
     if (!status) return;
     const row = rows.find((item) => item.id === submissionId);
     if (!row) return;
-    const emergeReady = isEmergeReady({
+    const { nextAction, emergeReady } = resolveConsistentNextAction({
       status,
-      level: row.level,
+      level: normalizeLevel(row.level),
       category: row.category,
-      evaluationScores: row.evaluation_scores,
+      evaluationScores: row.evaluation_scores ?? {},
     });
 
     setSavingStatusId(submissionId);
@@ -324,14 +356,16 @@ export default function AdminReview() {
 
     const { error: updateError } = await supabase
       .from("submissions")
-      .update({ status, emerge_ready: emergeReady })
+      .update({ status, emerge_ready: emergeReady, next_action: nextAction })
       .eq("id", submissionId);
 
     if (updateError) {
       setError(updateError.message);
     } else {
       setRows((prev) =>
-        prev.map((item) => (item.id === submissionId ? { ...item, status, emerge_ready: emergeReady } : item)),
+        prev.map((item) =>
+          item.id === submissionId ? { ...item, status, emerge_ready: emergeReady, next_action: nextAction } : item,
+        ),
       );
     }
 
@@ -344,18 +378,18 @@ export default function AdminReview() {
   ) => {
     const row = rows.find((item) => item.id === submissionId);
     if (!row) return;
-    const emergeReady = isEmergeReady({
+    const { nextAction, emergeReady } = resolveConsistentNextAction({
       status: updates.status,
-      level: row.level,
+      level: normalizeLevel(row.level),
       category: row.category,
-      evaluationScores: row.evaluation_scores,
+      evaluationScores: row.evaluation_scores ?? {},
     });
     setSavingStatusId(submissionId);
     setError(null);
 
     const { error: updateError } = await supabase
       .from("submissions")
-      .update({ ...updates, emerge_ready: emergeReady })
+      .update({ ...updates, emerge_ready: emergeReady, next_action: nextAction })
       .eq("id", submissionId);
 
     if (updateError) {
@@ -372,6 +406,7 @@ export default function AdminReview() {
                 ...row,
                 ...updates,
                 emerge_ready: emergeReady,
+                next_action: nextAction,
               }
             : row,
         ),
@@ -445,11 +480,11 @@ export default function AdminReview() {
     const level = levelDrafts[submissionId] || null;
     const row = rows.find((item) => item.id === submissionId);
     if (!row) return;
-    const emergeReady = isEmergeReady({
-      status: row.status,
-      level,
+    const { nextAction, emergeReady } = resolveConsistentNextAction({
+      status: normalizeStatus(row.status),
+      level: level ? level : "",
       category: row.category,
-      evaluationScores: row.evaluation_scores,
+      evaluationScores: row.evaluation_scores ?? {},
     });
 
     setSavingLevelId(submissionId);
@@ -457,14 +492,16 @@ export default function AdminReview() {
 
     const { error: updateError } = await supabase
       .from("submissions")
-      .update({ level, emerge_ready: emergeReady })
+      .update({ level, emerge_ready: emergeReady, next_action: nextAction })
       .eq("id", submissionId);
 
     if (updateError) {
       setError(updateError.message);
     } else {
       setRows((prev) =>
-        prev.map((item) => (item.id === submissionId ? { ...item, level, emerge_ready: emergeReady } : item)),
+        prev.map((item) =>
+          item.id === submissionId ? { ...item, level, emerge_ready: emergeReady, next_action: nextAction } : item,
+        ),
       );
     }
 
@@ -486,16 +523,19 @@ export default function AdminReview() {
     setSavingEvaluationId(submission.id);
     setError(null);
 
+    const decision = resolveConsistentNextAction({
+      status: normalizeStatus(submission.status),
+      level: normalizeLevel(submission.level),
+      category: submission.category,
+      evaluationScores: sanitizedScores,
+    });
+
     const { error: updateError } = await supabase
       .from("submissions")
       .update({
         evaluation_scores: sanitizedScores,
-        emerge_ready: isEmergeReady({
-          status: submission.status,
-          level: submission.level,
-          category: submission.category,
-          evaluationScores: sanitizedScores,
-        }),
+        emerge_ready: decision.emergeReady,
+        next_action: decision.nextAction,
       })
       .eq("id", submission.id);
 
@@ -505,16 +545,21 @@ export default function AdminReview() {
       setRows((prev) =>
         prev.map((row) =>
           row.id === submission.id
-            ? {
-                ...row,
-                evaluation_scores: sanitizedScores,
-                emerge_ready: isEmergeReady({
-                  status: row.status,
-                  level: row.level,
+            ? (() => {
+                const decision = resolveConsistentNextAction({
+                  status: normalizeStatus(row.status),
+                  level: normalizeLevel(row.level),
                   category: row.category,
                   evaluationScores: sanitizedScores,
-                }),
-              }
+                });
+
+                return {
+                  ...row,
+                  evaluation_scores: sanitizedScores,
+                  emerge_ready: decision.emergeReady,
+                  next_action: decision.nextAction,
+                };
+              })()
             : row,
         ),
       );
@@ -524,7 +569,25 @@ export default function AdminReview() {
   };
 
   const handleNextActionChange = async (row: Submission, selectedValue: NextAction | "") => {
-    const nextAction = selectedValue || null;
+    const normalizedStatus = normalizeStatus(row.status);
+    const normalizedLevel = normalizeLevel(row.level);
+    const selectedAction = selectedValue || "request_more_content";
+
+    const statusFromAction: ReviewStatus =
+      selectedAction === "reject"
+        ? "rejected"
+        : selectedAction === "enroll_training"
+          ? "development"
+          : selectedAction === "request_more_content"
+            ? normalizedStatus === "new" ? "new" : "review"
+            : "review";
+
+    const { nextAction, emergeReady } = resolveConsistentNextAction({
+      status: statusFromAction,
+      level: normalizedLevel,
+      category: row.category,
+      evaluationScores: row.evaluation_scores ?? {},
+    });
 
     setSavingNextActionId(row.id);
     setError(null);
@@ -532,7 +595,7 @@ export default function AdminReview() {
 
     const { error: updateError } = await supabase
       .from("submissions")
-      .update({ next_action: nextAction })
+      .update({ status: statusFromAction, emerge_ready: emergeReady, next_action: nextAction })
       .eq("id", row.id);
 
     if (updateError) {
@@ -541,8 +604,13 @@ export default function AdminReview() {
     } else {
       console.log("next_action save success", row.id, selectedValue);
       setRows((prevRows) =>
-        prevRows.map((prevRow) => (prevRow.id === row.id ? { ...prevRow, next_action: nextAction } : prevRow)),
+        prevRows.map((prevRow) =>
+          prevRow.id === row.id
+            ? { ...prevRow, status: statusFromAction, emerge_ready: emergeReady, next_action: nextAction }
+            : prevRow,
+        ),
       );
+      setStatusDrafts((prev) => ({ ...prev, [row.id]: statusFromAction }));
     }
 
     setSavingNextActionId((prev) => (prev === row.id ? null : prev));
