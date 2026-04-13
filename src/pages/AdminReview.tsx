@@ -105,6 +105,13 @@ const formatCriterionLabel = (value: string) =>
     .replaceAll("_", " ")
     .replace(/\b\w/g, (char) => char.toUpperCase());
 
+const getSuggestedLevelFromAverage = (averageScore: number): SubmissionLevel => {
+  if (averageScore >= 4.5) return "elite";
+  if (averageScore >= 3.8) return "advanced";
+  if (averageScore >= 3.0) return "intermediate";
+  return "beginner";
+};
+
 export default function AdminReview() {
   const [rows, setRows] = useState<Submission[]>([]);
   const [notesBySubmission, setNotesBySubmission] = useState<Record<string, AdminNote[]>>({});
@@ -546,6 +553,15 @@ export default function AdminReview() {
                 const normalizedCategory = normalizeCategory(row.category ?? "");
                 const criteria = getEvaluationCriteria(row.category);
                 const draftScores = evaluationDrafts[row.id] ?? {};
+                const savedScores = row.evaluation_scores ?? {};
+                const savedScoreValues = criteria
+                  .map((key) => savedScores[key])
+                  .filter((value): value is number => typeof value === "number" && value >= 1 && value <= 5);
+                const savedAverageScore =
+                  savedScoreValues.length > 0
+                    ? savedScoreValues.reduce((sum, value) => sum + value, 0) / savedScoreValues.length
+                    : null;
+                const suggestedLevel = savedAverageScore !== null ? getSuggestedLevelFromAverage(savedAverageScore) : null;
                 const scoreValues = criteria
                   .map((key) => draftScores[key])
                   .filter((value): value is number => typeof value === "number");
@@ -667,32 +683,41 @@ export default function AdminReview() {
                       </div>
                     </td>
                     <td className="min-w-48 px-3 py-2">
-                      <div className="flex gap-2">
-                        <select
-                          className="h-9 rounded-md border border-input bg-background px-2 text-sm"
-                          value={levelDrafts[row.id] ?? normalizeLevel(row.level)}
-                          onChange={(event) =>
-                            setLevelDrafts((prev) => ({
-                              ...prev,
-                              [row.id]: event.target.value as SubmissionLevel | "",
-                            }))
-                          }
-                        >
-                          <option value="">—</option>
-                          {LEVEL_OPTIONS.map((level) => (
-                            <option key={level} value={level}>
-                              {formatCriterionLabel(level)}
-                            </option>
-                          ))}
-                        </select>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          disabled={savingLevelId === row.id}
-                          onClick={() => handleLevelSave(row.id)}
-                        >
-                          Save
-                        </Button>
+                      <div className="space-y-2">
+                        <div className="rounded-md border border-border/60 bg-muted/20 px-2 py-1.5 text-xs">
+                          <span className="text-muted-foreground">Suggested Level: </span>
+                          <span className="font-medium">{suggestedLevel ? formatCriterionLabel(suggestedLevel) : "—"}</span>
+                          {savedAverageScore !== null && (
+                            <span className="text-muted-foreground"> ({savedAverageScore.toFixed(1)} avg)</span>
+                          )}
+                        </div>
+                        <div className="flex gap-2">
+                          <select
+                            className="h-9 rounded-md border border-input bg-background px-2 text-sm"
+                            value={levelDrafts[row.id] ?? normalizeLevel(row.level)}
+                            onChange={(event) =>
+                              setLevelDrafts((prev) => ({
+                                ...prev,
+                                [row.id]: event.target.value as SubmissionLevel | "",
+                              }))
+                            }
+                          >
+                            <option value="">—</option>
+                            {LEVEL_OPTIONS.map((level) => (
+                              <option key={level} value={level}>
+                                {formatCriterionLabel(level)}
+                              </option>
+                            ))}
+                          </select>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={savingLevelId === row.id}
+                            onClick={() => handleLevelSave(row.id)}
+                          >
+                            Save
+                          </Button>
+                        </div>
                       </div>
                     </td>
                     <td className="px-3 py-2">
