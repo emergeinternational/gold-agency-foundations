@@ -2918,6 +2918,7 @@ export type Database = {
       }
       submissions: {
         Row: {
+          assignee: string | null
           category: string | null
           city: string | null
           country: string | null
@@ -2938,6 +2939,7 @@ export type Database = {
           youtube: string | null
         }
         Insert: {
+          assignee?: string | null
           category?: string | null
           city?: string | null
           country?: string | null
@@ -2958,6 +2960,7 @@ export type Database = {
           youtube?: string | null
         }
         Update: {
+          assignee?: string | null
           category?: string | null
           city?: string | null
           country?: string | null
