@@ -12,6 +12,7 @@ type SubmissionRecord = {
   email?: string | null;
   phone?: string | null;
   city?: string | null;
+  telegram_chat_id?: string | null;
 };
 
 type WebhookPayload = {
@@ -38,6 +39,13 @@ const ACTION_HEADERS: Record<string, string> = {
   refer_to_emerge: "🚀 Referred for Emerge Review",
 };
 
+const CANDIDATE_MESSAGES: Record<string, string> = {
+  schedule_audition: "Great news! You have been selected for an audition. Our team will contact you with scheduling details shortly.",
+  enroll_training: "Great news! You have been selected for training. Our team will contact you with the next steps shortly.",
+  request_more_content: "Thanks for your submission. Please send additional content so we can continue your review.",
+  refer_to_emerge: "Congratulations! You have been selected for our premium Emerge consideration. Our team will contact you with next steps.",
+};
+
 const formatActionMessage = (action: string, submission: SubmissionRecord) => {
   const priority = submission.emerge_ready === true ? "HIGH" : "STANDARD";
   const header = ACTION_HEADERS[action] ?? "📌 Submission Action Required";
@@ -61,6 +69,19 @@ const formatActionMessage = (action: string, submission: SubmissionRecord) => {
   return lines.join("\n");
 };
 
+const formatCandidateMessage = (action: string, submission: SubmissionRecord) => {
+  const summary = CANDIDATE_MESSAGES[action] ?? "Your submission has been updated. Our team will contact you with details.";
+  const firstName = submission.full_name?.split(" ")[0] ?? null;
+
+  return [
+    firstName ? `Hi ${firstName},` : "Hi,",
+    "",
+    summary,
+    "",
+    "— Gold Agency Team",
+  ].join("\n");
+};
+
 const buildStructuredPayload = (action: string, submission: SubmissionRecord) => ({
   action,
   submission: {
@@ -75,15 +96,15 @@ const buildStructuredPayload = (action: string, submission: SubmissionRecord) =>
     email: submission.email ?? null,
     phone: submission.phone ?? null,
     city: submission.city ?? null,
+    telegram_chat_id: submission.telegram_chat_id ?? null,
   },
 });
 
-const sendTelegramMessage = async (message: string) => {
+const sendTelegramMessage = async (chatId: string, message: string) => {
   const telegramBotToken = Deno.env.get("TELEGRAM_BOT_TOKEN");
-  const telegramChatId = Deno.env.get("TELEGRAM_CHAT_ID");
 
-  if (!telegramBotToken || !telegramChatId) {
-    return { sent: false, reason: "missing_telegram_secrets" };
+  if (!telegramBotToken) {
+    return { sent: false, reason: "missing_telegram_bot_token" };
   }
 
   const response = await fetch(
@@ -92,7 +113,7 @@ const sendTelegramMessage = async (message: string) => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        chat_id: telegramChatId,
+        chat_id: chatId,
         text: message,
       }),
     },
@@ -101,6 +122,7 @@ const sendTelegramMessage = async (message: string) => {
   const responseBody = await response.text();
   console.info("Telegram API response", {
     status: response.status,
+    chat_id: chatId,
     body: responseBody,
   });
 
@@ -135,13 +157,54 @@ const processAction = async (action: string, submission: SubmissionRecord, teleg
     };
   }
 
-  const message = formatActionMessage(action, submission);
-  await sendTelegramMessage(message);
+  const internalChatId = Deno.env.get("TELEGRAM_CHAT_ID");
+
+  if (!internalChatId) {
+    console.info("TELEGRAM_CHAT_ID is missing. Action payload logged.", {
+      delivery: "log_only",
+      ...structuredPayload,
+    });
+
+    return {
+      mode: "log_only",
+      action,
+      payload: structuredPayload,
+      reason: "missing_internal_chat_id",
+    };
+  }
+
+  const internalMessage = formatActionMessage(action, submission);
+  await sendTelegramMessage(internalChatId, internalMessage);
+
+  const candidateMessage = formatCandidateMessage(action, submission);
+  const candidateChatId = submission.telegram_chat_id?.trim() || null;
+  const candidateTargetChatId = candidateChatId ?? internalChatId;
+  const fallbackUsed = candidateChatId === null;
+
+  if (fallbackUsed) {
+    console.info("Candidate Telegram chat not linked. Using fallback TELEGRAM_CHAT_ID.", {
+      submission_id: submission.id ?? null,
+      fallback_chat_id: internalChatId,
+    });
+  }
+
+  await sendTelegramMessage(candidateTargetChatId, candidateMessage);
+
+  console.info("Candidate message sent", {
+    submission_id: submission.id ?? null,
+    action,
+    target_chat_id: candidateTargetChatId,
+    fallback_used: fallbackUsed,
+  });
 
   return {
     mode: "telegram_sent",
     action,
     payload: structuredPayload,
+    candidate_delivery: {
+      target_chat_id: candidateTargetChatId,
+      fallback_used: fallbackUsed,
+    },
   };
 };
 
@@ -204,7 +267,7 @@ serve(async (req) => {
     }, { status: 400 });
   }
 
-  const telegramEnabled = Boolean(Deno.env.get("TELEGRAM_BOT_TOKEN") && Deno.env.get("TELEGRAM_CHAT_ID"));
+  const telegramEnabled = Boolean(Deno.env.get("TELEGRAM_BOT_TOKEN"));
   const isActionable = ACTIONABLE_ACTIONS.has(record.next_action);
 
   console.info("next_action processing decision", {
