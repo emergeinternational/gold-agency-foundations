@@ -58,6 +58,7 @@ const App = () => (
           <Route path="/enrollment-success" element={<EnrollmentSuccess />} />
           <Route path="/roster" element={<Roster />} />
           <Route path="/roster/:slug" element={<TalentProfile />} />
+          <Route path="/admin/review" element={<AdminReview />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
