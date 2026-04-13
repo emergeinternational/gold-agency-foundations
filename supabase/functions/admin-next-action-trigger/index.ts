@@ -12,6 +12,7 @@ type SubmissionRecord = {
   email?: string | null;
   phone?: string | null;
   city?: string | null;
+  telegram_chat_id?: string | null;
 };
 
 type WebhookPayload = {
@@ -28,20 +29,36 @@ type WebhookPayload = {
 // request_more_content -> insufficient data, requires additional submission
 // refer_to_emerge -> high-value candidate for escalation
 
-const ACTIONABLE_ACTIONS = new Set([
+const ACTIONABLE_ACTIONS = new Set<string>([
   "schedule_audition",
   "enroll_training",
   "request_more_content",
   "refer_to_emerge",
 ]);
 
-const ALLOWED_ACTIONS = new Set([...ACTIONABLE_ACTIONS, "hold", "reject"]);
+const ALLOWED_ACTIONS = new Set<string>([...ACTIONABLE_ACTIONS, "hold", "reject"]);
 
 const ACTION_HEADERS: Record<string, string> = {
   schedule_audition: "🎤 Audition Scheduling Required",
   enroll_training: "📚 Training Enrollment Required",
   request_more_content: "📎 More Content Needed",
   refer_to_emerge: "🚀 Referred for Emerge Review",
+};
+
+const CANDIDATE_MESSAGES: Record<string, string> = {
+  schedule_audition:
+    "Great news! You have been selected for an audition. Our team will contact you with scheduling details shortly.",
+  enroll_training:
+    "Great news! You have been selected for training. Our team will contact you with the next steps shortly.",
+  request_more_content:
+    "Thanks for your submission. Please send additional content so we can continue your review.",
+  refer_to_emerge:
+    "Congratulations! You have been selected for our premium Emerge consideration. Our team will contact you with next steps.",
+};
+
+const cleanString = (value: string | null | undefined): string | null => {
+  const trimmed = value?.trim() ?? "";
+  return trimmed.length > 0 ? trimmed : null;
 };
 
 const logDecision = (params: {
@@ -53,6 +70,7 @@ const logDecision = (params: {
   extra?: Record<string, unknown>;
 }) => {
   const { decision_path, record_id, next_action, emerge_ready, reason, extra } = params;
+
   console.info("submission next_action decision", {
     record_id,
     next_action,
@@ -64,14 +82,17 @@ const logDecision = (params: {
 };
 
 const withDefaultAction = (record: SubmissionRecord): SubmissionRecord => {
-  const status = (record.status ?? "").toLowerCase();
-  const normalizedAction = record.next_action ?? null;
-
+  const normalizedAction = cleanString(record.next_action);
   if (normalizedAction) {
-    return record;
+    return {
+      ...record,
+      next_action: normalizedAction,
+    };
   }
 
+  const status = cleanString(record.status)?.toLowerCase() ?? "";
   const fallbackAction = status === "rejected" ? "reject" : "request_more_content";
+
   return {
     ...record,
     next_action: fallbackAction,
@@ -82,23 +103,37 @@ const formatActionMessage = (action: string, submission: SubmissionRecord) => {
   const priority = submission.emerge_ready === true ? "HIGH" : "STANDARD";
   const header = ACTION_HEADERS[action] ?? "📌 Submission Action Required";
 
-  const lines = [
+  return [
     header,
     "",
     `Priority: ${priority}`,
     "",
-    `full_name: ${submission.full_name ?? "n/a"}`,
-    `category: ${submission.category ?? "n/a"}`,
-    `status: ${submission.status ?? "n/a"}`,
-    `level: ${submission.level ?? "n/a"}`,
-    `emerge_ready: ${String(submission.emerge_ready ?? "n/a")}`,
-    `next_action: ${submission.next_action ?? "n/a"}`,
-    `email: ${submission.email ?? "n/a"}`,
-    `phone: ${submission.phone ?? "n/a"}`,
-    `city: ${submission.city ?? "n/a"}`,
-  ];
+    `Name: ${submission.full_name ?? "n/a"}`,
+    `Category: ${submission.category ?? "n/a"}`,
+    `Source: ${submission.source ?? "n/a"}`,
+    `Status: ${submission.status ?? "n/a"}`,
+    `Level: ${submission.level ?? "n/a"}`,
+    `Emerge Ready: ${submission.emerge_ready === true ? "YES" : "NO"}`,
+    `Next Action: ${submission.next_action ?? "n/a"}`,
+    `Email: ${submission.email ?? "n/a"}`,
+    `Phone: ${submission.phone ?? "n/a"}`,
+    `City: ${submission.city ?? "n/a"}`,
+  ].join("\n");
+};
 
-  return lines.join("\n");
+const formatCandidateMessage = (action: string, submission: SubmissionRecord) => {
+  const summary =
+    CANDIDATE_MESSAGES[action] ??
+    "Your submission has been updated. Our team will contact you with details.";
+  const firstName = cleanString(submission.full_name)?.split(" ")[0] ?? null;
+
+  return [
+    firstName ? `Hi ${firstName},` : "Hi,",
+    "",
+    summary,
+    "",
+    "— Gold Agency Team",
+  ].join("\n");
 };
 
 const buildStructuredPayload = (action: string, submission: SubmissionRecord) => ({
@@ -115,30 +150,32 @@ const buildStructuredPayload = (action: string, submission: SubmissionRecord) =>
     email: submission.email ?? null,
     phone: submission.phone ?? null,
     city: submission.city ?? null,
+    telegram_chat_id: submission.telegram_chat_id ?? null,
   },
 });
 
-const sendTelegramMessage = async (message: string) => {
-  const telegramBotToken = Deno.env.get("TELEGRAM_BOT_TOKEN");
-  const telegramChatId = Deno.env.get("TELEGRAM_CHAT_ID");
+const sendTelegramMessage = async (chatId: string, message: string) => {
+  const telegramBotToken = cleanString(Deno.env.get("TELEGRAM_BOT_TOKEN"));
 
-  if (!telegramBotToken || !telegramChatId) {
-    return { sent: false, reason: "missing_telegram_secrets" };
+  if (!telegramBotToken) {
+    return { sent: false, reason: "missing_telegram_bot_token" as const };
   }
 
   const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      chat_id: telegramChatId,
+      chat_id: chatId,
       text: message,
     }),
     signal: AbortSignal.timeout(3500),
   });
 
   const responseBody = await response.text();
+
   console.info("Telegram API response", {
     status: response.status,
+    chat_id: chatId,
     body: responseBody,
   });
 
@@ -146,7 +183,7 @@ const sendTelegramMessage = async (message: string) => {
     throw new Error(`Telegram send failed (${response.status}): ${responseBody}`);
   }
 
-  return { sent: true };
+  return { sent: true as const };
 };
 
 const processAction = async (action: string, submission: SubmissionRecord, telegramEnabled: boolean) => {
@@ -155,7 +192,11 @@ const processAction = async (action: string, submission: SubmissionRecord, teleg
       action,
       submission_id: submission.id ?? null,
     });
-    return { mode: "no_external_action", action };
+
+    return {
+      mode: "no_external_action" as const,
+      action,
+    };
   }
 
   const structuredPayload = buildStructuredPayload(action, submission);
@@ -167,19 +208,61 @@ const processAction = async (action: string, submission: SubmissionRecord, teleg
     });
 
     return {
-      mode: "log_only",
+      mode: "log_only" as const,
       action,
       payload: structuredPayload,
+      reason: "missing_telegram_bot_token",
     };
   }
 
-  const message = formatActionMessage(action, submission);
-  await sendTelegramMessage(message);
+  const internalChatId = cleanString(Deno.env.get("TELEGRAM_CHAT_ID"));
+
+  if (!internalChatId) {
+    console.info("TELEGRAM_CHAT_ID is missing. Action payload logged.", {
+      delivery: "log_only",
+      ...structuredPayload,
+    });
+
+    return {
+      mode: "log_only" as const,
+      action,
+      payload: structuredPayload,
+      reason: "missing_internal_chat_id",
+    };
+  }
+
+  const internalMessage = formatActionMessage(action, submission);
+  await sendTelegramMessage(internalChatId, internalMessage);
+
+  const candidateMessage = formatCandidateMessage(action, submission);
+  const candidateChatId = cleanString(submission.telegram_chat_id);
+  const targetChatId = candidateChatId ?? internalChatId;
+  const fallbackUsed = candidateChatId === null;
+
+  if (fallbackUsed) {
+    console.info("Candidate Telegram chat not linked. Using fallback TELEGRAM_CHAT_ID.", {
+      submission_id: submission.id ?? null,
+      fallback_chat_id: internalChatId,
+    });
+  }
+
+  await sendTelegramMessage(targetChatId, candidateMessage);
+
+  console.info("Candidate message sent", {
+    submission_id: submission.id ?? null,
+    action,
+    target_chat_id: targetChatId,
+    fallback_used: fallbackUsed,
+  });
 
   return {
-    mode: "telegram_sent",
+    mode: "telegram_sent" as const,
     action,
     payload: structuredPayload,
+    candidate_delivery: {
+      target_chat_id: targetChatId,
+      fallback_used: fallbackUsed,
+    },
   };
 };
 
@@ -196,6 +279,7 @@ serve(async (req) => {
     console.error("Invalid JSON payload", {
       error: parseError instanceof Error ? parseError.message : String(parseError),
     });
+
     return Response.json({ ok: false, error: "invalid_json_payload" }, { status: 400 });
   }
 
@@ -221,6 +305,7 @@ serve(async (req) => {
       reason: "unsupported_event_type",
       extra: { eventType },
     });
+
     return Response.json({ ok: true, skipped: "unsupported_event_type", eventType });
   }
 
@@ -233,7 +318,12 @@ serve(async (req) => {
       reason: "unsupported_target",
       extra: { schema: payload.schema, table: payload.table },
     });
-    return Response.json({ ok: true, skipped: "unsupported_target", target: { schema: payload.schema, table: payload.table } });
+
+    return Response.json({
+      ok: true,
+      skipped: "unsupported_target",
+      target: { schema: payload.schema, table: payload.table },
+    });
   }
 
   if (!record) {
@@ -244,47 +334,64 @@ serve(async (req) => {
       emerge_ready: null,
       reason: "missing_record",
     });
+
     return Response.json({ ok: true, skipped: "missing_record" });
   }
 
-  const nextActionChanged = !oldRecord || record.next_action !== oldRecord.next_action;
+  const nextAction = cleanString(record.next_action);
+  const previousAction = cleanString(oldRecord?.next_action);
+  const nextActionChanged = !oldRecord || nextAction !== previousAction;
 
   if (!nextActionChanged) {
     logDecision({
       decision_path: "skipped",
       record_id: record.id ?? null,
-      next_action: record.next_action ?? null,
+      next_action: nextAction,
       emerge_ready: record.emerge_ready ?? null,
       reason: "next_action_unchanged",
     });
+
     return Response.json({ ok: true, skipped: "next_action_unchanged" });
   }
 
-  if (!ALLOWED_ACTIONS.has(record.next_action)) {
-    return Response.json({
-      ok: false,
-      error: "unsupported_next_action",
-      next_action: record.next_action,
-    }, { status: 400 });
+  if (!nextAction || !ALLOWED_ACTIONS.has(nextAction)) {
+    console.warn("Unsupported next_action received", {
+      record_id: record.id ?? null,
+      next_action: nextAction,
+    });
+
+    return Response.json(
+      {
+        ok: false,
+        error: "unsupported_next_action",
+        next_action: nextAction,
+      },
+      { status: 400 },
+    );
   }
 
-  const telegramEnabled = Boolean(Deno.env.get("TELEGRAM_BOT_TOKEN") && Deno.env.get("TELEGRAM_CHAT_ID"));
-  const isActionable = ACTIONABLE_ACTIONS.has(record.next_action);
+  const normalizedRecord: SubmissionRecord = {
+    ...record,
+    next_action: nextAction,
+  };
+
+  const telegramEnabled = Boolean(cleanString(Deno.env.get("TELEGRAM_BOT_TOKEN")));
+  const isActionable = ACTIONABLE_ACTIONS.has(nextAction);
 
   logDecision({
     decision_path: isActionable ? "actionable" : "skipped",
-    record_id: record.id ?? null,
-    next_action: record.next_action ?? null,
-    emerge_ready: record.emerge_ready ?? null,
+    record_id: normalizedRecord.id ?? null,
+    next_action: normalizedRecord.next_action ?? null,
+    emerge_ready: normalizedRecord.emerge_ready ?? null,
     reason: isActionable ? "next_action_actionable" : "next_action_not_actionable",
     extra: {
-      old_next_action: oldRecord?.next_action ?? null,
+      old_next_action: previousAction,
       telegram_secrets_present: telegramEnabled,
     },
   });
 
   try {
-    const result = await processAction(record.next_action, record, telegramEnabled);
+    const result = await processAction(nextAction, normalizedRecord, telegramEnabled);
 
     return Response.json({
       ok: true,
@@ -294,18 +401,18 @@ serve(async (req) => {
   } catch (error) {
     console.error("Failed to process next_action", {
       error: error instanceof Error ? error.message : String(error),
-      submission_id: record.id ?? null,
-      next_action: record.next_action,
-      emerge_ready: record.emerge_ready ?? null,
+      submission_id: normalizedRecord.id ?? null,
+      next_action: normalizedRecord.next_action ?? null,
+      emerge_ready: normalizedRecord.emerge_ready ?? null,
       decision_path: isActionable ? "actionable" : "skipped",
     });
 
     return Response.json({
       ok: true,
       warning: "action_processing_failed",
-      record_id: record.id ?? null,
-      next_action: record.next_action ?? null,
-      emerge_ready: record.emerge_ready ?? null,
+      record_id: normalizedRecord.id ?? null,
+      next_action: normalizedRecord.next_action ?? null,
+      emerge_ready: normalizedRecord.emerge_ready ?? null,
     });
   }
 });
