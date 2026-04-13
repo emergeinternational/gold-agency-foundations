@@ -23,6 +23,7 @@ type Submission = {
   source: string | null;
   status: string | null;
   level: string | null;
+  emerge_ready: boolean;
   evaluation_scores: Record<string, number> | null;
   portfolio_url: string | null;
   sample_url: string | null;
@@ -112,6 +113,29 @@ const getSuggestedLevelFromAverage = (averageScore: number): SubmissionLevel => 
   return "beginner";
 };
 
+const getAverageFromScores = (criteria: readonly string[], scores: Record<string, number> | null): number | null => {
+  const values = criteria
+    .map((key) => scores?.[key])
+    .filter((value): value is number => typeof value === "number" && value >= 1 && value <= 5);
+
+  if (values.length === 0) return null;
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+};
+
+const isEmergeReady = (params: {
+  status: string | null;
+  level: string | null;
+  category: string | null;
+  evaluationScores: Record<string, number> | null;
+}): boolean => {
+  const { status, level, category, evaluationScores } = params;
+  if (status !== "approved") return false;
+  if (level !== "advanced" && level !== "elite") return false;
+
+  const averageScore = getAverageFromScores(getEvaluationCriteria(category), evaluationScores);
+  return averageScore !== null && averageScore >= 3.8;
+};
+
 export default function AdminReview() {
   const [rows, setRows] = useState<Submission[]>([]);
   const [notesBySubmission, setNotesBySubmission] = useState<Record<string, AdminNote[]>>({});
@@ -123,6 +147,7 @@ export default function AdminReview() {
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterSource, setFilterSource] = useState("ascend");
+  const [filterReadiness, setFilterReadiness] = useState("all");
   const [search, setSearch] = useState("");
   const [savingStatusId, setSavingStatusId] = useState<string | null>(null);
   const [savingAssigneeId, setSavingAssigneeId] = useState<string | null>(null);
@@ -141,7 +166,7 @@ export default function AdminReview() {
       const { data, error: submissionsError } = await supabase
         .from("submissions")
         .select(
-          "id, assignee, created_at, full_name, email, phone, city, category, country, source, status, level, evaluation_scores, portfolio_url, sample_url, instagram, tiktok, youtube, website, prequalification_results(outcome, score, critical_pass)",
+          "id, assignee, created_at, full_name, email, phone, city, category, country, source, status, level, emerge_ready, evaluation_scores, portfolio_url, sample_url, instagram, tiktok, youtube, website, prequalification_results(outcome, score, critical_pass)",
         )
         .order("created_at", { ascending: false });
 
@@ -235,16 +260,29 @@ export default function AdminReview() {
   const handleStatusSave = async (submissionId: string) => {
     const status = statusDrafts[submissionId];
     if (!status) return;
+    const row = rows.find((item) => item.id === submissionId);
+    if (!row) return;
+    const emergeReady = isEmergeReady({
+      status,
+      level: row.level,
+      category: row.category,
+      evaluationScores: row.evaluation_scores,
+    });
 
     setSavingStatusId(submissionId);
     setError(null);
 
-    const { error: updateError } = await supabase.from("submissions").update({ status }).eq("id", submissionId);
+    const { error: updateError } = await supabase
+      .from("submissions")
+      .update({ status, emerge_ready: emergeReady })
+      .eq("id", submissionId);
 
     if (updateError) {
       setError(updateError.message);
     } else {
-      setRows((prev) => prev.map((row) => (row.id === submissionId ? { ...row, status } : row)));
+      setRows((prev) =>
+        prev.map((item) => (item.id === submissionId ? { ...item, status, emerge_ready: emergeReady } : item)),
+      );
     }
 
     setSavingStatusId(null);
@@ -254,10 +292,21 @@ export default function AdminReview() {
     submissionId: string,
     updates: { status: ReviewStatus; source?: string | null },
   ) => {
+    const row = rows.find((item) => item.id === submissionId);
+    if (!row) return;
+    const emergeReady = isEmergeReady({
+      status: updates.status,
+      level: row.level,
+      category: row.category,
+      evaluationScores: row.evaluation_scores,
+    });
     setSavingStatusId(submissionId);
     setError(null);
 
-    const { error: updateError } = await supabase.from("submissions").update(updates).eq("id", submissionId);
+    const { error: updateError } = await supabase
+      .from("submissions")
+      .update({ ...updates, emerge_ready: emergeReady })
+      .eq("id", submissionId);
 
     if (updateError) {
       setError(updateError.message);
@@ -272,6 +321,7 @@ export default function AdminReview() {
             ? {
                 ...row,
                 ...updates,
+                emerge_ready: emergeReady,
               }
             : row,
         ),
@@ -343,16 +393,29 @@ export default function AdminReview() {
 
   const handleLevelSave = async (submissionId: string) => {
     const level = levelDrafts[submissionId] || null;
+    const row = rows.find((item) => item.id === submissionId);
+    if (!row) return;
+    const emergeReady = isEmergeReady({
+      status: row.status,
+      level,
+      category: row.category,
+      evaluationScores: row.evaluation_scores,
+    });
 
     setSavingLevelId(submissionId);
     setError(null);
 
-    const { error: updateError } = await supabase.from("submissions").update({ level }).eq("id", submissionId);
+    const { error: updateError } = await supabase
+      .from("submissions")
+      .update({ level, emerge_ready: emergeReady })
+      .eq("id", submissionId);
 
     if (updateError) {
       setError(updateError.message);
     } else {
-      setRows((prev) => prev.map((row) => (row.id === submissionId ? { ...row, level } : row)));
+      setRows((prev) =>
+        prev.map((item) => (item.id === submissionId ? { ...item, level, emerge_ready: emergeReady } : item)),
+      );
     }
 
     setSavingLevelId(null);
@@ -375,7 +438,15 @@ export default function AdminReview() {
 
     const { error: updateError } = await supabase
       .from("submissions")
-      .update({ evaluation_scores: sanitizedScores })
+      .update({
+        evaluation_scores: sanitizedScores,
+        emerge_ready: isEmergeReady({
+          status: submission.status,
+          level: submission.level,
+          category: submission.category,
+          evaluationScores: sanitizedScores,
+        }),
+      })
       .eq("id", submission.id);
 
     if (updateError) {
@@ -387,6 +458,12 @@ export default function AdminReview() {
             ? {
                 ...row,
                 evaluation_scores: sanitizedScores,
+                emerge_ready: isEmergeReady({
+                  status: row.status,
+                  level: row.level,
+                  category: row.category,
+                  evaluationScores: sanitizedScores,
+                }),
               }
             : row,
         ),
@@ -427,15 +504,19 @@ export default function AdminReview() {
         const categoryMatch = filterCategory === "all" || normalizedCategory === filterCategory;
         const statusMatch = filterStatus === "all" || rowStatus === filterStatus;
         const sourceMatch = filterSource === "all" || normalizedSource === filterSource;
+        const readinessMatch =
+          filterReadiness === "all" ||
+          (filterReadiness === "ready" && row.emerge_ready) ||
+          (filterReadiness === "not_ready" && !row.emerge_ready);
         const searchMatch =
           searchTerm.length === 0 ||
           [row.full_name, row.email, row.phone, row.city, row.category, normalizedCategory]
             .filter(Boolean)
             .some((value) => value?.toLowerCase().includes(searchTerm));
 
-        return categoryMatch && statusMatch && sourceMatch && searchMatch;
+        return categoryMatch && statusMatch && sourceMatch && readinessMatch && searchMatch;
       }),
-    [rows, filterCategory, filterStatus, filterSource, search],
+    [rows, filterCategory, filterStatus, filterSource, filterReadiness, search],
   );
 
   return (
@@ -453,7 +534,7 @@ export default function AdminReview() {
         </Button>
       </div>
 
-      <div className="mb-4 grid gap-3 sm:grid-cols-4">
+      <div className="mb-4 grid gap-3 sm:grid-cols-5">
         <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">Filter by category</label>
           <select
@@ -503,6 +584,19 @@ export default function AdminReview() {
         </div>
 
         <div>
+          <label className="mb-1 block text-xs font-medium text-muted-foreground">Filter by readiness</label>
+          <select
+            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+            value={filterReadiness}
+            onChange={(event) => setFilterReadiness(event.target.value)}
+          >
+            <option value="all">All readiness states</option>
+            <option value="ready">Ready only</option>
+            <option value="not_ready">Not ready only</option>
+          </select>
+        </div>
+
+        <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">Search</label>
           <input
             className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
@@ -538,6 +632,7 @@ export default function AdminReview() {
                 <th className="px-3 py-2 font-medium">Assignee</th>
                 <th className="px-3 py-2 font-medium">Status</th>
                 <th className="px-3 py-2 font-medium">Level</th>
+                <th className="px-3 py-2 font-medium">Emerge Ready</th>
                 <th className="px-3 py-2 font-medium">PQ Outcome</th>
                 <th className="px-3 py-2 font-medium">Score</th>
                 <th className="px-3 py-2 font-medium">Critical</th>
@@ -554,13 +649,7 @@ export default function AdminReview() {
                 const criteria = getEvaluationCriteria(row.category);
                 const draftScores = evaluationDrafts[row.id] ?? {};
                 const savedScores = row.evaluation_scores ?? {};
-                const savedScoreValues = criteria
-                  .map((key) => savedScores[key])
-                  .filter((value): value is number => typeof value === "number" && value >= 1 && value <= 5);
-                const savedAverageScore =
-                  savedScoreValues.length > 0
-                    ? savedScoreValues.reduce((sum, value) => sum + value, 0) / savedScoreValues.length
-                    : null;
+                const savedAverageScore = getAverageFromScores(criteria, savedScores);
                 const suggestedLevel = savedAverageScore !== null ? getSuggestedLevelFromAverage(savedAverageScore) : null;
                 const scoreValues = criteria
                   .map((key) => draftScores[key])
@@ -718,6 +807,20 @@ export default function AdminReview() {
                             Save
                           </Button>
                         </div>
+                      </div>
+                    </td>
+                    <td className="px-3 py-2">
+                      <div className="space-y-1">
+                        <span
+                          className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
+                            row.emerge_ready
+                              ? "border border-emerald-500/40 bg-emerald-500/10 text-emerald-700"
+                              : "border border-border bg-secondary text-foreground"
+                          }`}
+                        >
+                          {row.emerge_ready ? "READY" : "NOT READY"}
+                        </span>
+                        <p className="text-[11px] text-muted-foreground">Requires approved + advanced/elite + 3.8+ avg</p>
                       </div>
                     </td>
                     <td className="px-3 py-2">
