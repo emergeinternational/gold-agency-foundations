@@ -6,9 +6,24 @@ import { supabase } from "@/integrations/supabase/client";
 
 type ReviewStatus = "new" | "review" | "development" | "approved" | "rejected";
 type SubmissionLevel = "beginner" | "intermediate" | "advanced" | "elite";
+type NextAction =
+  | "schedule_audition"
+  | "enroll_training"
+  | "request_more_content"
+  | "refer_to_emerge"
+  | "hold"
+  | "reject";
 
 const STATUS_OPTIONS: ReviewStatus[] = ["new", "review", "development", "approved", "rejected"];
 const LEVEL_OPTIONS: SubmissionLevel[] = ["beginner", "intermediate", "advanced", "elite"];
+const NEXT_ACTION_OPTIONS: NextAction[] = [
+  "schedule_audition",
+  "enroll_training",
+  "request_more_content",
+  "refer_to_emerge",
+  "hold",
+  "reject",
+];
 
 type Submission = {
   assignee: string | null;
@@ -23,6 +38,7 @@ type Submission = {
   source: string | null;
   status: string | null;
   level: string | null;
+  next_action: string | null;
   emerge_ready: boolean;
   evaluation_scores: Record<string, number> | null;
   portfolio_url: string | null;
@@ -101,6 +117,20 @@ const normalizeLevel = (value: string | null): SubmissionLevel | "" => {
   return "";
 };
 
+const normalizeNextAction = (value: string | null): NextAction | "" => {
+  if (value && NEXT_ACTION_OPTIONS.includes(value as NextAction)) {
+    return value as NextAction;
+  }
+  return "";
+};
+
+const getSuggestedNextAction = (row: Submission): NextAction | null => {
+  if (row.emerge_ready) return "refer_to_emerge";
+  if (row.status === "development") return "enroll_training";
+  if (row.status === "review") return "schedule_audition";
+  return null;
+};
+
 const formatCriterionLabel = (value: string) =>
   value
     .replaceAll("_", " ")
@@ -142,16 +172,19 @@ export default function AdminReview() {
   const [statusDrafts, setStatusDrafts] = useState<Record<string, ReviewStatus>>({});
   const [assigneeDrafts, setAssigneeDrafts] = useState<Record<string, string>>({});
   const [levelDrafts, setLevelDrafts] = useState<Record<string, SubmissionLevel | "">>({});
+  const [nextActionDrafts, setNextActionDrafts] = useState<Record<string, NextAction | "">>({});
   const [noteDrafts, setNoteDrafts] = useState<Record<string, string>>({});
   const [evaluationDrafts, setEvaluationDrafts] = useState<Record<string, Record<string, number>>>({});
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterSource, setFilterSource] = useState("ascend");
+  const [filterNextAction, setFilterNextAction] = useState("all");
   const [filterReadiness, setFilterReadiness] = useState("all");
   const [search, setSearch] = useState("");
   const [savingStatusId, setSavingStatusId] = useState<string | null>(null);
   const [savingAssigneeId, setSavingAssigneeId] = useState<string | null>(null);
   const [savingLevelId, setSavingLevelId] = useState<string | null>(null);
+  const [savingNextActionId, setSavingNextActionId] = useState<string | null>(null);
   const [savingNoteId, setSavingNoteId] = useState<string | null>(null);
   const [savingEvaluationId, setSavingEvaluationId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -166,7 +199,7 @@ export default function AdminReview() {
       const { data, error: submissionsError } = await supabase
         .from("submissions")
         .select(
-          "id, assignee, created_at, full_name, email, phone, city, category, country, source, status, level, emerge_ready, evaluation_scores, portfolio_url, sample_url, instagram, tiktok, youtube, website, prequalification_results(outcome, score, critical_pass)",
+          "id, assignee, created_at, full_name, email, phone, city, category, country, source, status, level, next_action, emerge_ready, evaluation_scores, portfolio_url, sample_url, instagram, tiktok, youtube, website, prequalification_results(outcome, score, critical_pass)",
         )
         .order("created_at", { ascending: false });
 
@@ -200,6 +233,13 @@ export default function AdminReview() {
       setLevelDrafts(
         submissionRows.reduce<Record<string, SubmissionLevel | "">>((acc, row) => {
           acc[row.id] = normalizeLevel(row.level);
+          return acc;
+        }, {}),
+      );
+
+      setNextActionDrafts(
+        submissionRows.reduce<Record<string, NextAction | "">>((acc, row) => {
+          acc[row.id] = normalizeNextAction(row.next_action);
           return acc;
         }, {}),
       );
@@ -473,6 +513,26 @@ export default function AdminReview() {
     setSavingEvaluationId(null);
   };
 
+  const handleNextActionSave = async (submissionId: string) => {
+    const nextAction = nextActionDrafts[submissionId] || null;
+
+    setSavingNextActionId(submissionId);
+    setError(null);
+
+    const { error: updateError } = await supabase
+      .from("submissions")
+      .update({ next_action: nextAction })
+      .eq("id", submissionId);
+
+    if (updateError) {
+      setError(updateError.message);
+    } else {
+      setRows((prev) => prev.map((row) => (row.id === submissionId ? { ...row, next_action: nextAction } : row)));
+    }
+
+    setSavingNextActionId(null);
+  };
+
   const renderAge = (createdAt: string) => {
     const createdDate = new Date(createdAt);
     const now = new Date();
@@ -499,11 +559,13 @@ export default function AdminReview() {
         const rowStatus = normalizeStatus(row.status);
         const normalizedCategory = normalizeCategory(row.category ?? "");
         const normalizedSource = row.source ?? "";
+        const normalizedNextAction = normalizeNextAction(row.next_action);
         const searchTerm = search.trim().toLowerCase();
 
         const categoryMatch = filterCategory === "all" || normalizedCategory === filterCategory;
         const statusMatch = filterStatus === "all" || rowStatus === filterStatus;
         const sourceMatch = filterSource === "all" || normalizedSource === filterSource;
+        const nextActionMatch = filterNextAction === "all" || normalizedNextAction === filterNextAction;
         const readinessMatch =
           filterReadiness === "all" ||
           (filterReadiness === "ready" && row.emerge_ready) ||
@@ -514,9 +576,9 @@ export default function AdminReview() {
             .filter(Boolean)
             .some((value) => value?.toLowerCase().includes(searchTerm));
 
-        return categoryMatch && statusMatch && sourceMatch && readinessMatch && searchMatch;
+        return categoryMatch && statusMatch && sourceMatch && nextActionMatch && readinessMatch && searchMatch;
       }),
-    [rows, filterCategory, filterStatus, filterSource, filterReadiness, search],
+    [rows, filterCategory, filterStatus, filterSource, filterNextAction, filterReadiness, search],
   );
 
   return (
@@ -534,7 +596,7 @@ export default function AdminReview() {
         </Button>
       </div>
 
-      <div className="mb-4 grid gap-3 sm:grid-cols-5">
+      <div className="mb-4 grid gap-3 sm:grid-cols-6">
         <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">Filter by category</label>
           <select
@@ -597,6 +659,22 @@ export default function AdminReview() {
         </div>
 
         <div>
+          <label className="mb-1 block text-xs font-medium text-muted-foreground">Filter by next action</label>
+          <select
+            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+            value={filterNextAction}
+            onChange={(event) => setFilterNextAction(event.target.value)}
+          >
+            <option value="all">All actions</option>
+            {NEXT_ACTION_OPTIONS.map((action) => (
+              <option key={action} value={action}>
+                {formatCriterionLabel(action)}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">Search</label>
           <input
             className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
@@ -632,6 +710,7 @@ export default function AdminReview() {
                 <th className="px-3 py-2 font-medium">Assignee</th>
                 <th className="px-3 py-2 font-medium">Status</th>
                 <th className="px-3 py-2 font-medium">Level</th>
+                <th className="px-3 py-2 font-medium">Next Action</th>
                 <th className="px-3 py-2 font-medium">Emerge Ready</th>
                 <th className="px-3 py-2 font-medium">PQ Outcome</th>
                 <th className="px-3 py-2 font-medium">Score</th>
@@ -651,6 +730,7 @@ export default function AdminReview() {
                 const savedScores = row.evaluation_scores ?? {};
                 const savedAverageScore = getAverageFromScores(criteria, savedScores);
                 const suggestedLevel = savedAverageScore !== null ? getSuggestedLevelFromAverage(savedAverageScore) : null;
+                const suggestedNextAction = getSuggestedNextAction(row);
                 const scoreValues = criteria
                   .map((key) => draftScores[key])
                   .filter((value): value is number => typeof value === "number");
@@ -807,6 +887,40 @@ export default function AdminReview() {
                             Save
                           </Button>
                         </div>
+                      </div>
+                    </td>
+                    <td className="min-w-52 px-3 py-2">
+                      <div className="space-y-2">
+                        <div className="flex gap-2">
+                          <select
+                            className="h-9 rounded-md border border-input bg-background px-2 text-sm"
+                            value={nextActionDrafts[row.id] ?? normalizeNextAction(row.next_action)}
+                            onChange={(event) =>
+                              setNextActionDrafts((prev) => ({
+                                ...prev,
+                                [row.id]: event.target.value as NextAction | "",
+                              }))
+                            }
+                          >
+                            <option value="">Select action</option>
+                            {NEXT_ACTION_OPTIONS.map((action) => (
+                              <option key={action} value={action}>
+                                {action}
+                              </option>
+                            ))}
+                          </select>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={savingNextActionId === row.id}
+                            onClick={() => handleNextActionSave(row.id)}
+                          >
+                            Save
+                          </Button>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground">
+                          Suggested: {suggestedNextAction ? suggestedNextAction : "—"}
+                        </p>
                       </div>
                     </td>
                     <td className="px-3 py-2">
