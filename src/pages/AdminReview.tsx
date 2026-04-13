@@ -5,8 +5,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 
 type ReviewStatus = "new" | "review" | "development" | "approved" | "rejected";
+type SubmissionLevel = "beginner" | "intermediate" | "advanced" | "elite";
 
 const STATUS_OPTIONS: ReviewStatus[] = ["new", "review", "development", "approved", "rejected"];
+const LEVEL_OPTIONS: SubmissionLevel[] = ["beginner", "intermediate", "advanced", "elite"];
 
 type Submission = {
   assignee: string | null;
@@ -20,6 +22,7 @@ type Submission = {
   country: string | null;
   source: string | null;
   status: string | null;
+  level: string | null;
   evaluation_scores: Record<string, number> | null;
   portfolio_url: string | null;
   sample_url: string | null;
@@ -90,6 +93,13 @@ const normalizeStatus = (value: string | null): ReviewStatus => {
   return "new";
 };
 
+const normalizeLevel = (value: string | null): SubmissionLevel | "" => {
+  if (value && LEVEL_OPTIONS.includes(value as SubmissionLevel)) {
+    return value as SubmissionLevel;
+  }
+  return "";
+};
+
 const formatCriterionLabel = (value: string) =>
   value
     .replaceAll("_", " ")
@@ -100,6 +110,7 @@ export default function AdminReview() {
   const [notesBySubmission, setNotesBySubmission] = useState<Record<string, AdminNote[]>>({});
   const [statusDrafts, setStatusDrafts] = useState<Record<string, ReviewStatus>>({});
   const [assigneeDrafts, setAssigneeDrafts] = useState<Record<string, string>>({});
+  const [levelDrafts, setLevelDrafts] = useState<Record<string, SubmissionLevel | "">>({});
   const [noteDrafts, setNoteDrafts] = useState<Record<string, string>>({});
   const [evaluationDrafts, setEvaluationDrafts] = useState<Record<string, Record<string, number>>>({});
   const [filterCategory, setFilterCategory] = useState("all");
@@ -108,6 +119,7 @@ export default function AdminReview() {
   const [search, setSearch] = useState("");
   const [savingStatusId, setSavingStatusId] = useState<string | null>(null);
   const [savingAssigneeId, setSavingAssigneeId] = useState<string | null>(null);
+  const [savingLevelId, setSavingLevelId] = useState<string | null>(null);
   const [savingNoteId, setSavingNoteId] = useState<string | null>(null);
   const [savingEvaluationId, setSavingEvaluationId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -122,7 +134,7 @@ export default function AdminReview() {
       const { data, error: submissionsError } = await supabase
         .from("submissions")
         .select(
-          "id, assignee, created_at, full_name, email, phone, city, category, country, source, status, evaluation_scores, portfolio_url, sample_url, instagram, tiktok, youtube, website, prequalification_results(outcome, score, critical_pass)",
+          "id, assignee, created_at, full_name, email, phone, city, category, country, source, status, level, evaluation_scores, portfolio_url, sample_url, instagram, tiktok, youtube, website, prequalification_results(outcome, score, critical_pass)",
         )
         .order("created_at", { ascending: false });
 
@@ -149,6 +161,13 @@ export default function AdminReview() {
       setAssigneeDrafts(
         submissionRows.reduce<Record<string, string>>((acc, row) => {
           acc[row.id] = row.assignee ?? "";
+          return acc;
+        }, {}),
+      );
+
+      setLevelDrafts(
+        submissionRows.reduce<Record<string, SubmissionLevel | "">>((acc, row) => {
+          acc[row.id] = normalizeLevel(row.level);
           return acc;
         }, {}),
       );
@@ -313,6 +332,23 @@ export default function AdminReview() {
         [submissionId]: next,
       };
     });
+  };
+
+  const handleLevelSave = async (submissionId: string) => {
+    const level = levelDrafts[submissionId] || null;
+
+    setSavingLevelId(submissionId);
+    setError(null);
+
+    const { error: updateError } = await supabase.from("submissions").update({ level }).eq("id", submissionId);
+
+    if (updateError) {
+      setError(updateError.message);
+    } else {
+      setRows((prev) => prev.map((row) => (row.id === submissionId ? { ...row, level } : row)));
+    }
+
+    setSavingLevelId(null);
   };
 
   const handleEvaluationSave = async (submission: Submission) => {
@@ -494,6 +530,7 @@ export default function AdminReview() {
                 <th className="px-3 py-2 font-medium">Country</th>
                 <th className="px-3 py-2 font-medium">Assignee</th>
                 <th className="px-3 py-2 font-medium">Status</th>
+                <th className="px-3 py-2 font-medium">Level</th>
                 <th className="px-3 py-2 font-medium">PQ Outcome</th>
                 <th className="px-3 py-2 font-medium">Score</th>
                 <th className="px-3 py-2 font-medium">Critical</th>
@@ -627,6 +664,35 @@ export default function AdminReview() {
                             Refer → Emerge
                           </Button>
                         </div>
+                      </div>
+                    </td>
+                    <td className="min-w-48 px-3 py-2">
+                      <div className="flex gap-2">
+                        <select
+                          className="h-9 rounded-md border border-input bg-background px-2 text-sm"
+                          value={levelDrafts[row.id] ?? normalizeLevel(row.level)}
+                          onChange={(event) =>
+                            setLevelDrafts((prev) => ({
+                              ...prev,
+                              [row.id]: event.target.value as SubmissionLevel | "",
+                            }))
+                          }
+                        >
+                          <option value="">—</option>
+                          {LEVEL_OPTIONS.map((level) => (
+                            <option key={level} value={level}>
+                              {formatCriterionLabel(level)}
+                            </option>
+                          ))}
+                        </select>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={savingLevelId === row.id}
+                          onClick={() => handleLevelSave(row.id)}
+                        >
+                          Save
+                        </Button>
                       </div>
                     </td>
                     <td className="px-3 py-2">
