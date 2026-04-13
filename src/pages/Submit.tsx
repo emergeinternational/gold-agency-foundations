@@ -151,6 +151,7 @@ export default function Submit() {
   const [headshot, setHeadshot] = useState<File | null>(null);
   const [mediaKit, setMediaKit] = useState<File | null>(null);
   const [videoAudio, setVideoAudio] = useState<File | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const [gateComplete, setGateComplete] = useState(false);
   const [gateCategory, setGateCategory] = useState(recognizedCategory);
