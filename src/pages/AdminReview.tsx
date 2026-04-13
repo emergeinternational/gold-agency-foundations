@@ -254,13 +254,6 @@ export default function AdminReview() {
         }, {}),
       );
 
-      setNextActionDrafts(
-        submissionRows.reduce<Record<string, NextAction | "">>((acc, row) => {
-          acc[row.id] = normalizeNextAction(row.next_action);
-          return acc;
-        }, {}),
-      );
-
       setEvaluationDrafts(
         submissionRows.reduce<Record<string, Record<string, number>>>((acc, row) => {
           const criteria = getEvaluationCriteria(row.category);
@@ -530,12 +523,12 @@ export default function AdminReview() {
     setSavingEvaluationId(null);
   };
 
-  const handleNextActionChange = async (row: SubmissionRow, selectedValue: NextAction | "") => {
+  const handleNextActionChange = async (row: Submission, selectedValue: NextAction | "") => {
     const nextAction = selectedValue || null;
 
     setSavingNextActionId(row.id);
     setError(null);
-    console.log("Saving next_action:", selectedValue, row.id);
+    console.log("Saving next_action", row.id, selectedValue);
 
     const { error: updateError } = await supabase
       .from("submissions")
@@ -546,6 +539,7 @@ export default function AdminReview() {
       console.error(updateError);
       setError(updateError.message);
     } else {
+      console.log("next_action save success", row.id, selectedValue);
       setRows((prevRows) =>
         prevRows.map((prevRow) => (prevRow.id === row.id ? { ...prevRow, next_action: nextAction } : prevRow)),
       );
