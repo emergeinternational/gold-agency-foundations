@@ -9,7 +9,7 @@ export default function Terms() {
           <span className="inline-block text-[11px] tracking-[0.3em] uppercase text-primary font-body font-semibold mb-4">Legal</span>
           <h1 className="font-display text-4xl sm:text-5xl font-semibold text-foreground mb-6">Terms of Use</h1>
           <div className="gold-line mb-10" />
-          <div className="space-y-6 text-muted-foreground leading-relaxed text-sm">
+          <div className="space-y-6 text-gray-300 leading-relaxed text-sm">
             <p><strong className="text-foreground">Effective Date:</strong> March 1, 2026</p>
             <p>By accessing and using the {BRAND.name} website, you agree to the following terms and conditions. {BRAND.name} is {BRAND.poweredByLine.toLowerCase()} ({BRAND.legalRelationship}).</p>
             <h2 className="font-display text-xl text-foreground mt-8">Use of the Site</h2>

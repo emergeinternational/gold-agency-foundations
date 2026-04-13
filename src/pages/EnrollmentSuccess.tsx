@@ -15,8 +15,8 @@ export default function EnrollmentSuccess() {
               <CheckCircle className="w-10 h-10 text-primary" />
             </div>
             <h1 className="font-display text-4xl sm:text-5xl font-semibold text-foreground mb-4">Enrollment Confirmed</h1>
-            <p className="text-muted-foreground text-lg max-w-lg mx-auto mb-2">You've been enrolled in an {BRAND.name} development program.</p>
-            <p className="text-sm text-muted-foreground max-w-md mx-auto mb-8">Full confirmation details will be sent once the enrollment system is connected. Thank you for investing in your development.</p>
+            <p className="text-gray-300 text-lg max-w-lg mx-auto mb-2">You've been enrolled in an {BRAND.name} development program.</p>
+            <p className="text-sm text-gray-300 max-w-md mx-auto mb-8">Full confirmation details will be sent once the enrollment system is connected. Thank you for investing in your development.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="gold" size="lg" asChild><Link to="/">Return Home</Link></Button>
               <Button variant="gold-outline" size="lg" asChild><Link to="/classes-workshops">Browse More Programs</Link></Button>

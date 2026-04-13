@@ -45,7 +45,7 @@ export default function Academy() {
               <motion.div key={f.title} {...fadeUp} transition={{ duration: 0.5, delay: i * 0.05 }} className="card-premium p-7 card-hover">
                 <f.icon className="w-7 h-7 text-primary mb-5 opacity-80" strokeWidth={1.5} />
                 <h3 className="font-display text-lg font-semibold text-foreground mb-2">{f.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
+                <p className="text-sm text-gray-300 leading-relaxed">{f.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -81,7 +81,7 @@ export default function Academy() {
                 </div>
                 <h3 className="font-display text-lg font-semibold text-foreground">{inst.name}</h3>
                 <p className="text-[10px] text-primary mt-1 mb-3 uppercase tracking-[0.2em]">{inst.role}</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">{inst.desc}</p>
+                <p className="text-xs text-gray-300 leading-relaxed">{inst.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -100,7 +100,7 @@ export default function Academy() {
             ].map((faq, i) => (
               <motion.div key={i} {...fadeUp} transition={{ duration: 0.4, delay: i * 0.04 }} className="card-premium p-6 sm:p-7">
                 <h4 className="font-display text-base font-semibold text-foreground mb-2">{faq.q}</h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
+                <p className="text-sm text-gray-300 leading-relaxed">{faq.a}</p>
               </motion.div>
             ))}
           </div>
@@ -112,7 +112,7 @@ export default function Academy() {
           <motion.div {...fadeUp}>
             <span className="badge-label mb-5 block">Take the Step</span>
             <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground leading-[1.1]">Your Craft Deserves Serious Investment</h2>
-            <p className="mt-5 text-muted-foreground text-base max-w-lg mx-auto font-light">Browse upcoming programs, explore online tutorials, or reach out to find the right track for your goals.</p>
+            <p className="mt-5 text-gray-300 text-base max-w-lg mx-auto font-light">Browse upcoming programs, explore online tutorials, or reach out to find the right track for your goals.</p>
             <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
               <Button variant="hero" size="xl" asChild><Link to="/classes-workshops">Browse Programs</Link></Button>
               <Button variant="hero-outline" size="xl" asChild><Link to="/tutorials">Online Tutorials</Link></Button>

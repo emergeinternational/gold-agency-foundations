@@ -20,7 +20,7 @@ export default function NotFound() {
             <h1 className="font-display text-3xl sm:text-4xl font-semibold text-foreground mb-4">
               Page Not Found
             </h1>
-            <p className="text-muted-foreground text-base max-w-md mx-auto mb-10 font-light">
+            <p className="text-gray-300 text-base max-w-md mx-auto mb-10 font-light">
               The page you're looking for doesn't exist or has been moved. Let us help you find your way.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">

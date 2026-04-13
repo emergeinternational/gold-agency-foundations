@@ -39,14 +39,14 @@ export default function Footer() {
               <h3 className="font-display text-lg font-bold tracking-[0.25em] text-primary uppercase group-hover:text-gold-light transition-colors">
                 {BRAND.name}
               </h3>
-              <p className="text-[8px] tracking-[0.25em] text-muted-foreground/50 uppercase mt-1">
+              <p className="text-[8px] tracking-[0.25em] text-gray-200 uppercase mt-1">
                 Development Division of{" "}
                 <a href={BRAND.poweredByUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
                   {BRAND.poweredBy}
                 </a>
               </p>
             </Link>
-            <p className="text-xs text-muted-foreground/50 mt-5 max-w-xs leading-relaxed">
+            <p className="text-xs text-gray-200 mt-5 max-w-xs leading-relaxed">
               Serving talent across Africa and global markets.
             </p>
             <div className="flex gap-4 mt-5">
@@ -89,10 +89,10 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="mt-14 pt-7 border-t border-border/10">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
-            <p className="text-[10px] text-muted-foreground/35 tracking-wider">
+            <p className="text-[10px] text-gray-200 tracking-wider">
               © {new Date().getFullYear()} {BRAND.name}. All rights reserved.
             </p>
-            <p className="text-[10px] text-muted-foreground/25 text-center sm:text-right tracking-wider">
+            <p className="text-[10px] text-gray-200 text-center sm:text-right tracking-wider">
               Ascend Elite Agency operates as a development division of{" "}
               <a href={BRAND.poweredByUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
                 {BRAND.poweredBy}

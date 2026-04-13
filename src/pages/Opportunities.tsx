@@ -30,7 +30,7 @@ export default function Opportunities() {
         <div className="container-wide">
           <div className="card-premium p-6 mb-10 flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-gray-300">
               <strong className="text-foreground">Note:</strong> All opportunities are subject to eligibility and review. Listing here does not constitute an offer or guarantee. Apply only to opportunities that match your current level.
             </p>
           </div>
@@ -43,7 +43,7 @@ export default function Opportunities() {
                   <span className={`text-[10px] uppercase tracking-widest px-2 py-0.5 rounded ${opp.status === "Active" ? "bg-green-900/30 text-green-400" : opp.status === "Upcoming" ? "bg-secondary text-muted-foreground" : "bg-primary/5 text-primary"}`}>{opp.status}</span>
                 </div>
                 <h3 className="font-display text-xl font-semibold text-foreground mb-2">{opp.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed flex-1 mb-4">{opp.desc}</p>
+                <p className="text-sm text-gray-300 leading-relaxed flex-1 mb-4">{opp.desc}</p>
                 <Button variant="gold-outline" size="sm" asChild>
                   <Link to="/submit">Submit for Review</Link>
                 </Button>
@@ -57,11 +57,11 @@ export default function Opportunities() {
         <div className="container-narrow text-center">
           <motion.div {...fadeUp}>
             <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground">Nothing Here That Fits?</h2>
-            <p className="mt-4 text-muted-foreground text-lg font-light">Submit your profile and we'll match you with relevant opportunities as they come up, including advanced preparation pathways where appropriate.</p>
+            <p className="mt-4 text-gray-300 text-lg font-light">Submit your profile and we'll match you with relevant opportunities as they come up, including advanced preparation pathways where appropriate.</p>
             <div className="mt-8">
               <Button variant="hero" size="xl" asChild><Link to="/submit">Submit for Review</Link></Button>
             </div>
-            <p className="mt-3 text-xs text-muted-foreground/70">Selection is limited.</p>
+            <p className="mt-3 text-xs text-gray-200">Selection is limited.</p>
           </motion.div>
         </div>
       </section>

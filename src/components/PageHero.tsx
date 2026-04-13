@@ -70,7 +70,7 @@ export default function PageHero({
             {title}
           </h1>
           {subtitle && (
-            <p className="mt-5 text-muted-foreground text-[15px] sm:text-base max-w-2xl leading-relaxed font-light">
+            <p className="mt-5 text-gray-300 text-[15px] sm:text-base max-w-2xl leading-relaxed font-light">
               {subtitle}
             </p>
           )}

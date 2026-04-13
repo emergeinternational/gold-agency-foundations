@@ -66,7 +66,7 @@ export default function Partnerships() {
               <motion.div key={p.title} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.05 }} className="card-premium p-7 card-hover">
                 <p.icon className="w-8 h-8 text-primary mb-4" />
                 <h3 className="font-display text-lg font-semibold text-foreground mb-2">{p.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{p.desc}</p>
+                <p className="text-sm text-gray-300 leading-relaxed">{p.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -82,7 +82,7 @@ export default function Partnerships() {
                 <Handshake className="w-8 h-8 text-primary" />
               </div>
               <h3 className="font-display text-2xl font-semibold text-foreground mb-2">Inquiry Received</h3>
-              <p className="text-muted-foreground">Thank you for your interest. Our team will review your inquiry and respond within five business days.</p>
+              <p className="text-gray-300">Thank you for your interest. Our team will review your inquiry and respond within five business days.</p>
             </motion.div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">

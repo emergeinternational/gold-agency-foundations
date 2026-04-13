@@ -29,7 +29,7 @@ export default function About() {
               <span className="badge-label mb-5 block">Origin</span>
               <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground leading-[1.1] mb-8">The Agency Behind the Name</h2>
               <div className="gold-line mb-10" />
-              <div className="space-y-5 text-muted-foreground leading-[1.8] text-[15px]">
+              <div className="space-y-5 text-gray-300 leading-[1.8] text-[15px]">
                 <p>
                   {BRAND.name} was built to address a specific gap: extraordinary creative talent exists across Ethiopia and beyond, but the infrastructure to develop, position, and represent that talent at the highest level rarely does.
                 </p>
@@ -62,7 +62,7 @@ export default function About() {
               <span className="badge-label mb-5 block">Philosophy</span>
               <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground leading-[1.1] mb-8">Representation Requires Preparation</h2>
               <div className="gold-line mb-10" />
-              <div className="space-y-5 text-muted-foreground leading-[1.8] text-[15px]">
+              <div className="space-y-5 text-gray-300 leading-[1.8] text-[15px]">
                 <p>
                   We don't simply add names to a roster — we invest in building careers. Our model integrates structured development, brand strategy, media positioning, and opportunity access into a single, cohesive agency.
                 </p>
@@ -95,7 +95,7 @@ export default function About() {
                 className="card-premium p-8 card-hover"
               >
                 <h3 className="font-display text-xl font-semibold text-primary mb-3">{v.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{v.desc}</p>
+                <p className="text-sm text-gray-300 leading-relaxed">{v.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -105,10 +105,10 @@ export default function About() {
       <section className="section-padding-sm">
         <div className="container-narrow text-center">
           <motion.div {...fadeUp}>
-            <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground/40">
+            <p className="text-[10px] tracking-[0.3em] uppercase text-gray-200">
               Development Division of Emerge Globally
             </p>
-            <p className="mt-2 text-xs text-muted-foreground/30">
+            <p className="mt-2 text-xs text-gray-200">
               Ascend Elite Agency operates as a development division of Emerge Globally, a New York–based company.
             </p>
           </motion.div>

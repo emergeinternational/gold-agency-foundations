@@ -78,7 +78,7 @@ export default function BookTalent() {
 
       <section className="section-padding">
         <div className="container-narrow">
-          <p className="text-muted-foreground text-sm mb-10 max-w-2xl">
+          <p className="text-gray-300 text-sm mb-10 max-w-2xl">
             We welcome inquiries from any market. Whether your project serves audiences across Africa and global markets — our team will respond with availability, recommendations, and next steps.
           </p>
 
@@ -169,7 +169,7 @@ export default function BookTalent() {
                       <option key={b.value} value={b.value}>{b.label}</option>
                     ))}
                   </select>
-                  <p className="text-[11px] text-muted-foreground/60 mt-1">Ranges are indicative — final terms are discussed with our team.</p>
+                  <p className="text-[11px] text-gray-200 mt-1">Ranges are indicative — final terms are discussed with our team.</p>
                 </div>
 
                 <div className="sm:col-span-2">

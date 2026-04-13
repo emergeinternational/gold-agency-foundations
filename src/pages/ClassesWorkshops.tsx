@@ -75,7 +75,7 @@ export default function ClassesWorkshops() {
           {/* Cards */}
           {filtered.length === 0 ? (
             <div className="text-center py-16">
-              <p className="text-muted-foreground">No programs match your current filters. Try adjusting your selection.</p>
+              <p className="text-gray-300">No programs match your current filters. Try adjusting your selection.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -87,7 +87,7 @@ export default function ClassesWorkshops() {
                       <span className="text-[10px] uppercase tracking-widest text-muted-foreground bg-secondary px-2 py-0.5 rounded">{c.level}</span>
                     </div>
                     <h3 className="font-display text-xl font-semibold text-foreground mb-2">{c.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed mb-4">{c.desc}</p>
+                    <p className="text-sm text-gray-300 leading-relaxed mb-4">{c.desc}</p>
                     <div className="space-y-1.5 text-xs text-muted-foreground">
                       <div className="flex items-center gap-2"><Calendar className="w-3.5 h-3.5" /> {c.date}</div>
                       <div className="flex items-center gap-2">
@@ -117,7 +117,7 @@ export default function ClassesWorkshops() {
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="card-premium p-8 max-w-lg w-full" onClick={e => e.stopPropagation()}>
             <span className="text-[10px] uppercase tracking-widest text-primary">{selectedClass.format} · {selectedClass.level}</span>
             <h3 className="font-display text-2xl font-semibold text-foreground mt-2 mb-4">{selectedClass.title}</h3>
-            <p className="text-muted-foreground leading-relaxed mb-6">{selectedClass.desc}</p>
+            <p className="text-gray-300 leading-relaxed mb-6">{selectedClass.desc}</p>
             <div className="space-y-2 text-sm text-muted-foreground mb-6">
               <p><strong className="text-foreground">Date:</strong> {selectedClass.date}</p>
               <p><strong className="text-foreground">Format:</strong> {selectedClass.delivery}</p>
