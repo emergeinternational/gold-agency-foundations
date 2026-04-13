@@ -1,7 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
+
+type ReviewStatus = "new" | "review" | "development" | "approved" | "rejected";
+
+const STATUS_OPTIONS: ReviewStatus[] = ["new", "review", "development", "approved", "rejected"];
 
 type Submission = {
   id: string;
@@ -20,24 +25,75 @@ type Submission = {
   }[];
 };
 
+type AdminNote = {
+  id: string;
+  created_at: string;
+  note: string | null;
+  submission_id: string | null;
+};
+
+const normalizeStatus = (value: string | null): ReviewStatus => {
+  if (value && STATUS_OPTIONS.includes(value as ReviewStatus)) {
+    return value as ReviewStatus;
+  }
+  return "new";
+};
+
 export default function AdminReview() {
   const [rows, setRows] = useState<Submission[]>([]);
+  const [notesBySubmission, setNotesBySubmission] = useState<Record<string, AdminNote[]>>({});
+  const [statusDrafts, setStatusDrafts] = useState<Record<string, ReviewStatus>>({});
+  const [noteDrafts, setNoteDrafts] = useState<Record<string, string>>({});
+  const [filterCategory, setFilterCategory] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [filterSource, setFilterSource] = useState("all");
+  const [savingStatusId, setSavingStatusId] = useState<string | null>(null);
+  const [savingNoteId, setSavingNoteId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
-      const { data, error: err } = await supabase
+      const { data, error: submissionsError } = await supabase
         .from("submissions")
         .select("id, created_at, full_name, email, phone, category, country, source, status, prequalification_results(outcome, score, critical_pass)")
         .order("created_at", { ascending: false });
 
-      if (err) {
-        setError(err.message);
-      } else {
-        setRows((data as unknown as Submission[]) ?? []);
+      if (submissionsError) {
+        setError(submissionsError.message);
+        setLoading(false);
+        return;
       }
+
+      const submissionRows = (data as Submission[]) ?? [];
+      setRows(submissionRows);
+      setStatusDrafts(
+        submissionRows.reduce<Record<string, ReviewStatus>>((acc, row) => {
+          acc[row.id] = normalizeStatus(row.status);
+          return acc;
+        }, {}),
+      );
+
+      if (submissionRows.length > 0) {
+        const ids = submissionRows.map((row) => row.id);
+        const { data: notesData, error: notesError } = await supabase
+          .from("admin_notes")
+          .select("id, created_at, note, submission_id")
+          .in("submission_id", ids)
+          .order("created_at", { ascending: false });
+
+        if (!notesError && notesData) {
+          const grouped = notesData.reduce<Record<string, AdminNote[]>>((acc, note) => {
+            if (!note.submission_id) return acc;
+            const current = acc[note.submission_id] ?? [];
+            acc[note.submission_id] = [...current, note as AdminNote];
+            return acc;
+          }, {});
+          setNotesBySubmission(grouped);
+        }
+      }
+
       setLoading(false);
     })();
   }, []);
@@ -47,57 +103,229 @@ export default function AdminReview() {
     navigate("/sign-in", { replace: true });
   };
 
+  const handleStatusSave = async (submissionId: string) => {
+    const status = statusDrafts[submissionId];
+    if (!status) return;
+
+    setSavingStatusId(submissionId);
+    const { error: updateError } = await supabase
+      .from("submissions")
+      .update({ status })
+      .eq("id", submissionId);
+
+    if (updateError) {
+      setError(updateError.message);
+    } else {
+      setRows((prev) => prev.map((row) => (row.id === submissionId ? { ...row, status } : row)));
+    }
+    setSavingStatusId(null);
+  };
+
+  const handleAddNote = async (submissionId: string) => {
+    const note = noteDrafts[submissionId]?.trim();
+    if (!note) return;
+
+    setSavingNoteId(submissionId);
+    const { data: inserted, error: noteError } = await supabase
+      .from("admin_notes")
+      .insert({ submission_id: submissionId, note })
+      .select("id, created_at, note, submission_id")
+      .single();
+
+    if (noteError) {
+      setError(noteError.message);
+    } else if (inserted) {
+      setNotesBySubmission((prev) => ({
+        ...prev,
+        [submissionId]: [inserted as AdminNote, ...(prev[submissionId] ?? [])],
+      }));
+      setNoteDrafts((prev) => ({ ...prev, [submissionId]: "" }));
+    }
+    setSavingNoteId(null);
+  };
+
+  const categoryOptions = useMemo(
+    () => [...new Set(rows.map((row) => row.category).filter(Boolean) as string[])].sort(),
+    [rows],
+  );
+  const sourceOptions = useMemo(
+    () => [...new Set(rows.map((row) => row.source).filter(Boolean) as string[])].sort(),
+    [rows],
+  );
+
+  const filteredRows = useMemo(
+    () =>
+      rows.filter((row) => {
+        const rowStatus = normalizeStatus(row.status);
+        const categoryMatch = filterCategory === "all" || row.category === filterCategory;
+        const statusMatch = filterStatus === "all" || rowStatus === filterStatus;
+        const sourceMatch = filterSource === "all" || row.source === filterSource;
+        return categoryMatch && statusMatch && sourceMatch;
+      }),
+    [rows, filterCategory, filterStatus, filterSource],
+  );
+
   return (
     <div className="min-h-screen bg-background text-foreground p-6 sm:p-10">
       <div className="mb-6 flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold mb-1">Submission Review</h1>
-          <p className="text-sm text-muted-foreground">Internal — read-only view of all submissions.</p>
+          <p className="text-sm text-muted-foreground">
+            Internal only — founder/admin review workspace. Source is shown prominently to keep Ascend and Emerge separated.
+          </p>
         </div>
         <Button variant="outline" onClick={handleSignOut}>Sign out</Button>
+      </div>
+
+      <div className="mb-4 grid gap-3 sm:grid-cols-3">
+        <div>
+          <label className="mb-1 block text-xs font-medium text-muted-foreground">Filter by category</label>
+          <select
+            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+            value={filterCategory}
+            onChange={(event) => setFilterCategory(event.target.value)}
+          >
+            <option value="all">All categories</option>
+            {categoryOptions.map((option) => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="mb-1 block text-xs font-medium text-muted-foreground">Filter by status</label>
+          <select
+            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+            value={filterStatus}
+            onChange={(event) => setFilterStatus(event.target.value)}
+          >
+            <option value="all">All statuses</option>
+            {STATUS_OPTIONS.map((status) => (
+              <option key={status} value={status}>{status}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="mb-1 block text-xs font-medium text-muted-foreground">Filter by source</label>
+          <select
+            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+            value={filterSource}
+            onChange={(event) => setFilterSource(event.target.value)}
+          >
+            <option value="all">All sources</option>
+            {sourceOptions.map((option) => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {loading && <p className="text-sm text-muted-foreground">Loading…</p>}
       {error && <p className="text-sm text-destructive">Error: {error}</p>}
 
-      {!loading && !error && rows.length === 0 && (
-        <p className="text-sm text-muted-foreground">No submissions yet.</p>
+      {!loading && !error && filteredRows.length === 0 && (
+        <p className="text-sm text-muted-foreground">No submissions for the selected filters.</p>
       )}
 
-      {!loading && rows.length > 0 && (
+      {!loading && filteredRows.length > 0 && (
         <div className="overflow-x-auto border border-border rounded-md">
           <table className="w-full text-sm">
             <thead className="bg-secondary/60 text-left">
               <tr>
                 <th className="px-3 py-2 font-medium">Date</th>
+                <th className="px-3 py-2 font-medium">Source</th>
                 <th className="px-3 py-2 font-medium">Name</th>
                 <th className="px-3 py-2 font-medium">Email</th>
                 <th className="px-3 py-2 font-medium">Phone</th>
                 <th className="px-3 py-2 font-medium">Category</th>
                 <th className="px-3 py-2 font-medium">Country</th>
-                <th className="px-3 py-2 font-medium">Source</th>
                 <th className="px-3 py-2 font-medium">Status</th>
                 <th className="px-3 py-2 font-medium">PQ Outcome</th>
                 <th className="px-3 py-2 font-medium">Score</th>
                 <th className="px-3 py-2 font-medium">Critical</th>
+                <th className="px-3 py-2 font-medium">Admin Notes</th>
               </tr>
             </thead>
             <tbody>
-              {rows.map((r) => {
-                const pq = r.prequalification_results?.[0];
+              {filteredRows.map((row) => {
+                const pq = row.prequalification_results?.[0];
+                const notes = notesBySubmission[row.id] ?? [];
+
                 return (
-                  <tr key={r.id} className="border-t border-border/60 hover:bg-secondary/30">
-                    <td className="px-3 py-2 whitespace-nowrap">{new Date(r.created_at).toLocaleDateString()}</td>
-                    <td className="px-3 py-2">{r.full_name ?? "—"}</td>
-                    <td className="px-3 py-2">{r.email ?? "—"}</td>
-                    <td className="px-3 py-2">{r.phone ?? "—"}</td>
-                    <td className="px-3 py-2">{r.category ?? "—"}</td>
-                    <td className="px-3 py-2">{r.country ?? "—"}</td>
-                    <td className="px-3 py-2">{r.source ?? "—"}</td>
-                    <td className="px-3 py-2">{r.status ?? "—"}</td>
+                  <tr key={row.id} className="border-t border-border/60 align-top hover:bg-secondary/30">
+                    <td className="px-3 py-2 whitespace-nowrap">{new Date(row.created_at).toLocaleDateString()}</td>
+                    <td className="px-3 py-2 font-semibold uppercase tracking-wide">{row.source ?? "—"}</td>
+                    <td className="px-3 py-2">{row.full_name ?? "—"}</td>
+                    <td className="px-3 py-2">{row.email ?? "—"}</td>
+                    <td className="px-3 py-2">{row.phone ?? "—"}</td>
+                    <td className="px-3 py-2">{row.category ?? "—"}</td>
+                    <td className="px-3 py-2">{row.country ?? "—"}</td>
+                    <td className="px-3 py-2 min-w-48">
+                      <div className="flex gap-2">
+                        <select
+                          className="h-9 rounded-md border border-input bg-background px-2 text-sm"
+                          value={statusDrafts[row.id] ?? normalizeStatus(row.status)}
+                          onChange={(event) =>
+                            setStatusDrafts((prev) => ({
+                              ...prev,
+                              [row.id]: event.target.value as ReviewStatus,
+                            }))
+                          }
+                        >
+                          {STATUS_OPTIONS.map((status) => (
+                            <option key={status} value={status}>{status}</option>
+                          ))}
+                        </select>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={savingStatusId === row.id}
+                          onClick={() => handleStatusSave(row.id)}
+                        >
+                          Save
+                        </Button>
+                      </div>
+                    </td>
                     <td className="px-3 py-2">{pq?.outcome ?? "—"}</td>
                     <td className="px-3 py-2">{pq?.score ?? "—"}</td>
                     <td className="px-3 py-2">{pq?.critical_pass === true ? "✓" : pq?.critical_pass === false ? "✗" : "—"}</td>
+                    <td className="px-3 py-2 min-w-72">
+                      <div className="space-y-2">
+                        {notes.length > 0 ? (
+                          <div className="max-h-28 overflow-y-auto rounded-md border border-border/60 p-2">
+                            {notes.map((note) => (
+                              <p key={note.id} className="mb-2 text-xs leading-relaxed last:mb-0">
+                                <span className="text-muted-foreground">{new Date(note.created_at).toLocaleString()}:</span>{" "}
+                                {note.note ?? ""}
+                              </p>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-xs text-muted-foreground">No internal notes yet.</p>
+                        )}
+
+                        <Textarea
+                          value={noteDrafts[row.id] ?? ""}
+                          onChange={(event) =>
+                            setNoteDrafts((prev) => ({
+                              ...prev,
+                              [row.id]: event.target.value,
+                            }))
+                          }
+                          rows={2}
+                          placeholder="Add internal note"
+                        />
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          disabled={savingNoteId === row.id || !(noteDrafts[row.id] ?? "").trim()}
+                          onClick={() => handleAddNote(row.id)}
+                        >
+                          Add note
+                        </Button>
+                      </div>
+                    </td>
                   </tr>
                 );
               })}
