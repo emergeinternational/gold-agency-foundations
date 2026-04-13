@@ -579,8 +579,8 @@ export default function Submit() {
                   {errors.agreeTerms && <p className={errorClass}>{errors.agreeTerms}</p>}
                 </div>
 
-                <Button type="submit" variant="hero" size="xl" className="w-full sm:w-auto">
-                  Submit for Review
+                <Button type="submit" variant="hero" size="xl" className="w-full sm:w-auto" disabled={submitting}>
+                  {submitting ? "Submitting…" : "Submit for Review"}
                 </Button>
                 <p className="text-xs text-gray-200">Reviewed by our representation team.</p>
               </form>
