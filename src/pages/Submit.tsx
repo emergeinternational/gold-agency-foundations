@@ -208,9 +208,59 @@ export default function Submit() {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validate()) navigate("/submission-success");
+    if (!validate()) return;
+    setSubmitting(true);
+    try {
+      // 1. Insert submission
+      const { data: submission, error: subErr } = await supabase
+        .from("submissions")
+        .insert({
+          full_name: form.fullName,
+          email: form.email,
+          phone: form.phone || null,
+          country: form.country || null,
+          city: form.city || null,
+          category: form.category || null,
+          instagram: form.instagram || null,
+          tiktok: form.tiktok || null,
+          youtube: form.youtube || null,
+          website: form.website || null,
+          experience_level: form.experienceLevel || null,
+          portfolio_url: form.portfolioLinks || null,
+          sample_url: null,
+          source: outcome?.qualify ? "emerge" : "ascend",
+          status: "new",
+          notes: null,
+        })
+        .select("id")
+        .single();
+
+      if (subErr) throw subErr;
+
+      // 2. Insert prequalification result linked to submission
+      if (outcome && submission) {
+        const { error: pqErr } = await supabase
+          .from("prequalification_results")
+          .insert({
+            submission_id: submission.id,
+            category: gateCategory,
+            score: outcome.score,
+            critical_pass: outcome.criticalPass,
+            outcome: outcome.qualify ? "qualify" : "develop",
+            answers: answers as Record<string, boolean | null>,
+          });
+        if (pqErr) console.error("Prequalification save error:", pqErr);
+      }
+
+      navigate("/submission-success");
+    } catch (err) {
+      console.error("Submission error:", err);
+      setErrors({ form: "Something went wrong. Please try again." });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const inputClass = "w-full px-4 py-3 bg-secondary/60 border border-border/60 rounded-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary/40 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-sm";
