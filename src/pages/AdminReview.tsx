@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,6 +14,8 @@ type NextAction =
   | "hold"
   | "reject";
 
+type ReviewViewMode = "standard" | "action_queue";
+
 const STATUS_OPTIONS: ReviewStatus[] = ["new", "review", "development", "approved", "rejected"];
 const LEVEL_OPTIONS: SubmissionLevel[] = ["beginner", "intermediate", "advanced", "elite"];
 const NEXT_ACTION_OPTIONS: NextAction[] = [
@@ -24,6 +26,16 @@ const NEXT_ACTION_OPTIONS: NextAction[] = [
   "hold",
   "reject",
 ];
+
+const ACTION_QUEUE_GROUP_ORDER = [
+  "schedule_audition",
+  "request_more_content",
+  "hold",
+  "enroll_training",
+  "refer_to_emerge",
+  "reject",
+  "no_action",
+] as const;
 
 type Submission = {
   assignee: string | null;
@@ -136,6 +148,11 @@ const formatCriterionLabel = (value: string) =>
     .replaceAll("_", " ")
     .replace(/\b\w/g, (char) => char.toUpperCase());
 
+const formatActionGroupLabel = (value: string | null): string => {
+  if (!value) return "No Action Set";
+  return formatCriterionLabel(value);
+};
+
 const getSuggestedLevelFromAverage = (averageScore: number): SubmissionLevel => {
   if (averageScore >= 4.5) return "elite";
   if (averageScore >= 3.8) return "advanced";
@@ -181,6 +198,7 @@ export default function AdminReview() {
   const [filterNextAction, setFilterNextAction] = useState("all");
   const [filterReadiness, setFilterReadiness] = useState("all");
   const [search, setSearch] = useState("");
+  const [viewMode, setViewMode] = useState<ReviewViewMode>("standard");
   const [savingStatusId, setSavingStatusId] = useState<string | null>(null);
   const [savingAssigneeId, setSavingAssigneeId] = useState<string | null>(null);
   const [savingLevelId, setSavingLevelId] = useState<string | null>(null);
@@ -581,6 +599,51 @@ export default function AdminReview() {
     [rows, filterCategory, filterStatus, filterSource, filterNextAction, filterReadiness, search],
   );
 
+
+
+  const summaryCounts = useMemo(() => {
+    const total = rows.length;
+    const readyForEmerge = rows.filter((row) => row.emerge_ready).length;
+    const inDevelopment = rows.filter((row) => row.status === "development").length;
+    const awaitingAudition = rows.filter((row) => row.next_action === "schedule_audition").length;
+    const requestMoreContent = rows.filter((row) => row.next_action === "request_more_content").length;
+    const hold = rows.filter((row) => row.next_action === "hold").length;
+
+    return {
+      total,
+      readyForEmerge,
+      inDevelopment,
+      awaitingAudition,
+      requestMoreContent,
+      hold,
+    };
+  }, [rows]);
+
+  const actionQueueGroups = useMemo(() => {
+    const grouped = filteredRows.reduce<Record<string, Submission[]>>((acc, row) => {
+      const key = row.next_action || "no_action";
+      acc[key] = [...(acc[key] ?? []), row];
+      return acc;
+    }, {});
+
+    return ACTION_QUEUE_GROUP_ORDER.filter((key) => grouped[key]?.length).map((key) => ({
+      key,
+      rows: [...(grouped[key] ?? [])].sort((a, b) => {
+        if (a.emerge_ready !== b.emerge_ready) {
+          return a.emerge_ready ? -1 : 1;
+        }
+
+        const aAverage = getAverageFromScores(getEvaluationCriteria(a.category), a.evaluation_scores) ?? -1;
+        const bAverage = getAverageFromScores(getEvaluationCriteria(b.category), b.evaluation_scores) ?? -1;
+
+        if (aAverage !== bAverage) {
+          return bAverage - aAverage;
+        }
+
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      }),
+    }));
+  }, [filteredRows]);
   return (
     <div className="min-h-screen bg-background p-6 text-foreground sm:p-10">
       <div className="mb-6 flex items-center justify-between gap-4">
@@ -685,6 +748,40 @@ export default function AdminReview() {
         </div>
       </div>
 
+      <div className="mb-4 grid gap-2 sm:grid-cols-6">
+        {[
+          { label: "Total Submissions", value: summaryCounts.total },
+          { label: "Ready for Emerge", value: summaryCounts.readyForEmerge },
+          { label: "In Development", value: summaryCounts.inDevelopment },
+          { label: "Awaiting Audition", value: summaryCounts.awaitingAudition },
+          { label: "Request More Content", value: summaryCounts.requestMoreContent },
+          { label: "Hold", value: summaryCounts.hold },
+        ].map((item) => (
+          <div key={item.label} className="rounded-md border border-border/60 bg-muted/20 px-3 py-2">
+            <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{item.label}</p>
+            <p className="text-lg font-semibold">{item.value}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="mb-4 flex items-center gap-2">
+        <span className="text-xs font-medium text-muted-foreground">View mode:</span>
+        <Button
+          size="sm"
+          variant={viewMode === "standard" ? "default" : "outline"}
+          onClick={() => setViewMode("standard")}
+        >
+          Standard View
+        </Button>
+        <Button
+          size="sm"
+          variant={viewMode === "action_queue" ? "default" : "outline"}
+          onClick={() => setViewMode("action_queue")}
+        >
+          Action Queue
+        </Button>
+      </div>
+
       {loading && <p className="text-sm text-muted-foreground">Loading…</p>}
       {error && <p className="text-sm text-destructive">Error: {error}</p>}
 
@@ -721,7 +818,11 @@ export default function AdminReview() {
               </tr>
             </thead>
             <tbody>
-              {filteredRows.map((row) => {
+              {(viewMode === "action_queue" ? actionQueueGroups.flatMap((group) => group.rows) : filteredRows).map((row, index, activeRows) => {
+                const previousRow = activeRows[index - 1];
+                const startsNewGroup =
+                  viewMode === "action_queue" && (index === 0 || previousRow?.next_action !== row.next_action);
+
                 const pq = row.prequalification_results?.[0];
                 const notes = notesBySubmission[row.id] ?? [];
                 const normalizedCategory = normalizeCategory(row.category ?? "");
@@ -740,7 +841,15 @@ export default function AdminReview() {
                     : null;
 
                 return (
-                  <tr key={row.id} className="align-top hover:bg-secondary/30 border-t border-border/60">
+                  <Fragment key={row.id}>
+                    {startsNewGroup && (
+                      <tr className="border-t border-border bg-secondary/40">
+                        <td colSpan={21} className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                          {formatActionGroupLabel(row.next_action)}
+                        </td>
+                      </tr>
+                    )}
+                    <tr className="align-top border-t border-border/60 hover:bg-secondary/30">
                     <td className="whitespace-nowrap px-3 py-2">{new Date(row.created_at).toLocaleDateString()}</td>
                     <td className="whitespace-nowrap px-3 py-2 text-xs text-muted-foreground">{renderAge(row.created_at)}</td>
                     <td className="px-3 py-2 font-semibold uppercase tracking-wide">{row.source ?? "—"}</td>
@@ -1055,7 +1164,8 @@ export default function AdminReview() {
                         </Button>
                       </div>
                     </td>
-                  </tr>
+                    </tr>
+                  </Fragment>
                 );
               })}
             </tbody>
