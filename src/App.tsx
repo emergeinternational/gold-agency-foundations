@@ -26,7 +26,7 @@ import EnrollmentSuccess from "./pages/EnrollmentSuccess";
 import Roster from "./pages/Roster";
 import TalentProfile from "./pages/TalentProfile";
 import NotFound from "./pages/NotFound";
-
+import AdminReview from "./pages/AdminReview";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -58,6 +58,7 @@ const App = () => (
           <Route path="/enrollment-success" element={<EnrollmentSuccess />} />
           <Route path="/roster" element={<Roster />} />
           <Route path="/roster/:slug" element={<TalentProfile />} />
+          <Route path="/admin/review" element={<AdminReview />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
