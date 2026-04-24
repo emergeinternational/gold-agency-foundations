@@ -175,6 +175,7 @@ export default function Submit() {
     new_faces_2026: "New Faces — 2026 Talent Search",
     new_faces_talent_review: "New Faces Talent Review",
     ongoing_casting_call: "Ongoing Casting Call",
+    featured_casting_call: "Featured Casting Call",
     creative_showcase: "Addis Creative Showcase",
     brand_campaign_spring_2026: "Brand Campaign — Spring 2026",
     east_african_media_fellowship: "East Africa Media Fellowship",
@@ -192,6 +193,7 @@ export default function Submit() {
   const OPPORTUNITY_CATEGORY_MAP: Record<string, string[]> = {
     new_faces_talent_review: TALENT_CATEGORIES.map((c) => c.id) as string[],
     ongoing_casting_call: ["models", "actors-performers", "hosts-presenters", "media-personalities"],
+    featured_casting_call: ["models", "actors-performers", "hosts-presenters", "media-personalities", "musicians"],
     creative_showcase: ["musicians", "speakers-storytellers", "actors-performers", "hosts-presenters", "digital-creators"],
     brand_campaign_spring_2026: ["models", "influencers", "actors-performers", "digital-creators"],
     east_african_media_fellowship: ["media-personalities", "hosts-presenters", "digital-creators", "speakers-storytellers"],

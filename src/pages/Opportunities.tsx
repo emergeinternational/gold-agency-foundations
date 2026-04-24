@@ -23,8 +23,9 @@ type Opportunity = {
 };
 
 const opportunities: Opportunity[] = [
-  { type: "Representation Review", title: "New Faces Talent Review", desc: "Seeking fresh creative talent across all categories. Submission does not guarantee representation. Selected talent may be invited to further development and positioning opportunities.", status: "Active", mode: "representation", slug: "new_faces_talent_review" },
-  { type: "Casting", title: "Ongoing Casting Call", desc: "Rolling casting for upcoming productions, campaigns, and creative projects. Submissions are reviewed continuously and matched to active and upcoming opportunities.", status: "Ongoing", mode: "casting", slug: "ongoing_casting_call" },
+  { type: "Representation Review", title: "New Faces Talent Review", desc: "Seeking fresh creative talent across categories for review, development, representation readiness, and future opportunities. Submission does not guarantee selection.", status: "Active", mode: "representation", slug: "new_faces_talent_review" },
+  { type: "Casting", title: "Ongoing Casting Call", desc: "Submit for current and future casting opportunities across media, campaigns, productions, and live opportunities.", status: "Ongoing", mode: "casting", slug: "ongoing_casting_call" },
+  { type: "Featured Casting", title: "Featured Casting Call", desc: "Submit for a featured casting opportunity. Selected applicants will receive date, time, location, and next-step details through Telegram.", status: "Upcoming", mode: "casting", slug: "featured_casting_call" },
   { type: "Showcase", title: "Addis Creative Showcase", desc: "A curated evening of live performance, industry introductions, and creative presentation in Addis Ababa.", status: "Upcoming", mode: "media_opportunity", slug: "creative_showcase" },
   { type: "Internal Casting", title: "Brand Campaign — Spring 2026", desc: "Internal casting for a major commercial campaign. Priority consideration for represented talent.", status: "Active", mode: "brand_campaign", slug: "brand_campaign_spring_2026" },
   { type: "Partner Opportunity", title: "East Africa Media Fellowship", desc: "A regional mentorship and exposure program for media-focused talent, developed with industry partners.", status: "Upcoming", mode: "media_opportunity", slug: "east_african_media_fellowship" },
