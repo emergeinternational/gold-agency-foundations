@@ -92,8 +92,8 @@ const supabaseRest = async (path: string, init: RequestInit = {}) => {
 
 const fetchSubmissionById = async (submissionId: string) => {
   const rows = (await supabaseRest(
-    `submissions?id=eq.${encodeURIComponent(submissionId)}&select=id,full_name,application_mode,telegram_chat_id&limit=1`,
-  )) as Array<{ id: string; full_name: string | null; application_mode: string | null; telegram_chat_id: string | null }>;
+    `submissions?id=eq.${encodeURIComponent(submissionId)}&select=id,full_name,application_mode,opportunity_title,telegram_chat_id&limit=1`,
+  )) as Array<{ id: string; full_name: string | null; application_mode: string | null; opportunity_title: string | null; telegram_chat_id: string | null }>;
   return rows?.[0] ?? null;
 };
 
@@ -141,12 +141,14 @@ const insertInboundMessage = async (params: {
   }
 };
 
-const buildWelcomeMessage = (firstName: string, applicationMode: string | null) => {
+const buildWelcomeMessage = (firstName: string, applicationMode: string | null, opportunityTitle: string | null) => {
   const mode = (applicationMode ?? "general").toLowerCase();
   const label = APPLICATION_LABELS[mode] ?? APPLICATION_LABELS.general;
 
   let intro: string;
-  if (mode === "casting") {
+  if (opportunityTitle && opportunityTitle.trim().length > 0) {
+    intro = `Thank you for submitting for ${opportunityTitle.trim()}.\nOur team will review your application and follow up here with next steps. Stay connected.`;
+  } else if (mode === "casting") {
     intro =
       "Thank you for your casting application.\nOur team is reviewing your submission. If selected, you will receive casting details here. Stay ready.";
   } else if (mode === "representation") {
@@ -207,7 +209,7 @@ const handleStartCommand = async (message: TelegramMessage, chatId: number) => {
     (message.from?.first_name?.trim()) ||
     (submission.full_name?.split(/\s+/)[0]?.trim() ?? "");
 
-  const welcome = buildWelcomeMessage(firstName, submission.application_mode);
+  const welcome = buildWelcomeMessage(firstName, submission.application_mode, submission.opportunity_title);
   await sendTelegramMessage(chatId, welcome);
 
   // Also log the welcome as outbound for the admin message history.
