@@ -1230,6 +1230,23 @@ export default function AdminReview() {
                       </div>
                     </td>
                     </tr>
+                    <tr className="border-b border-border bg-background/30">
+                      <td colSpan={21} className="px-3 py-3">
+                        <CandidateMessagingPanel
+                          submissionId={row.id}
+                          telegramChatId={row.telegram_chat_id}
+                          applicationMode={row.application_mode}
+                          candidateOutcome={row.candidate_outcome}
+                          priorityTier={row.priority_tier}
+                          tags={row.tags}
+                          onSegmentationSaved={(next) => {
+                            setRows((prev) =>
+                              prev.map((item) => (item.id === row.id ? { ...item, ...next } : item)),
+                            );
+                          }}
+                        />
+                      </td>
+                    </tr>
                   </Fragment>
                 );
               })}
