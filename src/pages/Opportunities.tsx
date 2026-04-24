@@ -45,7 +45,7 @@ export default function Opportunities() {
                 <h3 className="font-display text-xl font-semibold text-foreground mb-2">{opp.title}</h3>
                 <p className="text-sm text-gray-300 leading-relaxed flex-1 mb-4">{opp.desc}</p>
                 <Button variant="gold-outline" size="sm" asChild>
-                  <Link to="/submit">Submit for Review</Link>
+                  <Link to="/submit?mode=casting">Submit for Review</Link>
                 </Button>
               </motion.div>
             ))}
@@ -59,7 +59,7 @@ export default function Opportunities() {
             <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground">Nothing Here That Fits?</h2>
             <p className="mt-4 text-gray-300 text-lg font-light">Submit your profile and we'll match you with relevant opportunities as they come up, including advanced preparation pathways where appropriate.</p>
             <div className="mt-8">
-              <Button variant="hero" size="xl" asChild><Link to="/submit">Submit for Review</Link></Button>
+              <Button variant="hero" size="xl" asChild><Link to="/submit?mode=casting">Submit for Review</Link></Button>
             </div>
             <p className="mt-3 text-xs text-gray-200">Selection is limited.</p>
           </motion.div>

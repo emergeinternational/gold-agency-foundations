@@ -154,6 +154,11 @@ export default function Submit() {
   const categoryFromRoute = searchParams.get("category") ?? "";
   const recognizedCategory = TALENT_CATEGORIES.find((c) => c.id === categoryFromRoute)?.id ?? "";
 
+  // Phase 5: capture application_mode from query (?mode=casting | representation)
+  const rawMode = (searchParams.get("mode") ?? "").toLowerCase().trim();
+  const applicationMode: "casting" | "representation" | "general" =
+    rawMode === "casting" ? "casting" : rawMode === "representation" ? "representation" : "general";
+
   const [form, setForm] = useState({
     fullName: "", stageName: "", age: "", city: "", country: "",
     phone: "", email: "", instagram: "", tiktok: "", youtube: "", website: "",
@@ -267,6 +272,7 @@ export default function Submit() {
           source: outcome?.qualify ? "emerge" : "ascend",
           status: "new",
           notes: null,
+          application_mode: applicationMode,
         })
         .select("id")
         .single();
@@ -288,7 +294,9 @@ export default function Submit() {
         if (pqErr) console.error("Prequalification save error:", pqErr);
       }
 
-      navigate("/submission-success");
+      // Phase 1 fix: pass submission id to success page so Telegram deep link works
+      const successId = submission?.id;
+      navigate(successId ? `/submission-success?id=${encodeURIComponent(successId)}` : "/submission-success");
     } catch (err) {
       console.error("Submission error:", err);
       setErrors({ form: "Something went wrong. Please try again." });
