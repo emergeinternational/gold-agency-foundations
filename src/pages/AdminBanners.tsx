@@ -122,6 +122,8 @@ export default function AdminBanners() {
       sort_order: row.sort_order,
       display_ms: row.display_ms,
       link_url: row.link_url || null,
+      starts_at: row.starts_at,
+      ends_at: row.ends_at,
     };
     if (row.id) {
       const { error } = await supabase.from("banner_messages").update(payload).eq("id", row.id);
