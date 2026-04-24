@@ -932,7 +932,25 @@ export default function AdminReview() {
                     <td className="whitespace-nowrap px-3 py-2">{new Date(row.created_at).toLocaleDateString()}</td>
                     <td className="whitespace-nowrap px-3 py-2 text-xs text-muted-foreground">{renderAge(row.created_at)}</td>
                     <td className="px-3 py-2 font-semibold uppercase tracking-wide">{row.source ?? "—"}</td>
-                    <td className="px-3 py-2">{row.full_name ?? "—"}</td>
+                    <td className="px-3 py-2">
+                      <div className="flex flex-col gap-0.5">
+                        <span>{row.full_name ?? "—"}</span>
+                        {(row.application_mode || row.opportunity_title) && (
+                          <span className="flex flex-wrap gap-1">
+                            {row.application_mode && row.application_mode !== "general" && (
+                              <span className="inline-flex rounded-full border border-primary/30 bg-primary/5 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-primary">
+                                {row.application_mode.split("_").join(" ")}
+                              </span>
+                            )}
+                            {row.opportunity_title && (
+                              <span className="inline-flex rounded-full border border-border bg-secondary/40 px-1.5 py-0.5 text-[10px] text-muted-foreground" title={row.opportunity_slug ?? undefined}>
+                                {row.opportunity_title}
+                              </span>
+                            )}
+                          </span>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-3 py-2">{row.email ?? "—"}</td>
                     <td className="px-3 py-2">{row.phone ?? "—"}</td>
                     <td className="px-3 py-2">{row.city ?? "—"}</td>
