@@ -114,6 +114,26 @@ export default function AdminBanners() {
       toast({ title: "Message text required", variant: "destructive" });
       return;
     }
+    // Prevent saving an exact duplicate (same text + schedule window + featured flag)
+    const normalizedText = row.text.trim().toLowerCase();
+    const duplicate = rows.find((other, i) => {
+      if (i === idx) return false;
+      return (
+        (other.text || "").trim().toLowerCase() === normalizedText &&
+        !!other.featured === !!row.featured &&
+        (other.starts_at || null) === (row.starts_at || null) &&
+        (other.ends_at || null) === (row.ends_at || null)
+      );
+    });
+    if (duplicate) {
+      toast({
+        title: "Duplicate banner",
+        description:
+          "Another message has the same text, schedule window, and featured setting. Change one of them before saving.",
+        variant: "destructive",
+      });
+      return;
+    }
     setSavingId(row.id || `new-${idx}`);
     const payload = {
       text: row.text,
