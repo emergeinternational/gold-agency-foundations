@@ -17,6 +17,8 @@ type BannerRow = {
   sort_order: number;
   display_ms: number;
   link_url: string | null;
+  starts_at: string | null;
+  ends_at: string | null;
 };
 
 type Draft = Omit<BannerRow, "id"> & { id?: string; _dirty?: boolean };
@@ -28,8 +30,36 @@ const blankDraft = (sort_order: number): Draft => ({
   sort_order,
   display_ms: 4500,
   link_url: "",
+  starts_at: null,
+  ends_at: null,
   _dirty: true,
 });
+
+// Convert ISO string ↔ value used by <input type="datetime-local">
+const toLocalInput = (iso: string | null): string => {
+  if (!iso) return "";
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
+const fromLocalInput = (val: string): string | null => {
+  if (!val) return null;
+  return new Date(val).toISOString();
+};
+
+const scheduleStatus = (
+  starts: string | null,
+  ends: string | null,
+  isActive: boolean,
+): { label: string; tone: "live" | "scheduled" | "expired" | "off" } => {
+  if (!isActive) return { label: "Inactive", tone: "off" };
+  const now = Date.now();
+  const s = starts ? new Date(starts).getTime() : null;
+  const e = ends ? new Date(ends).getTime() : null;
+  if (s && now < s) return { label: `Scheduled · starts ${new Date(s).toLocaleString()}`, tone: "scheduled" };
+  if (e && now >= e) return { label: `Expired ${new Date(e).toLocaleString()}`, tone: "expired" };
+  return { label: e ? `Live · ends ${new Date(e).toLocaleString()}` : "Live", tone: "live" };
+};
 
 export default function AdminBanners() {
   const [rows, setRows] = useState<Draft[]>([]);
