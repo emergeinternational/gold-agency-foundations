@@ -384,6 +384,11 @@ export default function Submit() {
 
               <div className="space-y-3">
                 <p className="text-sm font-medium text-foreground">Step 2 · Category</p>
+                {opportunityTitle && (
+                  <div className="rounded-sm border border-primary/30 bg-primary/5 px-4 py-3 text-sm text-foreground">
+                    You are submitting for: <span className="font-medium text-primary">{opportunityTitle}</span>
+                  </div>
+                )}
                 {recognizedCategory ? (
                   <div className="rounded-sm border border-border/70 bg-secondary/40 px-4 py-3 text-sm text-foreground">
                     Category confirmed: <span className="font-medium">{TALENT_CATEGORIES.find((c) => c.id === recognizedCategory)?.label}</span>
@@ -400,8 +405,9 @@ export default function Submit() {
                       }}
                     >
                       <option value="">Select your primary discipline</option>
-                      {TALENT_CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
+                      {filteredCategories.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
                     </select>
+                    <p className="text-xs text-muted-foreground mt-1.5">Choose the category that best matches this opportunity.</p>
                   </div>
                 )}
               </div>
@@ -582,8 +588,11 @@ export default function Submit() {
                       <label className={labelClass}>Primary Category *</label>
                       <select className={inputClass} value={form.category} onChange={e => update("category", e.target.value)}>
                         <option value="">Select your primary discipline</option>
-                        {TALENT_CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
+                        {filteredCategories.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
                       </select>
+                      {opportunityTitle && (
+                        <p className="text-xs text-muted-foreground mt-1.5">Choose the category that best matches this opportunity.</p>
+                      )}
                       {errors.category && <p className={errorClass}>{errors.category}</p>}
                     </div>
                     <div>
