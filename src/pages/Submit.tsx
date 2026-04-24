@@ -173,6 +173,8 @@ export default function Submit() {
   const opportunitySlug = /^[a-z0-9_]{1,80}$/.test(rawOpportunitySlug) ? rawOpportunitySlug : null;
   const OPPORTUNITY_TITLES: Record<string, string> = {
     new_faces_2026: "New Faces — 2026 Talent Search",
+    new_faces_talent_review: "New Faces Talent Review",
+    ongoing_casting_call: "Ongoing Casting Call",
     creative_showcase: "Addis Creative Showcase",
     brand_campaign_spring_2026: "Brand Campaign — Spring 2026",
     east_african_media_fellowship: "East Africa Media Fellowship",
@@ -184,6 +186,26 @@ export default function Submit() {
     training_development_opportunities: "Training & Development Opportunities",
   };
   const opportunityTitle = opportunitySlug ? OPPORTUNITY_TITLES[opportunitySlug] ?? null : null;
+
+  // Opportunity → relevant talent category IDs (filters the Primary Category dropdown).
+  // If opportunity not in map (or no opportunity), show full TALENT_CATEGORIES list.
+  const OPPORTUNITY_CATEGORY_MAP: Record<string, string[]> = {
+    new_faces_talent_review: TALENT_CATEGORIES.map((c) => c.id) as string[],
+    ongoing_casting_call: ["models", "actors-performers", "hosts-presenters", "media-personalities"],
+    creative_showcase: ["musicians", "speakers-storytellers", "actors-performers", "hosts-presenters", "digital-creators"],
+    brand_campaign_spring_2026: ["models", "influencers", "actors-performers", "digital-creators"],
+    east_african_media_fellowship: ["media-personalities", "hosts-presenters", "digital-creators", "speakers-storytellers"],
+    program_spotlight_series: TALENT_CATEGORIES.map((c) => c.id) as string[],
+    monthly_creative_spotlight: TALENT_CATEGORIES.map((c) => c.id) as string[],
+    music_talent_spotlight: ["musicians", "voice-narration"],
+    visual_creators_opportunity: ["digital-creators", "models"],
+    creator_campaigns: ["influencers", "digital-creators", "models"],
+    training_development_opportunities: TALENT_CATEGORIES.map((c) => c.id) as string[],
+  };
+  const allowedCategoryIds: string[] = opportunitySlug && OPPORTUNITY_CATEGORY_MAP[opportunitySlug]
+    ? OPPORTUNITY_CATEGORY_MAP[opportunitySlug]
+    : (TALENT_CATEGORIES.map((c) => c.id) as string[]);
+  const filteredCategories = TALENT_CATEGORIES.filter((c) => allowedCategoryIds.includes(c.id));
 
   const [form, setForm] = useState({
     fullName: "", stageName: "", age: "", city: "", country: "",
