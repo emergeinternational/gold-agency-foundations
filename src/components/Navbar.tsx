@@ -9,6 +9,7 @@ const navLinks = [
   { label: "Management", href: "/representation" },
   { label: "Development", href: "/academy" },
   { label: "Areas of Representation", href: "/talent-categories" },
+  { label: "Opportunities", href: "/opportunities" },
   { label: "Book Talent", href: "/book-talent" },
   { label: "Partner With Us", href: "/partnerships" },
 ];

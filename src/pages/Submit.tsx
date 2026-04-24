@@ -154,10 +154,36 @@ export default function Submit() {
   const categoryFromRoute = searchParams.get("category") ?? "";
   const recognizedCategory = TALENT_CATEGORIES.find((c) => c.id === categoryFromRoute)?.id ?? "";
 
-  // Phase 5: capture application_mode from query (?mode=casting | representation)
+  // Phase 5: capture application_mode + opportunity context from query
+  // ?mode=casting | representation | media_opportunity | brand_campaign | training_development | general
+  const ALLOWED_MODES = new Set([
+    "casting",
+    "representation",
+    "media_opportunity",
+    "brand_campaign",
+    "training_development",
+    "general",
+  ]);
   const rawMode = (searchParams.get("mode") ?? "").toLowerCase().trim();
-  const applicationMode: "casting" | "representation" | "general" =
-    rawMode === "casting" ? "casting" : rawMode === "representation" ? "representation" : "general";
+  const applicationMode: string = ALLOWED_MODES.has(rawMode) ? rawMode : "general";
+
+  // Opportunity slug from query (e.g. new_faces_2026); store the slug verbatim,
+  // and derive a human-readable title for downstream messaging.
+  const rawOpportunitySlug = (searchParams.get("opportunity") ?? "").trim().toLowerCase();
+  const opportunitySlug = /^[a-z0-9_]{1,80}$/.test(rawOpportunitySlug) ? rawOpportunitySlug : null;
+  const OPPORTUNITY_TITLES: Record<string, string> = {
+    new_faces_2026: "New Faces — 2026 Talent Search",
+    creative_showcase: "Addis Creative Showcase",
+    brand_campaign_spring_2026: "Brand Campaign — Spring 2026",
+    east_african_media_fellowship: "East Africa Media Fellowship",
+    program_spotlight_series: "Program Spotlight Series",
+    monthly_creative_spotlight: "Monthly Creative Spotlight",
+    music_talent_spotlight: "Music Talent Spotlight",
+    visual_creators_opportunity: "Visual Creators Opportunity",
+    creator_campaigns: "Creator Campaigns",
+    training_development_opportunities: "Training & Development Opportunities",
+  };
+  const opportunityTitle = opportunitySlug ? OPPORTUNITY_TITLES[opportunitySlug] ?? null : null;
 
   const [form, setForm] = useState({
     fullName: "", stageName: "", age: "", city: "", country: "",
@@ -273,6 +299,8 @@ export default function Submit() {
           status: "new",
           notes: null,
           application_mode: applicationMode,
+          opportunity_slug: opportunitySlug,
+          opportunity_title: opportunityTitle,
         })
         .select("id")
         .single();
