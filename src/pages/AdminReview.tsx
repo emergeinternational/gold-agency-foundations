@@ -177,7 +177,8 @@ const getSuggestedNextAction = (row: Submission): NextAction | null => {
 
 const formatCriterionLabel = (value: string) =>
   value
-    .replaceAll("_", " ")
+    .split("_")
+    .join(" ")
     .replace(/\b\w/g, (char) => char.toUpperCase());
 
 const formatActionGroupLabel = (value: string | null): string => {

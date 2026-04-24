@@ -2931,8 +2931,8 @@ export type Database = {
           id: string
           instagram: string | null
           level: string | null
-          notes: string | null
           next_action: string | null
+          notes: string | null
           phone: string | null
           portfolio_url: string | null
           sample_url: string | null
@@ -2956,8 +2956,8 @@ export type Database = {
           id?: string
           instagram?: string | null
           level?: string | null
-          notes?: string | null
           next_action?: string | null
+          notes?: string | null
           phone?: string | null
           portfolio_url?: string | null
           sample_url?: string | null
@@ -2981,8 +2981,8 @@ export type Database = {
           id?: string
           instagram?: string | null
           level?: string | null
-          notes?: string | null
           next_action?: string | null
+          notes?: string | null
           phone?: string | null
           portfolio_url?: string | null
           sample_url?: string | null
@@ -3928,6 +3928,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      calculate_avg_score: { Args: { scores: Json }; Returns: number }
       get_user_dashboard_data: {
         Args: { target_user_id?: string }
         Returns: {
