@@ -154,6 +154,11 @@ export default function Submit() {
   const categoryFromRoute = searchParams.get("category") ?? "";
   const recognizedCategory = TALENT_CATEGORIES.find((c) => c.id === categoryFromRoute)?.id ?? "";
 
+  // Phase 5: capture application_mode from query (?mode=casting | representation)
+  const rawMode = (searchParams.get("mode") ?? "").toLowerCase().trim();
+  const applicationMode: "casting" | "representation" | "general" =
+    rawMode === "casting" ? "casting" : rawMode === "representation" ? "representation" : "general";
+
   const [form, setForm] = useState({
     fullName: "", stageName: "", age: "", city: "", country: "",
     phone: "", email: "", instagram: "", tiktok: "", youtube: "", website: "",

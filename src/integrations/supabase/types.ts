@@ -2916,9 +2916,67 @@ export type Database = {
         }
         Relationships: []
       }
+      submission_messages: {
+        Row: {
+          content: string | null
+          created_at: string
+          delivery_status: string | null
+          direction: string
+          file_url: string | null
+          id: string
+          message_type: string | null
+          reviewed: boolean
+          sent_by_admin_id: string | null
+          submission_id: string | null
+          telegram_chat_id: string | null
+          telegram_message_id: string | null
+          template_key: string | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          delivery_status?: string | null
+          direction: string
+          file_url?: string | null
+          id?: string
+          message_type?: string | null
+          reviewed?: boolean
+          sent_by_admin_id?: string | null
+          submission_id?: string | null
+          telegram_chat_id?: string | null
+          telegram_message_id?: string | null
+          template_key?: string | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          delivery_status?: string | null
+          direction?: string
+          file_url?: string | null
+          id?: string
+          message_type?: string | null
+          reviewed?: boolean
+          sent_by_admin_id?: string | null
+          submission_id?: string | null
+          telegram_chat_id?: string | null
+          telegram_message_id?: string | null
+          template_key?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submission_messages_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       submissions: {
         Row: {
+          application_mode: string | null
           assignee: string | null
+          candidate_outcome: string | null
           category: string | null
           city: string | null
           country: string | null
@@ -2935,15 +2993,20 @@ export type Database = {
           notes: string | null
           phone: string | null
           portfolio_url: string | null
+          priority_tier: string | null
           sample_url: string | null
           source: string | null
           status: string | null
+          tags: string[] | null
+          telegram_chat_id: string | null
           tiktok: string | null
           website: string | null
           youtube: string | null
         }
         Insert: {
+          application_mode?: string | null
           assignee?: string | null
+          candidate_outcome?: string | null
           category?: string | null
           city?: string | null
           country?: string | null
@@ -2960,15 +3023,20 @@ export type Database = {
           notes?: string | null
           phone?: string | null
           portfolio_url?: string | null
+          priority_tier?: string | null
           sample_url?: string | null
           source?: string | null
           status?: string | null
+          tags?: string[] | null
+          telegram_chat_id?: string | null
           tiktok?: string | null
           website?: string | null
           youtube?: string | null
         }
         Update: {
+          application_mode?: string | null
           assignee?: string | null
+          candidate_outcome?: string | null
           category?: string | null
           city?: string | null
           country?: string | null
@@ -2985,9 +3053,12 @@ export type Database = {
           notes?: string | null
           phone?: string | null
           portfolio_url?: string | null
+          priority_tier?: string | null
           sample_url?: string | null
           source?: string | null
           status?: string | null
+          tags?: string[] | null
+          telegram_chat_id?: string | null
           tiktok?: string | null
           website?: string | null
           youtube?: string | null
