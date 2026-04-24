@@ -586,6 +586,42 @@ export type Database = {
           },
         ]
       }
+      banner_messages: {
+        Row: {
+          created_at: string
+          display_ms: number
+          featured: boolean
+          id: string
+          is_active: boolean
+          link_url: string | null
+          sort_order: number
+          text: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_ms?: number
+          featured?: boolean
+          id?: string
+          is_active?: boolean
+          link_url?: string | null
+          sort_order?: number
+          text: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_ms?: number
+          featured?: boolean
+          id?: string
+          is_active?: boolean
+          link_url?: string | null
+          sort_order?: number
+          text?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       cart_items: {
         Row: {
           added_at: string | null
