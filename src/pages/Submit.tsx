@@ -259,9 +259,53 @@ export default function Submit() {
     creator_campaigns: ["influencers", "digital-creators", "models"],
     training_development_opportunities: TALENT_CATEGORIES.map((c) => c.id) as string[],
   };
-  const allowedCategoryIds: string[] = opportunitySlug && OPPORTUNITY_CATEGORY_MAP[opportunitySlug]
-    ? OPPORTUNITY_CATEGORY_MAP[opportunitySlug]
-    : (TALENT_CATEGORIES.map((c) => c.id) as string[]);
+  // Live lookup of the opportunity card from Supabase. If found, its
+  // category_options + opportunity_title override the hardcoded fallbacks
+  // above (admin-controlled). If not found, hardcoded fallback is used.
+  const [oppLookup, setOppLookup] = useState<{
+    title: string | null;
+    categoryLabels: string[] | null;
+  }>({ title: null, categoryLabels: null });
+
+  useEffect(() => {
+    if (!opportunitySlug) return;
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase
+        .from("opportunity_cards")
+        .select("opportunity_title, title, category_options")
+        .eq("opportunity_slug", opportunitySlug)
+        .eq("is_active", true)
+        .maybeSingle();
+      if (cancelled || error || !data) return;
+      setOppLookup({
+        title: data.opportunity_title || data.title || null,
+        categoryLabels: Array.isArray(data.category_options)
+          ? (data.category_options as string[])
+          : null,
+      });
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [opportunitySlug]);
+
+  // Final values: prefer Supabase admin-controlled values, then hardcoded
+  // fallbacks, then full category list.
+  const effectiveOpportunityTitle =
+    oppLookup.title ?? opportunityTitle;
+
+  const supabaseDerivedCategoryIds =
+    oppLookup.categoryLabels && oppLookup.categoryLabels.length > 0
+      ? labelsToCategoryIds(oppLookup.categoryLabels)
+      : null;
+
+  const allowedCategoryIds: string[] =
+    supabaseDerivedCategoryIds && supabaseDerivedCategoryIds.length > 0
+      ? supabaseDerivedCategoryIds
+      : opportunitySlug && OPPORTUNITY_CATEGORY_MAP[opportunitySlug]
+        ? OPPORTUNITY_CATEGORY_MAP[opportunitySlug]
+        : (TALENT_CATEGORIES.map((c) => c.id) as string[]);
   const filteredCategories = TALENT_CATEGORIES.filter((c) => allowedCategoryIds.includes(c.id));
 
   const [form, setForm] = useState({
