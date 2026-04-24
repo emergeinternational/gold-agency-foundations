@@ -9,7 +9,10 @@ export default function SubmissionSuccess() {
   const location = useLocation();
   const state = location.state as { submissionId?: string } | null;
   const submissionIdFromState = state?.submissionId?.trim();
-  const submissionIdFromQuery = new URLSearchParams(location.search).get("submission_id")?.trim();
+  const queryParams = new URLSearchParams(location.search);
+  // Phase 1: support both ?id= (new) and ?submission_id= (legacy)
+  const submissionIdFromQuery =
+    queryParams.get("id")?.trim() || queryParams.get("submission_id")?.trim();
   const submissionId = submissionIdFromState || submissionIdFromQuery;
   const telegramHref = submissionId
     ? `https://t.me/AscendAgencybot?start=${encodeURIComponent(submissionId)}`
