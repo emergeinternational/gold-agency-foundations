@@ -27,6 +27,7 @@ import Roster from "./pages/Roster";
 import TalentProfile from "./pages/TalentProfile";
 import NotFound from "./pages/NotFound";
 import AdminReview from "./pages/AdminReview";
+import AdminBanners from "./pages/AdminBanners";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import RequireAuth from "./components/auth/RequireAuth";
@@ -64,6 +65,7 @@ const App = () => (
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/admin/review" element={<RequireAuth><AdminReview /></RequireAuth>} />
+          <Route path="/admin/banners" element={<RequireAuth><AdminBanners /></RequireAuth>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
