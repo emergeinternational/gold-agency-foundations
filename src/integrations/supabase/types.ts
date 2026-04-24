@@ -2918,7 +2918,10 @@ export type Database = {
       }
       submissions: {
         Row: {
+          additional_skills: string[] | null
+          application_mode: string | null
           assignee: string | null
+          candidate_outcome: string | null
           category: string | null
           city: string | null
           country: string | null
@@ -2935,15 +2938,23 @@ export type Database = {
           next_action: string | null
           phone: string | null
           portfolio_url: string | null
+          priority_tier: string
           sample_url: string | null
+          state_region: string | null
           source: string | null
           status: string | null
+          tags: string[] | null
+          telegram_chat_id: string | null
           tiktok: string | null
+          market: string | null
           website: string | null
           youtube: string | null
         }
         Insert: {
+          additional_skills?: string[] | null
+          application_mode?: string | null
           assignee?: string | null
+          candidate_outcome?: string | null
           category?: string | null
           city?: string | null
           country?: string | null
@@ -2960,15 +2971,23 @@ export type Database = {
           next_action?: string | null
           phone?: string | null
           portfolio_url?: string | null
+          priority_tier?: string
           sample_url?: string | null
+          state_region?: string | null
           source?: string | null
           status?: string | null
+          tags?: string[] | null
+          telegram_chat_id?: string | null
           tiktok?: string | null
+          market?: string | null
           website?: string | null
           youtube?: string | null
         }
         Update: {
+          additional_skills?: string[] | null
+          application_mode?: string | null
           assignee?: string | null
+          candidate_outcome?: string | null
           category?: string | null
           city?: string | null
           country?: string | null
@@ -2985,14 +3004,93 @@ export type Database = {
           next_action?: string | null
           phone?: string | null
           portfolio_url?: string | null
+          priority_tier?: string
           sample_url?: string | null
+          state_region?: string | null
           source?: string | null
           status?: string | null
+          tags?: string[] | null
+          telegram_chat_id?: string | null
           tiktok?: string | null
+          market?: string | null
           website?: string | null
           youtube?: string | null
         }
         Relationships: []
+      }
+      submission_messages: {
+        Row: {
+          body: string | null
+          contact_phone: string | null
+          created_at: string
+          delivery_status: string | null
+          direction: string
+          event_date: string | null
+          event_time: string | null
+          id: string
+          link_url: string | null
+          location: string | null
+          media_type: string | null
+          media_url: string | null
+          message_type: string | null
+          review_status: string
+          sent_by_admin_id: string | null
+          submission_id: string
+          telegram_file_id: string | null
+          telegram_message_id: string | null
+          template_key: string | null
+        }
+        Insert: {
+          body?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          delivery_status?: string | null
+          direction: string
+          event_date?: string | null
+          event_time?: string | null
+          id?: string
+          link_url?: string | null
+          location?: string | null
+          media_type?: string | null
+          media_url?: string | null
+          message_type?: string | null
+          review_status?: string
+          sent_by_admin_id?: string | null
+          submission_id: string
+          telegram_file_id?: string | null
+          telegram_message_id?: string | null
+          template_key?: string | null
+        }
+        Update: {
+          body?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          delivery_status?: string | null
+          direction?: string
+          event_date?: string | null
+          event_time?: string | null
+          id?: string
+          link_url?: string | null
+          location?: string | null
+          media_type?: string | null
+          media_url?: string | null
+          message_type?: string | null
+          review_status?: string
+          sent_by_admin_id?: string | null
+          submission_id?: string
+          telegram_file_id?: string | null
+          telegram_message_id?: string | null
+          template_key?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submission_messages_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       talent_details: {
         Row: {

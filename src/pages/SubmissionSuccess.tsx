@@ -4,16 +4,28 @@ import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CheckCircle, MessageCircle } from "lucide-react";
 import { BRAND } from "@/lib/brand";
+import { useEffect, useState } from "react";
 
 export default function SubmissionSuccess() {
   const location = useLocation();
-  const state = location.state as { submissionId?: string } | null;
+  const state = location.state as { submissionId?: string; justSaved?: boolean } | null;
   const submissionIdFromState = state?.submissionId?.trim();
   const submissionIdFromQuery = new URLSearchParams(location.search).get("submission_id")?.trim();
   const submissionId = submissionIdFromState || submissionIdFromQuery;
+  const [attemptedOpen, setAttemptedOpen] = useState(false);
   const telegramHref = submissionId
     ? `https://t.me/AscendAgencybot?start=${encodeURIComponent(submissionId)}`
     : "https://t.me/AscendAgencybot";
+  const shouldAutostart = Boolean(state?.justSaved && submissionId);
+
+  useEffect(() => {
+    if (!shouldAutostart || attemptedOpen) return;
+    setAttemptedOpen(true);
+    const timer = window.setTimeout(() => {
+      window.open(telegramHref, "_blank", "noopener,noreferrer");
+    }, 900);
+    return () => window.clearTimeout(timer);
+  }, [attemptedOpen, shouldAutostart, telegramHref]);
 
   return (
     <Layout>
@@ -27,6 +39,13 @@ export default function SubmissionSuccess() {
             <p className="text-gray-300 text-base sm:text-lg max-w-xl mx-auto mb-8">
               Thank you for applying to {BRAND.name}. Your submission has been successfully received.
             </p>
+            {shouldAutostart && (
+              <div className="mb-6 rounded-sm border border-primary/40 bg-primary/10 px-4 py-3 text-left sm:text-center">
+                <p className="text-sm text-foreground font-medium">Application saved.</p>
+                <p className="text-xs text-muted-foreground">Now press START in Telegram to receive updates.</p>
+                <p className="text-xs text-muted-foreground">Opening Telegram now…</p>
+              </div>
+            )}
 
             <div className="card-premium p-6 sm:p-8 mb-8 text-center max-w-2xl mx-auto">
               <div className="inline-flex items-center justify-center gap-2 text-primary mb-3">
@@ -39,6 +58,13 @@ export default function SubmissionSuccess() {
               </Button>
               <p className="text-sm text-gray-300 max-w-xl mx-auto mt-4">Use the same Telegram account linked to the phone number used in your application.</p>
               <p className="text-xs text-gray-400 max-w-xl mx-auto mt-2">Tap Start when Telegram opens. Updates are sent automatically.</p>
+              <div className="mt-4 rounded-sm border border-border/70 bg-secondary/20 p-3 text-left">
+                <p className="text-xs font-medium text-foreground">Almost finished</p>
+                <p className="text-xs text-muted-foreground">Open Telegram and press START to receive updates.</p>
+                <Button variant="outline" size="sm" className="mt-2" asChild>
+                  <a href={telegramHref} target="_blank" rel="noopener noreferrer">Open Telegram & Press START</a>
+                </Button>
+              </div>
             </div>
 
             <div className="card-premium p-5 sm:p-6 max-w-2xl mx-auto mb-8 text-left sm:text-center">
