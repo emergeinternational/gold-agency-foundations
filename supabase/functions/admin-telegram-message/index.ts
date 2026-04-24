@@ -37,6 +37,69 @@ const getSupabaseConfig = () => {
   return { supabaseUrl, serviceRoleKey };
 };
 
+const getCallerAuthHeader = (req: Request) => {
+  const authorization = req.headers.get("Authorization")?.trim() ?? "";
+  if (!authorization.toLowerCase().startsWith("bearer ")) {
+    throw new Error("missing_bearer_token");
+  }
+  return authorization;
+};
+
+const getAnonKey = () => {
+  const anonKey = normalize(Deno.env.get("SUPABASE_ANON_KEY"));
+  if (!anonKey) {
+    throw new Error("admin_verification_unavailable_missing_supabase_anon_key");
+  }
+  return anonKey;
+};
+
+const assertAuthorizedAdmin = async (req: Request) => {
+  const { supabaseUrl } = getSupabaseConfig();
+  const anonKey = getAnonKey();
+  const authorization = getCallerAuthHeader(req);
+
+  const privilegedResponse = await fetch(`${supabaseUrl}/rest/v1/rpc/is_privileged_user`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      apikey: anonKey,
+      Authorization: authorization,
+    },
+    body: "{}",
+  });
+
+  if (!privilegedResponse.ok) {
+    const body = await privilegedResponse.text();
+    throw new Error(`admin_verification_failed_${privilegedResponse.status}:${body}`);
+  }
+
+  const isPrivileged = (await privilegedResponse.json()) === true;
+  if (!isPrivileged) {
+    throw new Error("forbidden_admin_required");
+  }
+
+  const userResponse = await fetch(`${supabaseUrl}/auth/v1/user`, {
+    method: "GET",
+    headers: {
+      apikey: anonKey,
+      Authorization: authorization,
+    },
+  });
+
+  if (!userResponse.ok) {
+    const body = await userResponse.text();
+    throw new Error(`admin_identity_lookup_failed_${userResponse.status}:${body}`);
+  }
+
+  const user = await userResponse.json();
+  const userId = normalize(user?.id);
+  if (!userId) {
+    throw new Error("admin_identity_missing");
+  }
+
+  return { userId };
+};
+
 const fetchSubmission = async (submissionId: string): Promise<SubmissionRow | null> => {
   const { supabaseUrl, serviceRoleKey } = getSupabaseConfig();
 
@@ -175,8 +238,6 @@ const buildMessage = (submission: SubmissionRow, payload: Payload) => {
 serve(async (req) => {
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405 });
 
-  const adminId = req.headers.get("x-admin-id");
-
   let payload: Payload;
 
   try {
@@ -192,6 +253,7 @@ serve(async (req) => {
   }
 
   try {
+    const { userId } = await assertAuthorizedAdmin(req);
     const submission = await fetchSubmission(submissionId);
 
     if (!submission) {
@@ -225,18 +287,26 @@ serve(async (req) => {
       mediaUrl: normalize(payload.media_url),
       deliveryStatus: telegramResult.status,
       telegramMessageId: telegramResult.sent ? telegramResult.telegram_message_id ?? null : null,
-      adminId,
+      adminId: userId,
     });
 
     return Response.json({ ok: true, ...telegramResult });
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    const status =
+      message === "forbidden_admin_required" || message === "missing_bearer_token"
+        ? 403
+        : message.startsWith("admin_verification_unavailable_")
+          ? 503
+          : 500;
+
     return Response.json(
       {
         ok: false,
         error: "message_send_failed",
-        details: error instanceof Error ? error.message : String(error),
+        details: message,
       },
-      { status: 500 },
+      { status },
     );
   }
 });
