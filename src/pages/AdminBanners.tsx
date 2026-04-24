@@ -17,6 +17,8 @@ type BannerRow = {
   sort_order: number;
   display_ms: number;
   link_url: string | null;
+  starts_at: string | null;
+  ends_at: string | null;
 };
 
 type Draft = Omit<BannerRow, "id"> & { id?: string; _dirty?: boolean };
@@ -28,8 +30,36 @@ const blankDraft = (sort_order: number): Draft => ({
   sort_order,
   display_ms: 4500,
   link_url: "",
+  starts_at: null,
+  ends_at: null,
   _dirty: true,
 });
+
+// Convert ISO string ↔ value used by <input type="datetime-local">
+const toLocalInput = (iso: string | null): string => {
+  if (!iso) return "";
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
+const fromLocalInput = (val: string): string | null => {
+  if (!val) return null;
+  return new Date(val).toISOString();
+};
+
+const scheduleStatus = (
+  starts: string | null,
+  ends: string | null,
+  isActive: boolean,
+): { label: string; tone: "live" | "scheduled" | "expired" | "off" } => {
+  if (!isActive) return { label: "Inactive", tone: "off" };
+  const now = Date.now();
+  const s = starts ? new Date(starts).getTime() : null;
+  const e = ends ? new Date(ends).getTime() : null;
+  if (s && now < s) return { label: `Scheduled · starts ${new Date(s).toLocaleString()}`, tone: "scheduled" };
+  if (e && now >= e) return { label: `Expired ${new Date(e).toLocaleString()}`, tone: "expired" };
+  return { label: e ? `Live · ends ${new Date(e).toLocaleString()}` : "Live", tone: "live" };
+};
 
 export default function AdminBanners() {
   const [rows, setRows] = useState<Draft[]>([]);
@@ -92,6 +122,8 @@ export default function AdminBanners() {
       sort_order: row.sort_order,
       display_ms: row.display_ms,
       link_url: row.link_url || null,
+      starts_at: row.starts_at,
+      ends_at: row.ends_at,
     };
     if (row.id) {
       const { error } = await supabase.from("banner_messages").update(payload).eq("id", row.id);
@@ -170,17 +202,22 @@ export default function AdminBanners() {
                 key={row.id || `new-${idx}`}
                 className="border border-border rounded-lg p-5 bg-card space-y-4"
               >
-                <div className="grid sm:grid-cols-[1fr_auto] gap-4 items-start">
-                  <div className="space-y-2">
-                    <Label>Message text</Label>
-                    <Textarea
-                      value={row.text}
-                      onChange={(e) => update(idx, { text: e.target.value })}
-                      rows={2}
-                      placeholder="Your announcement…"
-                    />
-                  </div>
-                  <div className="flex sm:flex-col gap-3 sm:items-end">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  {(() => {
+                    const s = scheduleStatus(row.starts_at, row.ends_at, row.is_active);
+                    const tones: Record<typeof s.tone, string> = {
+                      live: "bg-primary/15 text-primary border-primary/30",
+                      scheduled: "bg-muted text-muted-foreground border-border",
+                      expired: "bg-destructive/10 text-destructive border-destructive/30",
+                      off: "bg-muted text-muted-foreground border-border",
+                    };
+                    return (
+                      <span className={`text-[10px] uppercase tracking-[0.18em] px-2 py-1 rounded border ${tones[s.tone]}`}>
+                        {s.label}
+                      </span>
+                    );
+                  })()}
+                  <div className="flex gap-2">
                     <Button
                       size="sm"
                       onClick={() => save(idx)}
@@ -198,6 +235,16 @@ export default function AdminBanners() {
                       <Trash2 className="w-4 h-4" /> Delete
                     </Button>
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Message text</Label>
+                  <Textarea
+                    value={row.text}
+                    onChange={(e) => update(idx, { text: e.target.value })}
+                    rows={2}
+                    placeholder="Your announcement…"
+                  />
                 </div>
 
                 <div className="grid sm:grid-cols-4 gap-4">
@@ -247,6 +294,49 @@ export default function AdminBanners() {
                         onCheckedChange={(v) => update(idx, { is_active: v })}
                       />
                     </div>
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4 pt-2 border-t border-border/50">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label>Start date & time</Label>
+                      {row.starts_at && (
+                        <button
+                          type="button"
+                          onClick={() => update(idx, { starts_at: null })}
+                          className="text-[10px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                    <Input
+                      type="datetime-local"
+                      value={toLocalInput(row.starts_at)}
+                      onChange={(e) => update(idx, { starts_at: fromLocalInput(e.target.value) })}
+                    />
+                    <p className="text-[11px] text-muted-foreground">Leave empty to show immediately.</p>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label>End date & time</Label>
+                      {row.ends_at && (
+                        <button
+                          type="button"
+                          onClick={() => update(idx, { ends_at: null })}
+                          className="text-[10px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                    <Input
+                      type="datetime-local"
+                      value={toLocalInput(row.ends_at)}
+                      onChange={(e) => update(idx, { ends_at: fromLocalInput(e.target.value) })}
+                    />
+                    <p className="text-[11px] text-muted-foreground">Leave empty to show indefinitely.</p>
                   </div>
                 </div>
               </div>

@@ -590,33 +590,39 @@ export type Database = {
         Row: {
           created_at: string
           display_ms: number
+          ends_at: string | null
           featured: boolean
           id: string
           is_active: boolean
           link_url: string | null
           sort_order: number
+          starts_at: string | null
           text: string
           updated_at: string
         }
         Insert: {
           created_at?: string
           display_ms?: number
+          ends_at?: string | null
           featured?: boolean
           id?: string
           is_active?: boolean
           link_url?: string | null
           sort_order?: number
+          starts_at?: string | null
           text: string
           updated_at?: string
         }
         Update: {
           created_at?: string
           display_ms?: number
+          ends_at?: string | null
           featured?: boolean
           id?: string
           is_active?: boolean
           link_url?: string | null
           sort_order?: number
+          starts_at?: string | null
           text?: string
           updated_at?: string
         }

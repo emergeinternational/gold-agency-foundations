@@ -27,10 +27,13 @@ export default function AnnouncementBanner() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      const nowIso = new Date().toISOString();
       const { data, error } = await supabase
         .from("banner_messages")
-        .select("id, text, featured, display_ms, link_url, sort_order, is_active")
+        .select("id, text, featured, display_ms, link_url, sort_order, is_active, starts_at, ends_at")
         .eq("is_active", true)
+        .or(`starts_at.is.null,starts_at.lte.${nowIso}`)
+        .or(`ends_at.is.null,ends_at.gt.${nowIso}`)
         .order("sort_order", { ascending: true });
       if (!cancelled && !error && data && data.length > 0) {
         setMessages(
