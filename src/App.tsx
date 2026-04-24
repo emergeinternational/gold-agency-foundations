@@ -28,9 +28,11 @@ import TalentProfile from "./pages/TalentProfile";
 import NotFound from "./pages/NotFound";
 import AdminReview from "./pages/AdminReview";
 import AdminBanners from "./pages/AdminBanners";
+import AdminHub from "./pages/AdminHub";
+import AdminOpportunities from "./pages/AdminOpportunities";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
-import RequireAuth from "./components/auth/RequireAuth";
+import RequireAdmin from "./components/auth/RequireAdmin";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -64,8 +66,10 @@ const App = () => (
           <Route path="/roster/:slug" element={<TalentProfile />} />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />
-          <Route path="/admin/review" element={<RequireAuth><AdminReview /></RequireAuth>} />
-          <Route path="/admin/banners" element={<RequireAuth><AdminBanners /></RequireAuth>} />
+          <Route path="/admin" element={<RequireAdmin><AdminHub /></RequireAdmin>} />
+          <Route path="/admin/review" element={<RequireAdmin><AdminReview /></RequireAdmin>} />
+          <Route path="/admin/banners" element={<RequireAdmin><AdminBanners /></RequireAdmin>} />
+          <Route path="/admin/opportunities" element={<RequireAdmin><AdminOpportunities /></RequireAdmin>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

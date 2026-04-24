@@ -423,7 +423,7 @@ export default function Submit() {
           notes: null,
           application_mode: applicationMode,
           opportunity_slug: opportunitySlug,
-          opportunity_title: opportunityTitle,
+          opportunity_title: effectiveOpportunityTitle,
         })
         .select("id")
         .single();
@@ -485,9 +485,9 @@ export default function Submit() {
 
               <div className="space-y-3">
                 <p className="text-sm font-medium text-foreground">Step 2 · Category</p>
-                {opportunityTitle && (
+                {effectiveOpportunityTitle && (
                   <div className="rounded-sm border border-primary/30 bg-primary/5 px-4 py-3 text-sm text-foreground">
-                    You are submitting for: <span className="font-medium text-primary">{opportunityTitle}</span>
+                    You are submitting for: <span className="font-medium text-primary">{effectiveOpportunityTitle}</span>
                   </div>
                 )}
                 {recognizedCategory ? (
@@ -691,7 +691,7 @@ export default function Submit() {
                         <option value="">Select your primary discipline</option>
                         {filteredCategories.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
                       </select>
-                      {opportunityTitle && (
+                      {effectiveOpportunityTitle && (
                         <p className="text-xs text-muted-foreground mt-1.5">Choose the category that best matches this opportunity.</p>
                       )}
                       {errors.category && <p className={errorClass}>{errors.category}</p>}
