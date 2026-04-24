@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { BRAND } from "@/lib/brand";
 import { Handshake, Building, Mic, MapPin, BookOpen, TrendingUp } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const partnershipBanner = "/partnerwithus.PNG";
 
@@ -25,9 +26,20 @@ const partnerTypes = [
   { icon: TrendingUp, title: "Investors & Institutions", desc: "Support the growth of Ethiopia's creative economy through strategic, long-term collaboration." },
 ];
 
+// Structured inquiry types stored on the inquiry record (separate from legacy "partner type" UI categories above).
+const INQUIRY_TYPES: Array<{ value: string; label: string }> = [
+  { value: "brand_partnership", label: "Brand Partnership" },
+  { value: "campaign_collaboration", label: "Campaign Collaboration" },
+  { value: "venue_partnership", label: "Venue Partnership" },
+  { value: "media_partnership", label: "Media Partnership" },
+  { value: "sponsorship", label: "Sponsorship" },
+  { value: "general", label: "General Partnership Inquiry" },
+];
+
 export default function Partnerships() {
-  const [form, setForm] = useState({ org: "", name: "", email: "", type: "", message: "" });
+  const [form, setForm] = useState({ org: "", name: "", email: "", phone: "", inquiryType: "", type: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const update = (field: string, value: string) => {
@@ -35,14 +47,37 @@ export default function Partnerships() {
     if (errors[field]) setErrors(prev => { const n = { ...prev }; delete n[field]; return n; });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errs: Record<string, string> = {};
     if (!form.org.trim()) errs.org = "Required";
     if (!form.email.trim()) errs.email = "Required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = "Please enter a valid email";
+    if (!form.inquiryType) errs.inquiryType = "Please select an inquiry type";
     if (!form.message.trim()) errs.message = "Required";
     setErrors(errs);
-    if (Object.keys(errs).length === 0) setSubmitted(true);
+    if (Object.keys(errs).length > 0) return;
+
+    setSubmitting(true);
+    try {
+      const { error } = await supabase.from("partnership_inquiries").insert({
+        organization: form.org.trim(),
+        contact_name: form.name.trim() || null,
+        email: form.email.trim(),
+        phone: form.phone.trim() || null,
+        inquiry_type: form.inquiryType,
+        partnership_type_legacy: form.type || null,
+        message: form.message.trim(),
+        status: "new",
+      });
+      if (error) throw error;
+      setSubmitted(true);
+    } catch (err) {
+      console.error("partnership inquiry submit error", err);
+      setErrors({ form: "Something went wrong. Please try again, or email us directly." });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const inputClass = "w-full px-4 py-3 bg-secondary/60 border border-border/60 rounded-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary/40 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-sm";
@@ -81,11 +116,14 @@ export default function Partnerships() {
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                 <Handshake className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="font-display text-2xl font-semibold text-foreground mb-2">Inquiry Received</h3>
-              <p className="text-gray-300">Thank you for your interest. Our team will review your inquiry and respond within five business days.</p>
+              <h3 className="font-display text-2xl font-semibold text-foreground mb-2">Your inquiry has been received.</h3>
+              <p className="text-gray-300">Our team will review and follow up shortly.</p>
             </motion.div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
+              <p className="text-sm text-muted-foreground mb-2">
+                Tell us briefly what you are looking to build or collaborate on. Our team reviews all partnership inquiries.
+              </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-1.5">Organization *</label>
@@ -102,7 +140,19 @@ export default function Partnerships() {
                   {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">Partnership Type</label>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">Phone (optional)</label>
+                  <input className={inputClass} value={form.phone} onChange={e => update("phone", e.target.value)} placeholder="+1 555 555 5555" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">Inquiry Type *</label>
+                  <select className={inputClass} value={form.inquiryType} onChange={e => update("inquiryType", e.target.value)}>
+                    <option value="">Select inquiry type</option>
+                    {INQUIRY_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                  </select>
+                  {errors.inquiryType && <p className="text-xs text-destructive mt-1">{errors.inquiryType}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">Partnership Type (optional)</label>
                   <select className={inputClass} value={form.type} onChange={e => update("type", e.target.value)}>
                     <option value="">Select</option>
                     {partnerTypes.map(p => <option key={p.title} value={p.title}>{p.title}</option>)}
@@ -114,7 +164,10 @@ export default function Partnerships() {
                 <textarea className={`${inputClass} min-h-[120px]`} value={form.message} onChange={e => update("message", e.target.value)} placeholder="Describe the collaboration you have in mind" maxLength={2000} />
                 {errors.message && <p className="text-xs text-destructive mt-1">{errors.message}</p>}
               </div>
-              <Button type="submit" variant="gold" size="lg">Submit Inquiry</Button>
+              {errors.form && <p className="text-sm text-destructive">{errors.form}</p>}
+              <Button type="submit" variant="gold" size="lg" disabled={submitting}>
+                {submitting ? "Submitting…" : "Submit Inquiry"}
+              </Button>
             </form>
           )}
         </div>
