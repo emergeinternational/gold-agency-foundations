@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Layout from "@/components/Layout";
 import PageHero from "@/components/PageHero";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,61 @@ import { BRAND, TALENT_CATEGORIES } from "@/lib/brand";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Upload, CheckCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+
+// Loose mapping from admin-defined category_options labels (e.g. "Model",
+// "Singer / Music Artist") onto our internal TALENT_CATEGORIES ids. Used to
+// filter the Primary Category dropdown when an opportunity is selected.
+const LABEL_TO_CATEGORY_ID: Record<string, string> = {
+  model: "models",
+  models: "models",
+  "actor / performer": "actors-performers",
+  "actors / performers": "actors-performers",
+  performer: "actors-performers",
+  "host / media personality": "hosts-presenters",
+  "media personality": "media-personalities",
+  "host": "hosts-presenters",
+  "event host": "hosts-presenters",
+  "voiceover / narration": "voice-narration",
+  "voice / narration": "voice-narration",
+  "singer / music artist": "musicians",
+  "rapper": "musicians",
+  "dj": "musicians",
+  "producer": "musicians",
+  "songwriter": "musicians",
+  "musician": "musicians",
+  "musician / artist": "musicians",
+  "performer (music)": "musicians",
+  "influencer / content creator": "influencers",
+  "tiktok creator": "influencers",
+  "youtuber": "digital-creators",
+  "podcaster": "digital-creators",
+  "livestream personality": "digital-creators",
+  "content creator": "digital-creators",
+  "photographer": "digital-creators",
+  "videographer": "digital-creators",
+  "video editor": "digital-creators",
+  "graphic designer": "digital-creators",
+  "creative director": "digital-creators",
+  "stylist": "digital-creators",
+  "makeup artist": "digital-creators",
+  "fashion designer": "digital-creators",
+  "journalist / interviewer": "speakers-storytellers",
+  "speaker": "speakers-storytellers",
+  "brand ambassador": "influencers",
+  "entrepreneur with media potential": "speakers-storytellers",
+  "dancer": "actors-performers",
+  "comedian": "actors-performers",
+};
+
+const labelsToCategoryIds = (labels: string[]): string[] => {
+  const ids = new Set<string>();
+  for (const raw of labels) {
+    const key = raw.trim().toLowerCase();
+    const id = LABEL_TO_CATEGORY_ID[key];
+    if (id) ids.add(id);
+  }
+  return Array.from(ids);
+};
 
 type Question = {
   id: string;
