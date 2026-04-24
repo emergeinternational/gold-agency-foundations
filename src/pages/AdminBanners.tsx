@@ -296,6 +296,49 @@ export default function AdminBanners() {
                     </div>
                   </div>
                 </div>
+
+                <div className="grid sm:grid-cols-2 gap-4 pt-2 border-t border-border/50">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label>Start date & time</Label>
+                      {row.starts_at && (
+                        <button
+                          type="button"
+                          onClick={() => update(idx, { starts_at: null })}
+                          className="text-[10px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                    <Input
+                      type="datetime-local"
+                      value={toLocalInput(row.starts_at)}
+                      onChange={(e) => update(idx, { starts_at: fromLocalInput(e.target.value) })}
+                    />
+                    <p className="text-[11px] text-muted-foreground">Leave empty to show immediately.</p>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label>End date & time</Label>
+                      {row.ends_at && (
+                        <button
+                          type="button"
+                          onClick={() => update(idx, { ends_at: null })}
+                          className="text-[10px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                    <Input
+                      type="datetime-local"
+                      value={toLocalInput(row.ends_at)}
+                      onChange={(e) => update(idx, { ends_at: fromLocalInput(e.target.value) })}
+                    />
+                    <p className="text-[11px] text-muted-foreground">Leave empty to show indefinitely.</p>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
