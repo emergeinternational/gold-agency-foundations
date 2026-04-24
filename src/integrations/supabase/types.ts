@@ -2333,6 +2333,51 @@ export type Database = {
           },
         ]
       }
+      partnership_inquiries: {
+        Row: {
+          admin_notes: string | null
+          contact_name: string | null
+          created_at: string
+          email: string
+          id: string
+          inquiry_type: string
+          message: string
+          organization: string
+          partnership_type_legacy: string | null
+          phone: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          contact_name?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          inquiry_type: string
+          message: string
+          organization: string
+          partnership_type_legacy?: string | null
+          phone?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          contact_name?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          inquiry_type?: string
+          message?: string
+          organization?: string
+          partnership_type_legacy?: string | null
+          phone?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       payment_methods: {
         Row: {
           countries: string[] | null
@@ -2991,6 +3036,8 @@ export type Database = {
           level: string | null
           next_action: string | null
           notes: string | null
+          opportunity_slug: string | null
+          opportunity_title: string | null
           phone: string | null
           portfolio_url: string | null
           priority_tier: string | null
@@ -3021,6 +3068,8 @@ export type Database = {
           level?: string | null
           next_action?: string | null
           notes?: string | null
+          opportunity_slug?: string | null
+          opportunity_title?: string | null
           phone?: string | null
           portfolio_url?: string | null
           priority_tier?: string | null
@@ -3051,6 +3100,8 @@ export type Database = {
           level?: string | null
           next_action?: string | null
           notes?: string | null
+          opportunity_slug?: string | null
+          opportunity_title?: string | null
           phone?: string | null
           portfolio_url?: string | null
           priority_tier?: string | null
