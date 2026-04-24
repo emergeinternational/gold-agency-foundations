@@ -173,6 +173,8 @@ export default function Submit() {
   const opportunitySlug = /^[a-z0-9_]{1,80}$/.test(rawOpportunitySlug) ? rawOpportunitySlug : null;
   const OPPORTUNITY_TITLES: Record<string, string> = {
     new_faces_2026: "New Faces — 2026 Talent Search",
+    new_faces_talent_review: "New Faces Talent Review",
+    ongoing_casting_call: "Ongoing Casting Call",
     creative_showcase: "Addis Creative Showcase",
     brand_campaign_spring_2026: "Brand Campaign — Spring 2026",
     east_african_media_fellowship: "East Africa Media Fellowship",
@@ -184,6 +186,26 @@ export default function Submit() {
     training_development_opportunities: "Training & Development Opportunities",
   };
   const opportunityTitle = opportunitySlug ? OPPORTUNITY_TITLES[opportunitySlug] ?? null : null;
+
+  // Opportunity → relevant talent category IDs (filters the Primary Category dropdown).
+  // If opportunity not in map (or no opportunity), show full TALENT_CATEGORIES list.
+  const OPPORTUNITY_CATEGORY_MAP: Record<string, string[]> = {
+    new_faces_talent_review: TALENT_CATEGORIES.map((c) => c.id) as string[],
+    ongoing_casting_call: ["models", "actors-performers", "hosts-presenters", "media-personalities"],
+    creative_showcase: ["musicians", "speakers-storytellers", "actors-performers", "hosts-presenters", "digital-creators"],
+    brand_campaign_spring_2026: ["models", "influencers", "actors-performers", "digital-creators"],
+    east_african_media_fellowship: ["media-personalities", "hosts-presenters", "digital-creators", "speakers-storytellers"],
+    program_spotlight_series: TALENT_CATEGORIES.map((c) => c.id) as string[],
+    monthly_creative_spotlight: TALENT_CATEGORIES.map((c) => c.id) as string[],
+    music_talent_spotlight: ["musicians", "voice-narration"],
+    visual_creators_opportunity: ["digital-creators", "models"],
+    creator_campaigns: ["influencers", "digital-creators", "models"],
+    training_development_opportunities: TALENT_CATEGORIES.map((c) => c.id) as string[],
+  };
+  const allowedCategoryIds: string[] = opportunitySlug && OPPORTUNITY_CATEGORY_MAP[opportunitySlug]
+    ? OPPORTUNITY_CATEGORY_MAP[opportunitySlug]
+    : (TALENT_CATEGORIES.map((c) => c.id) as string[]);
+  const filteredCategories = TALENT_CATEGORIES.filter((c) => allowedCategoryIds.includes(c.id));
 
   const [form, setForm] = useState({
     fullName: "", stageName: "", age: "", city: "", country: "",
@@ -362,6 +384,11 @@ export default function Submit() {
 
               <div className="space-y-3">
                 <p className="text-sm font-medium text-foreground">Step 2 · Category</p>
+                {opportunityTitle && (
+                  <div className="rounded-sm border border-primary/30 bg-primary/5 px-4 py-3 text-sm text-foreground">
+                    You are submitting for: <span className="font-medium text-primary">{opportunityTitle}</span>
+                  </div>
+                )}
                 {recognizedCategory ? (
                   <div className="rounded-sm border border-border/70 bg-secondary/40 px-4 py-3 text-sm text-foreground">
                     Category confirmed: <span className="font-medium">{TALENT_CATEGORIES.find((c) => c.id === recognizedCategory)?.label}</span>
@@ -378,8 +405,9 @@ export default function Submit() {
                       }}
                     >
                       <option value="">Select your primary discipline</option>
-                      {TALENT_CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
+                      {filteredCategories.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
                     </select>
+                    <p className="text-xs text-muted-foreground mt-1.5">Choose the category that best matches this opportunity.</p>
                   </div>
                 )}
               </div>
@@ -560,8 +588,11 @@ export default function Submit() {
                       <label className={labelClass}>Primary Category *</label>
                       <select className={inputClass} value={form.category} onChange={e => update("category", e.target.value)}>
                         <option value="">Select your primary discipline</option>
-                        {TALENT_CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
+                        {filteredCategories.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
                       </select>
+                      {opportunityTitle && (
+                        <p className="text-xs text-muted-foreground mt-1.5">Choose the category that best matches this opportunity.</p>
+                      )}
                       {errors.category && <p className={errorClass}>{errors.category}</p>}
                     </div>
                     <div>
