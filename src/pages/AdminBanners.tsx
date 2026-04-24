@@ -202,17 +202,22 @@ export default function AdminBanners() {
                 key={row.id || `new-${idx}`}
                 className="border border-border rounded-lg p-5 bg-card space-y-4"
               >
-                <div className="grid sm:grid-cols-[1fr_auto] gap-4 items-start">
-                  <div className="space-y-2">
-                    <Label>Message text</Label>
-                    <Textarea
-                      value={row.text}
-                      onChange={(e) => update(idx, { text: e.target.value })}
-                      rows={2}
-                      placeholder="Your announcement…"
-                    />
-                  </div>
-                  <div className="flex sm:flex-col gap-3 sm:items-end">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  {(() => {
+                    const s = scheduleStatus(row.starts_at, row.ends_at, row.is_active);
+                    const tones: Record<typeof s.tone, string> = {
+                      live: "bg-primary/15 text-primary border-primary/30",
+                      scheduled: "bg-muted text-muted-foreground border-border",
+                      expired: "bg-destructive/10 text-destructive border-destructive/30",
+                      off: "bg-muted text-muted-foreground border-border",
+                    };
+                    return (
+                      <span className={`text-[10px] uppercase tracking-[0.18em] px-2 py-1 rounded border ${tones[s.tone]}`}>
+                        {s.label}
+                      </span>
+                    );
+                  })()}
+                  <div className="flex gap-2">
                     <Button
                       size="sm"
                       onClick={() => save(idx)}
@@ -230,6 +235,16 @@ export default function AdminBanners() {
                       <Trash2 className="w-4 h-4" /> Delete
                     </Button>
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Message text</Label>
+                  <Textarea
+                    value={row.text}
+                    onChange={(e) => update(idx, { text: e.target.value })}
+                    rows={2}
+                    placeholder="Your announcement…"
+                  />
                 </div>
 
                 <div className="grid sm:grid-cols-4 gap-4">
