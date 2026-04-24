@@ -98,6 +98,36 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_activity_log: {
+        Row: {
+          action: string
+          admin_user_id: string | null
+          created_at: string
+          details: Json | null
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+        }
+        Insert: {
+          action: string
+          admin_user_id?: string | null
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+        }
+        Update: {
+          action?: string
+          admin_user_id?: string | null
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
       admin_audit: {
         Row: {
           action: string | null
@@ -2221,6 +2251,72 @@ export type Database = {
         }
         Relationships: []
       }
+      opportunity_cards: {
+        Row: {
+          application_mode: string
+          button_label: string | null
+          category_options: Json | null
+          contact_phone: string | null
+          created_at: string
+          description: string | null
+          ends_at: string | null
+          featured: boolean
+          id: string
+          is_active: boolean
+          location: string | null
+          opportunity_slug: string
+          opportunity_title: string | null
+          sort_order: number
+          starts_at: string | null
+          status_label: string | null
+          title: string
+          type_label: string | null
+          updated_at: string
+        }
+        Insert: {
+          application_mode: string
+          button_label?: string | null
+          category_options?: Json | null
+          contact_phone?: string | null
+          created_at?: string
+          description?: string | null
+          ends_at?: string | null
+          featured?: boolean
+          id?: string
+          is_active?: boolean
+          location?: string | null
+          opportunity_slug: string
+          opportunity_title?: string | null
+          sort_order?: number
+          starts_at?: string | null
+          status_label?: string | null
+          title: string
+          type_label?: string | null
+          updated_at?: string
+        }
+        Update: {
+          application_mode?: string
+          button_label?: string | null
+          category_options?: Json | null
+          contact_phone?: string | null
+          created_at?: string
+          description?: string | null
+          ends_at?: string | null
+          featured?: boolean
+          id?: string
+          is_active?: boolean
+          location?: string | null
+          opportunity_slug?: string
+          opportunity_title?: string | null
+          sort_order?: number
+          starts_at?: string | null
+          status_label?: string | null
+          title?: string
+          type_label?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       order_receipts: {
         Row: {
           admin_notes: string | null
@@ -2374,6 +2470,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      partner_inquiries: {
+        Row: {
+          company: string | null
+          created_at: string
+          email: string | null
+          id: string
+          inquiry_type: string | null
+          message: string | null
+          name: string | null
+          notes: string | null
+          phone: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          inquiry_type?: string | null
+          message?: string | null
+          name?: string | null
+          notes?: string | null
+          phone?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          inquiry_type?: string | null
+          message?: string | null
+          name?: string | null
+          notes?: string | null
+          phone?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       partnership_inquiries: {
         Row: {
