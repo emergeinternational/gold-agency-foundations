@@ -62,6 +62,8 @@ type Submission = {
   website: string | null;
   telegram_chat_id: string | null;
   application_mode: string | null;
+  opportunity_slug: string | null;
+  opportunity_title: string | null;
   candidate_outcome: string | null;
   priority_tier: string | null;
   tags: string[] | null;
@@ -255,7 +257,7 @@ export default function AdminReview() {
       const { data, error: submissionsError } = await supabase
         .from("submissions")
         .select(
-          "id, assignee, created_at, full_name, email, phone, city, category, country, source, status, level, next_action, emerge_ready, evaluation_scores, portfolio_url, sample_url, instagram, tiktok, youtube, website, telegram_chat_id, application_mode, candidate_outcome, priority_tier, tags, prequalification_results(outcome, score, critical_pass)",
+          "id, assignee, created_at, full_name, email, phone, city, category, country, source, status, level, next_action, emerge_ready, evaluation_scores, portfolio_url, sample_url, instagram, tiktok, youtube, website, telegram_chat_id, application_mode, opportunity_slug, opportunity_title, candidate_outcome, priority_tier, tags, prequalification_results(outcome, score, critical_pass)",
         )
         .order("created_at", { ascending: false });
 
