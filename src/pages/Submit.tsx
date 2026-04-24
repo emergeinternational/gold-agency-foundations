@@ -7,6 +7,14 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Upload, CheckCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
+type ApplicationMode =
+  | "casting"
+  | "representation"
+  | "training_development"
+  | "general_database"
+  | "brand_campaign"
+  | "media_opportunity";
+
 type Question = {
   id: string;
   text: string;
@@ -134,6 +142,45 @@ const CATEGORY_TO_GATE: Record<string, keyof typeof GATE_CONFIG> = {
 
 const BLOCKED_FAKE_VALUES = new Set(["test", "abc", "123", "none", "na"]);
 const REQUIRED_LINK_ERROR = "Please provide at least one valid portfolio, sample, or social link.";
+const APPLICATION_MODE_VALUES: ApplicationMode[] = [
+  "casting",
+  "representation",
+  "training_development",
+  "general_database",
+  "brand_campaign",
+  "media_opportunity",
+];
+const EXTENDED_CATEGORIES = [
+  "model",
+  "actor_performer",
+  "host_media_personality",
+  "voiceover_narration",
+  "singer_music_artist",
+  "rapper",
+  "dj",
+  "producer",
+  "songwriter",
+  "musician",
+  "influencer_content_creator",
+  "tiktok_creator",
+  "youtuber",
+  "podcaster",
+  "livestream_personality",
+  "photographer",
+  "videographer",
+  "video_editor",
+  "graphic_designer",
+  "creative_director",
+  "stylist",
+  "makeup_artist",
+  "fashion_designer",
+  "journalist_interviewer",
+  "trainer_workshop_facilitator",
+  "event_host",
+  "brand_ambassador",
+  "entrepreneur_media_potential",
+  "other",
+];
 
 const normalizeInput = (value: string) => value.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
 const isBlockedFakeValue = (value: string) => BLOCKED_FAKE_VALUES.has(normalizeInput(value));
@@ -147,17 +194,33 @@ const isValidHttpUrl = (value: string) => {
     return false;
   }
 };
+const normalizeApplicationMode = (value: string | null): ApplicationMode => {
+  if (value && APPLICATION_MODE_VALUES.includes(value as ApplicationMode)) {
+    return value as ApplicationMode;
+  }
+  return "general_database";
+};
+
+const deriveMarket = (country: string) => {
+  const normalized = country.trim().toLowerCase();
+  if (!normalized) return null;
+  if (normalized.includes("ethiopia")) return "Ethiopia Market";
+  if (normalized.includes("united states") || normalized.includes("usa")) return "USA Market";
+  if (normalized.includes("kenya")) return "Kenya Market";
+  return `${country.trim()} Market`;
+};
 
 export default function Submit() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const categoryFromRoute = searchParams.get("category") ?? "";
+  const modeFromRoute = normalizeApplicationMode(searchParams.get("mode"));
   const recognizedCategory = TALENT_CATEGORIES.find((c) => c.id === categoryFromRoute)?.id ?? "";
 
   const [form, setForm] = useState({
-    fullName: "", stageName: "", age: "", city: "", country: "",
+    fullName: "", stageName: "", age: "", city: "", stateRegion: "", country: "",
     phone: "", email: "", instagram: "", tiktok: "", youtube: "", website: "",
-    category: recognizedCategory, experienceLevel: "", shortBio: "", whyRepresentation: "",
+    category: recognizedCategory, additionalSkills: "", experienceLevel: "", shortBio: "", whyRepresentation: "",
     portfolioLinks: "", guardianName: "", guardianEmail: "", guardianPhone: "",
   });
   const [isMinor, setIsMinor] = useState(false);
@@ -256,7 +319,14 @@ export default function Submit() {
           phone: form.phone || null,
           country: form.country || null,
           city: form.city || null,
+          state_region: form.stateRegion || null,
+          market: deriveMarket(form.country),
           category: form.category || null,
+          additional_skills: form.additionalSkills
+            .split(",")
+            .map((item) => item.trim())
+            .filter(Boolean),
+          application_mode: modeFromRoute,
           instagram: form.instagram || null,
           tiktok: form.tiktok || null,
           youtube: form.youtube || null,
@@ -266,6 +336,7 @@ export default function Submit() {
           sample_url: null,
           source: outcome?.qualify ? "emerge" : "ascend",
           status: "new",
+          candidate_outcome: "under_review",
           notes: null,
         })
         .select("id")
@@ -288,7 +359,9 @@ export default function Submit() {
         if (pqErr) console.error("Prequalification save error:", pqErr);
       }
 
-      navigate("/submission-success");
+      navigate(`/submission-success?submission_id=${encodeURIComponent(submission.id)}`, {
+        state: { submissionId: submission.id, applicationMode: modeFromRoute, justSaved: true },
+      });
     } catch (err) {
       console.error("Submission error:", err);
       setErrors({ form: "Something went wrong. Please try again." });
@@ -473,6 +546,10 @@ export default function Submit() {
                       {errors.city && <p className={errorClass}>{errors.city}</p>}
                     </div>
                     <div>
+                      <label className={labelClass}>State / Region</label>
+                      <input className={inputClass} value={form.stateRegion} onChange={e => update("stateRegion", e.target.value)} placeholder="State / region" />
+                    </div>
+                    <div>
                       <label className={labelClass}>Country</label>
                       <input className={inputClass} value={form.country} onChange={e => update("country", e.target.value)} placeholder="Country of residence" />
                     </div>
@@ -525,6 +602,11 @@ export default function Submit() {
                       <select className={inputClass} value={form.category} onChange={e => update("category", e.target.value)}>
                         <option value="">Select your primary discipline</option>
                         {TALENT_CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
+                        {EXTENDED_CATEGORIES.map((category) => (
+                          <option key={category} value={category}>
+                            {category.replaceAll("_", " ").replace(/\b\w/g, (char) => char.toUpperCase())}
+                          </option>
+                        ))}
                       </select>
                       {errors.category && <p className={errorClass}>{errors.category}</p>}
                     </div>
@@ -537,6 +619,10 @@ export default function Submit() {
                         <option value="advanced">Experienced</option>
                         <option value="professional">Established Professional</option>
                       </select>
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className={labelClass}>Additional Skills (optional)</label>
+                      <input className={inputClass} value={form.additionalSkills} onChange={e => update("additionalSkills", e.target.value)} placeholder="Comma-separated, e.g. hosting, voiceover, styling" />
                     </div>
                     <div className="sm:col-span-2">
                       <label className={labelClass}>Short Bio *</label>
@@ -616,7 +702,7 @@ export default function Submit() {
                 </div>
 
                 <Button type="submit" variant="hero" size="xl" className="w-full sm:w-auto" disabled={submitting}>
-                  {submitting ? "Submitting…" : "Submit for Review"}
+                  {submitting ? "Submitting…" : "Submit & Connect on Telegram"}
                 </Button>
                 <p className="text-xs text-gray-200">Reviewed by our representation team.</p>
               </form>

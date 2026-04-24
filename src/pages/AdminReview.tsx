@@ -47,6 +47,8 @@ type Submission = {
   city: string | null;
   category: string | null;
   country: string | null;
+  state_region: string | null;
+  market: string | null;
   source: string | null;
   status: string | null;
   level: string | null;
@@ -59,11 +61,28 @@ type Submission = {
   tiktok: string | null;
   youtube: string | null;
   website: string | null;
+  telegram_chat_id: string | null;
+  application_mode: string | null;
+  candidate_outcome: string | null;
+  priority_tier: string | null;
+  tags: string[] | null;
+  additional_skills: string[] | null;
   prequalification_results?: {
     outcome: string | null;
     score: number | null;
     critical_pass: boolean | null;
   }[];
+};
+
+type SubmissionMessage = {
+  id: string;
+  submission_id: string;
+  direction: "admin_to_candidate" | "candidate_to_admin";
+  body: string | null;
+  template_key: string | null;
+  delivery_status: string | null;
+  review_status: string | null;
+  created_at: string;
 };
 
 type AdminNote = {
@@ -74,6 +93,15 @@ type AdminNote = {
 };
 
 const GENERIC_EVALUATION_CRITERIA = ["potential", "professionalism", "market_fit"] as const;
+const MESSAGE_TEMPLATE_OPTIONS = [
+  "request_photos",
+  "request_video",
+  "request_links",
+  "appointment_invite",
+  "not_selected_current_opportunity",
+  "development_recommended",
+  "fast_track_talent",
+] as const;
 
 const CATEGORY_EVALUATION_CRITERIA: Record<string, readonly string[]> = {
   model: ["look", "presence", "walk", "proportions", "potential"],
@@ -218,6 +246,17 @@ const isEmergeReady = (params: {
 export default function AdminReview() {
   const [rows, setRows] = useState<Submission[]>([]);
   const [notesBySubmission, setNotesBySubmission] = useState<Record<string, AdminNote[]>>({});
+  const [messagesBySubmission, setMessagesBySubmission] = useState<Record<string, SubmissionMessage[]>>({});
+  const [templateDrafts, setTemplateDrafts] = useState<Record<string, string>>({});
+  const [messageDrafts, setMessageDrafts] = useState<Record<string, string>>({});
+  const [linkDrafts, setLinkDrafts] = useState<Record<string, string>>({});
+  const [dateDrafts, setDateDrafts] = useState<Record<string, string>>({});
+  const [timeDrafts, setTimeDrafts] = useState<Record<string, string>>({});
+  const [locationDrafts, setLocationDrafts] = useState<Record<string, string>>({});
+  const [contactPhoneDrafts, setContactPhoneDrafts] = useState<Record<string, string>>({});
+  const [candidateOutcomeDrafts, setCandidateOutcomeDrafts] = useState<Record<string, string>>({});
+  const [priorityTierDrafts, setPriorityTierDrafts] = useState<Record<string, string>>({});
+  const [tagsDrafts, setTagsDrafts] = useState<Record<string, string>>({});
   const [statusDrafts, setStatusDrafts] = useState<Record<string, ReviewStatus>>({});
   const [assigneeDrafts, setAssigneeDrafts] = useState<Record<string, string>>({});
   const [levelDrafts, setLevelDrafts] = useState<Record<string, SubmissionLevel | "">>({});
@@ -236,6 +275,8 @@ export default function AdminReview() {
   const [savingNextActionId, setSavingNextActionId] = useState<string | null>(null);
   const [savingNoteId, setSavingNoteId] = useState<string | null>(null);
   const [savingEvaluationId, setSavingEvaluationId] = useState<string | null>(null);
+  const [savingMessageId, setSavingMessageId] = useState<string | null>(null);
+  const [savingMetaId, setSavingMetaId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -248,7 +289,7 @@ export default function AdminReview() {
       const { data, error: submissionsError } = await supabase
         .from("submissions")
         .select(
-          "id, assignee, created_at, full_name, email, phone, city, category, country, source, status, level, next_action, emerge_ready, evaluation_scores, portfolio_url, sample_url, instagram, tiktok, youtube, website, prequalification_results(outcome, score, critical_pass)",
+          "id, assignee, created_at, full_name, email, phone, city, state_region, market, category, country, source, status, level, next_action, emerge_ready, evaluation_scores, portfolio_url, sample_url, instagram, tiktok, youtube, website, telegram_chat_id, application_mode, candidate_outcome, priority_tier, tags, additional_skills, prequalification_results(outcome, score, critical_pass)",
         )
         .order("created_at", { ascending: false });
 
@@ -282,6 +323,24 @@ export default function AdminReview() {
       setLevelDrafts(
         submissionRows.reduce<Record<string, SubmissionLevel | "">>((acc, row) => {
           acc[row.id] = normalizeLevel(row.level);
+          return acc;
+        }, {}),
+      );
+      setCandidateOutcomeDrafts(
+        submissionRows.reduce<Record<string, string>>((acc, row) => {
+          acc[row.id] = row.candidate_outcome ?? "under_review";
+          return acc;
+        }, {}),
+      );
+      setPriorityTierDrafts(
+        submissionRows.reduce<Record<string, string>>((acc, row) => {
+          acc[row.id] = row.priority_tier ?? "standard";
+          return acc;
+        }, {}),
+      );
+      setTagsDrafts(
+        submissionRows.reduce<Record<string, string>>((acc, row) => {
+          acc[row.id] = (row.tags ?? []).join(", ");
           return acc;
         }, {}),
       );
@@ -325,6 +384,24 @@ export default function AdminReview() {
             return acc;
           }, {});
           setNotesBySubmission(grouped);
+        }
+
+        const { data: messageData, error: messageError } = await supabase
+          .from("submission_messages")
+          .select("id, submission_id, direction, body, template_key, delivery_status, review_status, created_at")
+          .in("submission_id", ids)
+          .order("created_at", { ascending: false });
+
+        if (messageError) {
+          setError(messageError.message);
+        } else if (messageData) {
+          const groupedMessages = messageData.reduce<Record<string, SubmissionMessage[]>>((acc, message) => {
+            const key = message.submission_id;
+            if (!key) return acc;
+            acc[key] = [...(acc[key] ?? []), message as SubmissionMessage];
+            return acc;
+          }, {});
+          setMessagesBySubmission(groupedMessages);
         }
       }
 
@@ -616,6 +693,102 @@ export default function AdminReview() {
     setSavingNextActionId((prev) => (prev === row.id ? null : prev));
   };
 
+  const handleMetaSave = async (submissionId: string) => {
+    setSavingMetaId(submissionId);
+    setError(null);
+
+    const candidate_outcome = candidateOutcomeDrafts[submissionId] || null;
+    const priority_tier = priorityTierDrafts[submissionId] || "standard";
+    const tags = (tagsDrafts[submissionId] ?? "")
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
+
+    const { error: updateError } = await supabase
+      .from("submissions")
+      .update({ candidate_outcome, priority_tier, tags })
+      .eq("id", submissionId);
+
+    if (updateError) {
+      setError(updateError.message);
+    } else {
+      setRows((prev) =>
+        prev.map((item) => (item.id === submissionId ? { ...item, candidate_outcome, priority_tier, tags } : item)),
+      );
+    }
+
+    setSavingMetaId(null);
+  };
+
+  const handleSendTelegramUpdate = async (row: Submission) => {
+    setSavingMessageId(row.id);
+    setError(null);
+
+    if (!row.telegram_chat_id) {
+      setError("Telegram not connected. Candidate must press Start before direct updates can be sent.");
+      setSavingMessageId(null);
+      return;
+    }
+
+    const payload = {
+      submission_id: row.id,
+      message_template_key: templateDrafts[row.id] || null,
+      message_body: messageDrafts[row.id] || null,
+      date: dateDrafts[row.id] || null,
+      time: timeDrafts[row.id] || null,
+      location: locationDrafts[row.id] || null,
+      contact_phone: contactPhoneDrafts[row.id] || null,
+      link_url: linkDrafts[row.id] || null,
+    };
+
+    const previewText = [
+      payload.message_body || `Template: ${payload.message_template_key || "none"}`,
+      payload.date ? `Date: ${payload.date}` : "",
+      payload.time ? `Time: ${payload.time}` : "",
+      payload.location ? `Location: ${payload.location}` : "",
+      payload.contact_phone ? `Contact: ${payload.contact_phone}` : "",
+      payload.link_url ? `Link: ${payload.link_url}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    const confirmed = window.confirm(
+      `Send Telegram update?\n\nCandidate: ${row.full_name ?? "Unknown"}\nApplication Mode: ${row.application_mode ?? "general_database"}\nDestination: ${row.telegram_chat_id}\n\nPreview:\n${previewText}`,
+    );
+
+    if (!confirmed) {
+      setSavingMessageId(null);
+      return;
+    }
+
+    const { data, error: invokeError } = await supabase.functions.invoke("admin-telegram-message", {
+      body: payload,
+      headers: { "x-admin-id": assigneeDrafts[row.id] || "admin_review" },
+    });
+
+    if (invokeError) {
+      setError(invokeError.message);
+      setSavingMessageId(null);
+      return;
+    }
+
+    const delivery = data?.status || "sent";
+    const inserted: SubmissionMessage = {
+      id: crypto.randomUUID(),
+      submission_id: row.id,
+      direction: "admin_to_candidate",
+      body: messageDrafts[row.id] || null,
+      template_key: templateDrafts[row.id] || null,
+      delivery_status: delivery,
+      review_status: "reviewed",
+      created_at: new Date().toISOString(),
+    };
+
+    setMessagesBySubmission((prev) => ({ ...prev, [row.id]: [inserted, ...(prev[row.id] ?? [])] }));
+    setMessageDrafts((prev) => ({ ...prev, [row.id]: "" }));
+    setSavingMessageId(null);
+  };
+
   const renderAge = (createdAt: string) => {
     const createdDate = new Date(createdAt);
     const now = new Date();
@@ -884,6 +1057,8 @@ export default function AdminReview() {
                 <th className="px-3 py-2 font-medium">Critical</th>
                 <th className="px-3 py-2 font-medium">Evidence</th>
                 <th className="px-3 py-2 font-medium">Evaluation</th>
+                <th className="px-3 py-2 font-medium">Telegram / Messages</th>
+                <th className="px-3 py-2 font-medium">Candidate Segmentation</th>
                 <th className="px-3 py-2 font-medium">Admin Notes</th>
               </tr>
             </thead>
@@ -909,12 +1084,16 @@ export default function AdminReview() {
                   scoreValues.length > 0
                     ? (scoreValues.reduce((sum, value) => sum + value, 0) / scoreValues.length).toFixed(1)
                     : null;
+                const messageHistory = messagesBySubmission[row.id] ?? [];
+                const unreadReplies = messageHistory.filter(
+                  (entry) => entry.direction === "candidate_to_admin" && entry.review_status === "new",
+                ).length;
 
                 return (
                   <Fragment key={row.id}>
                     {startsNewGroup && (
                       <tr className="border-t border-border bg-secondary/40">
-                        <td colSpan={21} className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        <td colSpan={23} className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                           {formatActionGroupLabel(row.next_action)}
                         </td>
                       </tr>
@@ -1184,6 +1363,154 @@ export default function AdminReview() {
                             Save scores
                           </Button>
                         </div>
+                      </div>
+                    </td>
+                    <td className="min-w-[340px] px-3 py-2">
+                      <div className="space-y-2">
+                        <p className="text-xs">
+                          Telegram:{" "}
+                          <span className={row.telegram_chat_id ? "font-medium text-emerald-600" : "font-medium text-amber-600"}>
+                            {row.telegram_chat_id ? "Connected" : "Not connected"}
+                          </span>
+                        </p>
+                        {!row.telegram_chat_id && (
+                          <p className="text-[11px] text-amber-600">
+                            Telegram not connected. Candidate must press Start before direct updates can be sent.
+                          </p>
+                        )}
+                        {messageHistory.length > 0 ? (
+                          <div className="max-h-28 overflow-y-auto rounded-md border border-border/60 p-2">
+                            {messageHistory.slice(0, 5).map((message) => (
+                              <p key={message.id} className="mb-2 text-xs leading-relaxed last:mb-0">
+                                <span className="text-muted-foreground">
+                                  {new Date(message.created_at).toLocaleString()} · {message.direction}
+                                </span>
+                                <br />
+                                {message.body || message.template_key || "—"}
+                                <span className="text-muted-foreground"> ({message.delivery_status ?? "pending"})</span>
+                              </p>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-xs text-muted-foreground">No Telegram messages yet.</p>
+                        )}
+                        {unreadReplies > 0 && (
+                          <p className="text-[11px] text-amber-600">Unreviewed candidate replies: {unreadReplies}</p>
+                        )}
+                        <select
+                          className="h-8 w-full rounded-md border border-input bg-background px-2 text-xs"
+                          value={templateDrafts[row.id] ?? ""}
+                          onChange={(event) => setTemplateDrafts((prev) => ({ ...prev, [row.id]: event.target.value }))}
+                        >
+                          <option value="">Select template</option>
+                          {MESSAGE_TEMPLATE_OPTIONS.map((template) => (
+                            <option key={template} value={template}>
+                              {template}
+                            </option>
+                          ))}
+                        </select>
+                        <Textarea
+                          rows={2}
+                          value={messageDrafts[row.id] ?? ""}
+                          onChange={(event) => setMessageDrafts((prev) => ({ ...prev, [row.id]: event.target.value }))}
+                          placeholder="Custom message (optional)"
+                        />
+                        <input
+                          className="h-8 w-full rounded-md border border-input bg-background px-2 text-xs"
+                          placeholder="Optional link"
+                          value={linkDrafts[row.id] ?? ""}
+                          onChange={(event) => setLinkDrafts((prev) => ({ ...prev, [row.id]: event.target.value }))}
+                        />
+                        <div className="grid grid-cols-2 gap-2">
+                          <input
+                            className="h-8 rounded-md border border-input bg-background px-2 text-xs"
+                            placeholder="Date"
+                            value={dateDrafts[row.id] ?? ""}
+                            onChange={(event) => setDateDrafts((prev) => ({ ...prev, [row.id]: event.target.value }))}
+                          />
+                          <input
+                            className="h-8 rounded-md border border-input bg-background px-2 text-xs"
+                            placeholder="Time"
+                            value={timeDrafts[row.id] ?? ""}
+                            onChange={(event) => setTimeDrafts((prev) => ({ ...prev, [row.id]: event.target.value }))}
+                          />
+                        </div>
+                        <input
+                          className="h-8 w-full rounded-md border border-input bg-background px-2 text-xs"
+                          placeholder="Location"
+                          value={locationDrafts[row.id] ?? ""}
+                          onChange={(event) => setLocationDrafts((prev) => ({ ...prev, [row.id]: event.target.value }))}
+                        />
+                        <input
+                          className="h-8 w-full rounded-md border border-input bg-background px-2 text-xs"
+                          placeholder="Contact phone"
+                          value={contactPhoneDrafts[row.id] ?? ""}
+                          onChange={(event) => setContactPhoneDrafts((prev) => ({ ...prev, [row.id]: event.target.value }))}
+                        />
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          disabled={savingMessageId === row.id}
+                          onClick={() => handleSendTelegramUpdate(row)}
+                        >
+                          Send Telegram Update
+                        </Button>
+                      </div>
+                    </td>
+                    <td className="min-w-72 px-3 py-2">
+                      <div className="space-y-2">
+                        <p className="text-xs text-muted-foreground">
+                          Application mode: {row.application_mode ?? "general_database"}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Location: {[row.city, row.state_region, row.country].filter(Boolean).join(", ") || "—"}
+                        </p>
+                        <p className="text-xs text-muted-foreground">Market: {row.market ?? "—"}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Skills: {(row.additional_skills ?? []).join(", ") || "—"}
+                        </p>
+                        <select
+                          className="h-8 w-full rounded-md border border-input bg-background px-2 text-xs"
+                          value={candidateOutcomeDrafts[row.id] ?? "under_review"}
+                          onChange={(event) =>
+                            setCandidateOutcomeDrafts((prev) => ({ ...prev, [row.id]: event.target.value }))
+                          }
+                        >
+                          {[
+                            "connected",
+                            "under_review",
+                            "needs_more_info",
+                            "invited_to_next_step",
+                            "selected_for_casting",
+                            "not_selected_current_opportunity",
+                            "saved_for_future_opportunities",
+                            "recommended_for_training",
+                            "scheduled",
+                            "completed",
+                          ].map((value) => (
+                            <option key={value} value={value}>
+                              {value}
+                            </option>
+                          ))}
+                        </select>
+                        <select
+                          className="h-8 w-full rounded-md border border-input bg-background px-2 text-xs"
+                          value={priorityTierDrafts[row.id] ?? "standard"}
+                          onChange={(event) => setPriorityTierDrafts((prev) => ({ ...prev, [row.id]: event.target.value }))}
+                        >
+                          <option value="standard">standard</option>
+                          <option value="priority">priority</option>
+                          <option value="high_value">high_value</option>
+                        </select>
+                        <input
+                          className="h-8 w-full rounded-md border border-input bg-background px-2 text-xs"
+                          placeholder="Tags: Priority Talent, Network Fit"
+                          value={tagsDrafts[row.id] ?? ""}
+                          onChange={(event) => setTagsDrafts((prev) => ({ ...prev, [row.id]: event.target.value }))}
+                        />
+                        <Button size="sm" variant="outline" disabled={savingMetaId === row.id} onClick={() => handleMetaSave(row.id)}>
+                          Save Segmentation
+                        </Button>
                       </div>
                     </td>
                     <td className="min-w-72 px-3 py-2">

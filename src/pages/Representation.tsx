@@ -38,7 +38,7 @@ export default function Representation() {
         backgroundImage={managementBanner}
         backgroundPosition="center 24%"
         overlayVariant="enhanced"
-        cta={{ label: "Submit for Review", href: "/submit" }}
+        cta={{ label: "Submit for Review", href: "/submit?mode=representation" }}
       />
 
       <section className="section-padding">
@@ -74,7 +74,7 @@ export default function Representation() {
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="hero" size="xl" asChild>
-                <Link to="/submit">Submit for Review</Link>
+                <Link to="/submit?mode=representation">Submit for Review</Link>
               </Button>
               <Button variant="hero-outline" size="xl" asChild>
                 <Link to="/academy">Explore Development Pathways</Link>
