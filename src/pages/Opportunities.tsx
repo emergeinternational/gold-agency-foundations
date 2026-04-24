@@ -1,10 +1,12 @@
+import { useEffect, useState } from "react";
 import Layout from "@/components/Layout";
 import PageHero from "@/components/PageHero";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Star } from "lucide-react";
 import opportunitiesHero from "@/assets/opportunities-hero.jpg";
+import { supabase } from "@/integrations/supabase/client";
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
@@ -17,15 +19,19 @@ type Opportunity = {
   type: string;
   title: string;
   desc: string;
-  status: "Active" | "Upcoming" | "Ongoing";
+  status: string;
   mode: string;
   slug: string;
+  featured?: boolean;
+  buttonLabel?: string;
 };
 
-const opportunities: Opportunity[] = [
-  { type: "Representation Review", title: "New Faces Talent Review", desc: "Seeking fresh creative talent across categories for review, development, representation readiness, and future opportunities. Submission does not guarantee selection.", status: "Active", mode: "representation", slug: "new_faces_talent_review" },
+// Fallback list (used only if Supabase is unreachable / empty).
+// Mirrors the seeded opportunity_cards rows so the page never goes blank.
+const FALLBACK: Opportunity[] = [
+  { type: "Featured Casting", title: "Featured Casting Call", desc: "Submit for a featured casting opportunity. Selected applicants will receive date, time, location, and next-step details through Telegram.", status: "Upcoming", mode: "casting", slug: "featured_casting_call", featured: true },
   { type: "Casting", title: "Ongoing Casting Call", desc: "Submit for current and future casting opportunities across media, campaigns, productions, and live opportunities.", status: "Ongoing", mode: "casting", slug: "ongoing_casting_call" },
-  { type: "Featured Casting", title: "Featured Casting Call", desc: "Submit for a featured casting opportunity. Selected applicants will receive date, time, location, and next-step details through Telegram.", status: "Upcoming", mode: "casting", slug: "featured_casting_call" },
+  { type: "Representation Review", title: "New Faces Talent Review", desc: "Seeking fresh creative talent across categories for review, development, representation readiness, and future opportunities. Submission does not guarantee selection.", status: "Active", mode: "representation", slug: "new_faces_talent_review" },
   { type: "Showcase", title: "Addis Creative Showcase", desc: "A curated evening of live performance, industry introductions, and creative presentation in Addis Ababa.", status: "Upcoming", mode: "media_opportunity", slug: "creative_showcase" },
   { type: "Internal Casting", title: "Brand Campaign — Spring 2026", desc: "Internal casting for a major commercial campaign. Priority consideration for represented talent.", status: "Active", mode: "brand_campaign", slug: "brand_campaign_spring_2026" },
   { type: "Partner Opportunity", title: "East Africa Media Fellowship", desc: "A regional mentorship and exposure program for media-focused talent, developed with industry partners.", status: "Upcoming", mode: "media_opportunity", slug: "east_african_media_fellowship" },
@@ -40,7 +46,51 @@ const opportunities: Opportunity[] = [
 const buildSubmitHref = (opp: Opportunity) =>
   `/submit?mode=${encodeURIComponent(opp.mode)}&opportunity=${encodeURIComponent(opp.slug)}`;
 
+const statusClass = (status: string) =>
+  status === "Active"
+    ? "bg-green-900/30 text-green-400"
+    : status === "Upcoming"
+      ? "bg-secondary text-muted-foreground"
+      : status === "Closed"
+        ? "bg-destructive/15 text-destructive"
+        : status === "Closing Soon"
+          ? "bg-yellow-500/15 text-yellow-400"
+          : "bg-primary/5 text-primary";
+
 export default function Opportunities() {
+  const [opportunities, setOpportunities] = useState<Opportunity[]>(FALLBACK);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase
+        .from("opportunity_cards")
+        .select("title, description, status_label, application_mode, opportunity_slug, type_label, featured, button_label, sort_order")
+        .eq("is_active", true)
+        .order("featured", { ascending: false })
+        .order("sort_order", { ascending: true })
+        .order("created_at", { ascending: false });
+      if (cancelled) return;
+      if (!error && data && data.length > 0) {
+        setOpportunities(
+          data.map((d) => ({
+            type: d.type_label || "Opportunity",
+            title: d.title,
+            desc: d.description || "",
+            status: d.status_label || "Active",
+            mode: d.application_mode,
+            slug: d.opportunity_slug,
+            featured: !!d.featured,
+            buttonLabel: d.button_label || "Submit for Review",
+          })),
+        );
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <Layout>
       <PageHero
@@ -63,15 +113,29 @@ export default function Opportunities() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {opportunities.map((opp, i) => (
-              <motion.div key={opp.slug} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.05 }} className="card-premium p-6 card-hover flex flex-col">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-[10px] uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded">{opp.type}</span>
-                  <span className={`text-[10px] uppercase tracking-widest px-2 py-0.5 rounded ${opp.status === "Active" ? "bg-green-900/30 text-green-400" : opp.status === "Upcoming" ? "bg-secondary text-muted-foreground" : "bg-primary/5 text-primary"}`}>{opp.status}</span>
+              <motion.div
+                key={opp.slug}
+                {...fadeUp}
+                transition={{ duration: 0.6, delay: i * 0.05 }}
+                className={`card-premium p-6 card-hover flex flex-col ${opp.featured ? "ring-1 ring-primary/40 border-primary/30" : ""}`}
+              >
+                <div className="flex items-center gap-2 mb-3 flex-wrap">
+                  <span className="text-[10px] uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded">
+                    {opp.type}
+                  </span>
+                  <span className={`text-[10px] uppercase tracking-widest px-2 py-0.5 rounded ${statusClass(opp.status)}`}>
+                    {opp.status}
+                  </span>
+                  {opp.featured && (
+                    <span className="text-[10px] uppercase tracking-widest px-2 py-0.5 rounded bg-yellow-500/15 text-yellow-400 inline-flex items-center gap-1">
+                      <Star className="w-3 h-3" /> Featured
+                    </span>
+                  )}
                 </div>
                 <h3 className="font-display text-xl font-semibold text-foreground mb-2">{opp.title}</h3>
                 <p className="text-sm text-gray-300 leading-relaxed flex-1 mb-4">{opp.desc}</p>
                 <Button variant="gold-outline" size="sm" asChild>
-                  <Link to={buildSubmitHref(opp)}>Submit for Review</Link>
+                  <Link to={buildSubmitHref(opp)}>{opp.buttonLabel || "Submit for Review"}</Link>
                 </Button>
               </motion.div>
             ))}

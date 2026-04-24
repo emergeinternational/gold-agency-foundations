@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Layout from "@/components/Layout";
 import PageHero from "@/components/PageHero";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,61 @@ import { BRAND, TALENT_CATEGORIES } from "@/lib/brand";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Upload, CheckCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+
+// Loose mapping from admin-defined category_options labels (e.g. "Model",
+// "Singer / Music Artist") onto our internal TALENT_CATEGORIES ids. Used to
+// filter the Primary Category dropdown when an opportunity is selected.
+const LABEL_TO_CATEGORY_ID: Record<string, string> = {
+  model: "models",
+  models: "models",
+  "actor / performer": "actors-performers",
+  "actors / performers": "actors-performers",
+  performer: "actors-performers",
+  "host / media personality": "hosts-presenters",
+  "media personality": "media-personalities",
+  "host": "hosts-presenters",
+  "event host": "hosts-presenters",
+  "voiceover / narration": "voice-narration",
+  "voice / narration": "voice-narration",
+  "singer / music artist": "musicians",
+  "rapper": "musicians",
+  "dj": "musicians",
+  "producer": "musicians",
+  "songwriter": "musicians",
+  "musician": "musicians",
+  "musician / artist": "musicians",
+  "performer (music)": "musicians",
+  "influencer / content creator": "influencers",
+  "tiktok creator": "influencers",
+  "youtuber": "digital-creators",
+  "podcaster": "digital-creators",
+  "livestream personality": "digital-creators",
+  "content creator": "digital-creators",
+  "photographer": "digital-creators",
+  "videographer": "digital-creators",
+  "video editor": "digital-creators",
+  "graphic designer": "digital-creators",
+  "creative director": "digital-creators",
+  "stylist": "digital-creators",
+  "makeup artist": "digital-creators",
+  "fashion designer": "digital-creators",
+  "journalist / interviewer": "speakers-storytellers",
+  "speaker": "speakers-storytellers",
+  "brand ambassador": "influencers",
+  "entrepreneur with media potential": "speakers-storytellers",
+  "dancer": "actors-performers",
+  "comedian": "actors-performers",
+};
+
+const labelsToCategoryIds = (labels: string[]): string[] => {
+  const ids = new Set<string>();
+  for (const raw of labels) {
+    const key = raw.trim().toLowerCase();
+    const id = LABEL_TO_CATEGORY_ID[key];
+    if (id) ids.add(id);
+  }
+  return Array.from(ids);
+};
 
 type Question = {
   id: string;
@@ -204,9 +259,53 @@ export default function Submit() {
     creator_campaigns: ["influencers", "digital-creators", "models"],
     training_development_opportunities: TALENT_CATEGORIES.map((c) => c.id) as string[],
   };
-  const allowedCategoryIds: string[] = opportunitySlug && OPPORTUNITY_CATEGORY_MAP[opportunitySlug]
-    ? OPPORTUNITY_CATEGORY_MAP[opportunitySlug]
-    : (TALENT_CATEGORIES.map((c) => c.id) as string[]);
+  // Live lookup of the opportunity card from Supabase. If found, its
+  // category_options + opportunity_title override the hardcoded fallbacks
+  // above (admin-controlled). If not found, hardcoded fallback is used.
+  const [oppLookup, setOppLookup] = useState<{
+    title: string | null;
+    categoryLabels: string[] | null;
+  }>({ title: null, categoryLabels: null });
+
+  useEffect(() => {
+    if (!opportunitySlug) return;
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase
+        .from("opportunity_cards")
+        .select("opportunity_title, title, category_options")
+        .eq("opportunity_slug", opportunitySlug)
+        .eq("is_active", true)
+        .maybeSingle();
+      if (cancelled || error || !data) return;
+      setOppLookup({
+        title: data.opportunity_title || data.title || null,
+        categoryLabels: Array.isArray(data.category_options)
+          ? (data.category_options as string[])
+          : null,
+      });
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [opportunitySlug]);
+
+  // Final values: prefer Supabase admin-controlled values, then hardcoded
+  // fallbacks, then full category list.
+  const effectiveOpportunityTitle =
+    oppLookup.title ?? opportunityTitle;
+
+  const supabaseDerivedCategoryIds =
+    oppLookup.categoryLabels && oppLookup.categoryLabels.length > 0
+      ? labelsToCategoryIds(oppLookup.categoryLabels)
+      : null;
+
+  const allowedCategoryIds: string[] =
+    supabaseDerivedCategoryIds && supabaseDerivedCategoryIds.length > 0
+      ? supabaseDerivedCategoryIds
+      : opportunitySlug && OPPORTUNITY_CATEGORY_MAP[opportunitySlug]
+        ? OPPORTUNITY_CATEGORY_MAP[opportunitySlug]
+        : (TALENT_CATEGORIES.map((c) => c.id) as string[]);
   const filteredCategories = TALENT_CATEGORIES.filter((c) => allowedCategoryIds.includes(c.id));
 
   const [form, setForm] = useState({
@@ -324,7 +423,7 @@ export default function Submit() {
           notes: null,
           application_mode: applicationMode,
           opportunity_slug: opportunitySlug,
-          opportunity_title: opportunityTitle,
+          opportunity_title: effectiveOpportunityTitle,
         })
         .select("id")
         .single();
@@ -386,9 +485,9 @@ export default function Submit() {
 
               <div className="space-y-3">
                 <p className="text-sm font-medium text-foreground">Step 2 · Category</p>
-                {opportunityTitle && (
+                {effectiveOpportunityTitle && (
                   <div className="rounded-sm border border-primary/30 bg-primary/5 px-4 py-3 text-sm text-foreground">
-                    You are submitting for: <span className="font-medium text-primary">{opportunityTitle}</span>
+                    You are submitting for: <span className="font-medium text-primary">{effectiveOpportunityTitle}</span>
                   </div>
                 )}
                 {recognizedCategory ? (
@@ -592,7 +691,7 @@ export default function Submit() {
                         <option value="">Select your primary discipline</option>
                         {filteredCategories.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
                       </select>
-                      {opportunityTitle && (
+                      {effectiveOpportunityTitle && (
                         <p className="text-xs text-muted-foreground mt-1.5">Choose the category that best matches this opportunity.</p>
                       )}
                       {errors.category && <p className={errorClass}>{errors.category}</p>}
