@@ -784,41 +784,45 @@ export default function Submit() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className={labelClass}>Parent / Guardian Full Name *</label>
-                        <input className={inputClass} value={form.guardianName} onChange={e => update("guardianName", e.target.value)} placeholder="Guardian's full name" />
+                        <input className={`${inputClass} ${errors.guardianName ? "border-destructive ring-1 ring-destructive/40" : ""}`} value={form.guardianName} onChange={e => update("guardianName", e.target.value)} placeholder="Guardian's full name" aria-invalid={!!errors.guardianName} />
                         {errors.guardianName && <p className={errorClass}>{errors.guardianName}</p>}
                       </div>
                       <div>
                         <label className={labelClass}>Relationship to Applicant *</label>
-                        <input className={inputClass} value={form.guardianRelationship} onChange={e => update("guardianRelationship", e.target.value)} placeholder="e.g. Mother, Father, Legal Guardian" />
+                        <input className={`${inputClass} ${errors.guardianRelationship ? "border-destructive ring-1 ring-destructive/40" : ""}`} value={form.guardianRelationship} onChange={e => update("guardianRelationship", e.target.value)} placeholder="e.g. Mother, Father, Legal Guardian" aria-invalid={!!errors.guardianRelationship} />
                         {errors.guardianRelationship && <p className={errorClass}>{errors.guardianRelationship}</p>}
                       </div>
                       <div>
                         <label className={labelClass}>Guardian Email *</label>
-                        <input className={inputClass} type="email" value={form.guardianEmail} onChange={e => update("guardianEmail", e.target.value)} placeholder="guardian@email.com" />
+                        <input className={`${inputClass} ${errors.guardianEmail ? "border-destructive ring-1 ring-destructive/40" : ""}`} type="email" value={form.guardianEmail} onChange={e => update("guardianEmail", e.target.value)} placeholder="guardian@email.com" aria-invalid={!!errors.guardianEmail} />
                         {errors.guardianEmail && <p className={errorClass}>{errors.guardianEmail}</p>}
                       </div>
                       <div>
                         <label className={labelClass}>Guardian Phone *</label>
-                        <input className={inputClass} type="tel" value={form.guardianPhone} onChange={e => update("guardianPhone", e.target.value)} placeholder="+1..." />
+                        <input className={`${inputClass} ${errors.guardianPhone ? "border-destructive ring-1 ring-destructive/40" : ""}`} type="tel" value={form.guardianPhone} onChange={e => update("guardianPhone", e.target.value)} placeholder="+1..." aria-invalid={!!errors.guardianPhone} />
                         {errors.guardianPhone && <p className={errorClass}>{errors.guardianPhone}</p>}
                       </div>
                     </div>
                     <div className="space-y-4 mt-5">
-                      <label className="flex items-start gap-3 cursor-pointer">
-                        <input type="checkbox" checked={guardianConsent} onChange={e => { setGuardianConsent(e.target.checked); if (errors.guardianConsent) setErrors(prev => { const n = { ...prev }; delete n.guardianConsent; return n; }); }} className="mt-1 accent-primary" />
-                        <span className="text-sm text-muted-foreground">
-                          I confirm that I am the applicant's legal parent or guardian and authorize {BRAND.name} to review this submission. I understand that no casting, training, booking, representation, travel, media use, or participation may move forward without required legal authorization, releases, and any applicable permits.
-                        </span>
-                      </label>
-                      {errors.guardianConsent && <p className={errorClass}>{errors.guardianConsent}</p>}
+                      <div className={errors.guardianConsent ? "rounded-sm border border-destructive/60 bg-destructive/5 p-2" : ""}>
+                        <label className="flex items-start gap-3 cursor-pointer">
+                          <input type="checkbox" checked={guardianConsent} onChange={e => { setGuardianConsent(e.target.checked); if (errors.guardianConsent) setErrors(prev => { const n = { ...prev }; delete n.guardianConsent; return n; }); }} className={`mt-1 accent-primary ${errors.guardianConsent ? "ring-2 ring-destructive/60" : ""}`} aria-invalid={!!errors.guardianConsent} />
+                          <span className={`text-sm ${errors.guardianConsent ? "text-destructive" : "text-muted-foreground"}`}>
+                            I confirm that I am the applicant's legal parent or guardian and authorize {BRAND.name} to review this submission. I understand that no casting, training, booking, representation, travel, media use, or participation may move forward without required legal authorization, releases, and any applicable permits.
+                          </span>
+                        </label>
+                        {errors.guardianConsent && <p className={errorClass}>{errors.guardianConsent}</p>}
+                      </div>
 
-                      <label className="flex items-start gap-3 cursor-pointer">
-                        <input type="checkbox" checked={guardianAuthAck} onChange={e => { setGuardianAuthAck(e.target.checked); if (errors.guardianAuthAck) setErrors(prev => { const n = { ...prev }; delete n.guardianAuthAck; return n; }); }} className="mt-1 accent-primary" />
-                        <span className="text-sm text-muted-foreground">
-                          I understand that additional documentation may be required before any minor can participate in any opportunity.
-                        </span>
-                      </label>
-                      {errors.guardianAuthAck && <p className={errorClass}>{errors.guardianAuthAck}</p>}
+                      <div className={errors.guardianAuthAck ? "rounded-sm border border-destructive/60 bg-destructive/5 p-2" : ""}>
+                        <label className="flex items-start gap-3 cursor-pointer">
+                          <input type="checkbox" checked={guardianAuthAck} onChange={e => { setGuardianAuthAck(e.target.checked); if (errors.guardianAuthAck) setErrors(prev => { const n = { ...prev }; delete n.guardianAuthAck; return n; }); }} className={`mt-1 accent-primary ${errors.guardianAuthAck ? "ring-2 ring-destructive/60" : ""}`} aria-invalid={!!errors.guardianAuthAck} />
+                          <span className={`text-sm ${errors.guardianAuthAck ? "text-destructive" : "text-muted-foreground"}`}>
+                            I understand that additional documentation may be required before any minor can participate in any opportunity.
+                          </span>
+                        </label>
+                        {errors.guardianAuthAck && <p className={errorClass}>{errors.guardianAuthAck}</p>}
+                      </div>
                     </div>
                   </fieldset>
                 )}
