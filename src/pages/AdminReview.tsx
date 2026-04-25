@@ -67,6 +67,14 @@ type Submission = {
   candidate_outcome: string | null;
   priority_tier: string | null;
   tags: string[] | null;
+  applicant_age: number | null;
+  is_minor: boolean | null;
+  parent_guardian_full_name: string | null;
+  parent_guardian_relationship: string | null;
+  parent_guardian_email: string | null;
+  parent_guardian_phone: string | null;
+  parent_guardian_consent: boolean | null;
+  parent_guardian_authorization_acknowledgment: boolean | null;
   prequalification_results?: {
     outcome: string | null;
     score: number | null;
