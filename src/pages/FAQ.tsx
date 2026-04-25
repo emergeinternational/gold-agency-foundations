@@ -18,6 +18,21 @@ const faqs = [
   { q: "What does 'global reach' mean in practice?", a: "It means we prepare selected talent for international opportunities — through industry-standard training, cross-border partnerships, and positioning that resonates beyond local markets." },
 ];
 
+const minorFaqs = [
+  {
+    q: "What can a minor (under 18) expect after submitting?",
+    a: "Submissions from minors are reviewed only after a legal parent or guardian has provided contact details and consent. Our team will reach out through the guardian email and phone provided. No casting, audition, training, travel, or media use can move forward until the guardian has authorized those specific next steps in writing.",
+  },
+  {
+    q: "What does a parent or guardian need to authorize?",
+    a: "At submission, guardians authorize the agency to review the application and contact them about next steps. Before any participation, additional written authorization is required for the specific activity — including auditions, training enrollment, bookings, travel, media use, or any release of likeness. Guardians may withdraw authorization at any time before participation begins.",
+  },
+  {
+    q: "Are there extra protections for applicants under 13?",
+    a: "Yes. Applicants under 13 require verified parent or guardian consent before any personal information can be reviewed or used. We collect only what is necessary for review and we do not share minor information publicly.",
+  },
+];
+
 export default function FAQ() {
   return (
     <Layout>
@@ -31,6 +46,23 @@ export default function FAQ() {
                 <p className="text-sm text-gray-300 leading-relaxed">{faq.a}</p>
               </motion.div>
             ))}
+          </div>
+
+          <div className="mt-12">
+            <div className="mb-5 flex items-center gap-3">
+              <span className="inline-flex rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-primary font-medium">
+                For Minors & Guardians
+              </span>
+              <h2 className="font-display text-xl font-semibold text-foreground">Under-18 Applicants</h2>
+            </div>
+            <div className="space-y-4">
+              {minorFaqs.map((faq, i) => (
+                <motion.div key={`minor-${i}`} {...fadeUp} transition={{ duration: 0.5, delay: i * 0.03 }} className="card-premium p-6 sm:p-7 border-primary/20">
+                  <h3 className="font-display text-lg font-semibold text-foreground mb-2">{faq.q}</h3>
+                  <p className="text-sm text-gray-300 leading-relaxed">{faq.a}</p>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
