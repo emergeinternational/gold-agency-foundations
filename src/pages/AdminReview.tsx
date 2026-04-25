@@ -265,7 +265,7 @@ export default function AdminReview() {
       const { data, error: submissionsError } = await supabase
         .from("submissions")
         .select(
-          "id, assignee, created_at, full_name, email, phone, city, category, country, source, status, level, next_action, emerge_ready, evaluation_scores, portfolio_url, sample_url, instagram, tiktok, youtube, website, telegram_chat_id, application_mode, opportunity_slug, opportunity_title, candidate_outcome, priority_tier, tags, prequalification_results(outcome, score, critical_pass)",
+          "id, assignee, created_at, full_name, email, phone, city, category, country, source, status, level, next_action, emerge_ready, evaluation_scores, portfolio_url, sample_url, instagram, tiktok, youtube, website, telegram_chat_id, application_mode, opportunity_slug, opportunity_title, candidate_outcome, priority_tier, tags, applicant_age, is_minor, parent_guardian_full_name, parent_guardian_relationship, parent_guardian_email, parent_guardian_phone, parent_guardian_consent, parent_guardian_authorization_acknowledgment, prequalification_results(outcome, score, critical_pass)",
         )
         .order("created_at", { ascending: false });
 
