@@ -28,6 +28,55 @@ const NEXT_ACTION_OPTIONS: NextAction[] = [
   "reject",
 ];
 
+const ACTION_HEADERS: Record<string, string> = {
+  schedule_audition: "🎤 Audition Scheduling Required",
+  enroll_training: "📚 Training Enrollment Required",
+  request_more_content: "📎 More Content Needed",
+  refer_to_emerge: "🚀 Referred for Emerge Review",
+};
+
+const CANDIDATE_MESSAGES: Record<string, string> = {
+  schedule_audition:
+    "Great news! You have been selected for an audition. Our team will contact you with scheduling details shortly.",
+  enroll_training:
+    "Great news! You have been selected for training. Our team will contact you with the next steps shortly.",
+  request_more_content:
+    "Thanks for your submission. Please send additional content so we can continue your review.",
+  refer_to_emerge:
+    "Congratulations! You have been selected for our premium Emerge consideration. Our team will contact you with next steps.",
+};
+
+const MINOR_SAFE_SUMMARY =
+  "Thanks for your submission. Before any next step can move forward, legal parent/guardian authorization may be required. Our team will provide instructions if needed.";
+
+const buildInternalTelegramPreview = (action: string, row: Submission): string => {
+  const priority = row.emerge_ready ? "HIGH" : "STANDARD";
+  const header = ACTION_HEADERS[action] ?? "📌 Submission Action Required";
+  return [
+    header,
+    "",
+    `Priority: ${priority}`,
+    "",
+    `Name: ${row.full_name ?? "n/a"}`,
+    `Category: ${row.category ?? "n/a"}`,
+    `Source: ${row.source ?? "n/a"}`,
+    `Status: ${row.status ?? "n/a"}`,
+    `Level: ${row.level ?? "n/a"}`,
+    `Emerge Ready: ${row.emerge_ready ? "YES" : "NO"}`,
+    `Next Action: ${action}`,
+    `Email: ${row.email ?? "n/a"}`,
+    `Phone: ${row.phone ?? "n/a"}`,
+    `City: ${row.city ?? "n/a"}`,
+  ].join("\n");
+};
+
+const buildCandidateTelegramPreview = (action: string, row: Submission): string => {
+  const summary = CANDIDATE_MESSAGES[action] ?? "Your submission has been updated. Our team will contact you with details.";
+  const firstName = row.full_name?.trim().split(" ")[0] ?? null;
+  const body = row.is_minor ? MINOR_SAFE_SUMMARY : summary;
+  return [firstName ? `Hi ${firstName},` : "Hi,", "", body, "", "— Gold Agency Team"].join("\n");
+};
+
 const ACTION_QUEUE_GROUP_ORDER = [
   "schedule_audition",
   "request_more_content",
