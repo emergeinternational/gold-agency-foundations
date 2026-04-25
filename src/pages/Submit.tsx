@@ -413,6 +413,8 @@ export default function Submit() {
     setSubmitting(true);
     try {
       // 1. Insert submission
+      const ageNum = form.age ? Number(form.age) : null;
+      const minorFlag = ageNum !== null && ageNum < 18;
       const { data: submission, error: subErr } = await supabase
         .from("submissions")
         .insert({
@@ -435,6 +437,14 @@ export default function Submit() {
           application_mode: applicationMode,
           opportunity_slug: opportunitySlug,
           opportunity_title: effectiveOpportunityTitle,
+          applicant_age: ageNum,
+          is_minor: minorFlag,
+          parent_guardian_full_name: minorFlag ? form.guardianName || null : null,
+          parent_guardian_relationship: minorFlag ? form.guardianRelationship || null : null,
+          parent_guardian_email: minorFlag ? form.guardianEmail || null : null,
+          parent_guardian_phone: minorFlag ? form.guardianPhone || null : null,
+          parent_guardian_consent: minorFlag ? guardianConsent : false,
+          parent_guardian_authorization_acknowledgment: minorFlag ? guardianAuthAck : false,
         })
         .select("id")
         .single();
