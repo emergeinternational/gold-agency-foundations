@@ -943,6 +943,11 @@ export default function AdminReview() {
                     <td className="px-3 py-2">
                       <div className="flex flex-col gap-0.5">
                         <span>{row.full_name ?? "—"}</span>
+                        {row.is_minor && (
+                          <span className="inline-flex w-fit items-center rounded-full border border-destructive/40 bg-destructive/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-destructive font-semibold">
+                            Minor — Guardian Authorization Required
+                          </span>
+                        )}
                         {(row.application_mode || row.opportunity_title) && (
                           <span className="flex flex-wrap gap-1">
                             {row.application_mode && row.application_mode !== "general" && (
