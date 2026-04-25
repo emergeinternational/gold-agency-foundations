@@ -281,6 +281,46 @@ const isEmergeReady = (params: {
   return averageScore !== null && averageScore >= 3.8;
 };
 
+function TelegramPreviewPanel({ row }: { row: Submission }) {
+  const [open, setOpen] = useState(false);
+  const action = normalizeNextAction(row.next_action) || "request_more_content";
+  const internal = buildInternalTelegramPreview(action, row);
+  const candidate = buildCandidateTelegramPreview(action, row);
+  const audience = row.is_minor ? "Minor — guardian-safe wording" : "Adult — standard wording";
+
+  return (
+    <div className="rounded-md border border-border/60 bg-muted/10 p-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-foreground">Telegram Preview</p>
+          <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium ${row.is_minor ? "border border-destructive/40 bg-destructive/10 text-destructive" : "border border-border bg-secondary text-foreground"}`}>
+            {audience}
+          </span>
+          <span className="text-[11px] text-muted-foreground">Action: {action}</span>
+        </div>
+        <Button size="sm" variant="outline" onClick={() => setOpen((v) => !v)}>
+          {open ? "Hide preview" : "Show preview"}
+        </Button>
+      </div>
+      {open && (
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <div>
+            <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Internal (admin chat)</p>
+            <pre className="whitespace-pre-wrap rounded-md border border-border/60 bg-background p-2 text-[11px] leading-snug text-foreground">{internal}</pre>
+          </div>
+          <div>
+            <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Candidate-facing</p>
+            <pre className={`whitespace-pre-wrap rounded-md border p-2 text-[11px] leading-snug text-foreground ${row.is_minor ? "border-destructive/40 bg-destructive/5" : "border-border/60 bg-background"}`}>{candidate}</pre>
+            {row.is_minor && (
+              <p className="mt-1 text-[10px] text-destructive">Minor-safe override active — no booking, casting, travel, or media-use language sent.</p>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function AdminReview() {
   const [rows, setRows] = useState<Submission[]>([]);
   const [notesBySubmission, setNotesBySubmission] = useState<Record<string, AdminNote[]>>({});
