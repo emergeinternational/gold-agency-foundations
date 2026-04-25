@@ -1282,8 +1282,36 @@ export default function AdminReview() {
                     </td>
                     <td className="min-w-72 px-3 py-2">
                       <div className="space-y-2">
+                        {/* Clear minor vs adult banner so reviewers can sort guardian-required submissions at a glance */}
+                        <div className="flex items-center justify-between gap-2">
+                          {row.is_minor ? (
+                            <span className="inline-flex items-center rounded-full border border-destructive/40 bg-destructive/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-destructive">
+                              Minor{row.applicant_age != null ? ` · age ${row.applicant_age}` : ""} — Guardian required
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center rounded-full border border-border/60 bg-muted/30 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                              Adult{row.applicant_age != null ? ` · age ${row.applicant_age}` : ""}
+                            </span>
+                          )}
+                          {row.is_minor && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const el = document.getElementById(`guardian-${row.id}`);
+                                if (el) {
+                                  el.scrollIntoView({ behavior: "smooth", block: "center" });
+                                  el.classList.add("ring-2", "ring-destructive");
+                                  window.setTimeout(() => el.classList.remove("ring-2", "ring-destructive"), 1600);
+                                }
+                              }}
+                              className="text-[10px] font-medium text-destructive underline underline-offset-2 hover:text-destructive/80"
+                            >
+                              Jump to guardian details →
+                            </button>
+                          )}
+                        </div>
                         {row.is_minor && (
-                          <div className="rounded-md border border-destructive/40 bg-destructive/5 p-2 text-xs space-y-0.5">
+                          <div id={`guardian-${row.id}`} className="rounded-md border border-destructive/40 bg-destructive/5 p-2 text-xs space-y-0.5 transition-shadow">
                             <p className="font-semibold text-destructive uppercase tracking-wide text-[10px]">Guardian — Minor Applicant{row.applicant_age != null ? ` (age ${row.applicant_age})` : ""}</p>
                             <p><span className="text-muted-foreground">Name:</span> {row.parent_guardian_full_name ?? "—"}</p>
                             <p><span className="text-muted-foreground">Relationship:</span> {row.parent_guardian_relationship ?? "—"}</p>
@@ -1329,7 +1357,8 @@ export default function AdminReview() {
                     </td>
                     </tr>
                     <tr className="border-b border-border bg-background/30">
-                      <td colSpan={21} className="px-3 py-3">
+                      <td colSpan={21} className="px-3 py-3 space-y-4">
+                        <TelegramPreviewPanel row={row} />
                         <CandidateMessagingPanel
                           submissionId={row.id}
                           telegramChatId={row.telegram_chat_id}
