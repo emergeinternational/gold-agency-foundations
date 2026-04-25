@@ -1228,6 +1228,17 @@ export default function AdminReview() {
                     </td>
                     <td className="min-w-72 px-3 py-2">
                       <div className="space-y-2">
+                        {row.is_minor && (
+                          <div className="rounded-md border border-destructive/40 bg-destructive/5 p-2 text-xs space-y-0.5">
+                            <p className="font-semibold text-destructive uppercase tracking-wide text-[10px]">Guardian — Minor Applicant{row.applicant_age != null ? ` (age ${row.applicant_age})` : ""}</p>
+                            <p><span className="text-muted-foreground">Name:</span> {row.parent_guardian_full_name ?? "—"}</p>
+                            <p><span className="text-muted-foreground">Relationship:</span> {row.parent_guardian_relationship ?? "—"}</p>
+                            <p><span className="text-muted-foreground">Email:</span> {row.parent_guardian_email ?? "—"}</p>
+                            <p><span className="text-muted-foreground">Phone:</span> {row.parent_guardian_phone ?? "—"}</p>
+                            <p><span className="text-muted-foreground">Consent:</span> {row.parent_guardian_consent ? "✓ Granted" : "✗ Not granted"}</p>
+                            <p><span className="text-muted-foreground">Acknowledgment:</span> {row.parent_guardian_authorization_acknowledgment ? "✓ Confirmed" : "✗ Missing"}</p>
+                          </div>
+                        )}
                         {notes.length > 0 ? (
                           <div className="max-h-28 overflow-y-auto rounded-md border border-border/60 p-2">
                             {notes.map((note) => (
