@@ -7,16 +7,23 @@ export const BRAND = {
   poweredByLine: "Development Division of Emerge Globally",
   legalEntity: "Casa Noir LLC",
   legalRelationship: "Ascend Elite Agency operates as a development division of Emerge Globally, a New York–based company.",
+  // Headquarters / international base
+  headquarters: "New York City",
+  // On-the-ground partnership / creative activity location (not HQ)
   locationPrimary: "Addis Ababa",
   locationVision: "New York City",
+  // Approved positioning statements
+  positioningLong:
+    "Ascend Elite is an international talent and media platform based in New York City, with on-the-ground partnerships and creative activity across Africa, including Addis Ababa, Ethiopia.",
+  positioningShort:
+    "International talent and media platform based in New York City, with on-the-ground partnerships across Africa.",
   email: "info@ascendeliteagency.com",
   phone: "+251 000 000 000",
+  // Only verified, active social accounts. Inactive handles are intentionally
+  // omitted so we never link to placeholder or incorrect accounts.
   socialLinks: {
-    instagram: "https://instagram.com/ascendeliteagency",
-    twitter: "https://x.com/ascendeliteagency",
-    youtube: "https://youtube.com/@ascendeliteagency",
-    linkedin: "https://linkedin.com/company/ascendeliteagency",
-    tiktok: "https://tiktok.com/@ascendeliteagency",
+    instagram: "https://www.instagram.com/ascendelitehq",
+    tiktok: "https://www.tiktok.com/@ascendeliteagency",
   },
 } as const;
 

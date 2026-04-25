@@ -51,7 +51,7 @@ export default function Contact() {
               {[
                 { icon: Mail, label: "Email", value: BRAND.email },
                 { icon: Phone, label: "Phone", value: BRAND.phone },
-                { icon: MapPin, label: "Location", value: `${BRAND.locationPrimary}, Ethiopia` },
+                { icon: MapPin, label: "Based In", value: "New York City — with on-the-ground partnerships in Addis Ababa, Ethiopia" },
               ].map(c => (
                 <div key={c.label} className="flex items-start gap-3">
                   <c.icon className="w-5 h-5 text-primary mt-0.5" />
