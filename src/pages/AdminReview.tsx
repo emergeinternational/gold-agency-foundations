@@ -28,6 +28,55 @@ const NEXT_ACTION_OPTIONS: NextAction[] = [
   "reject",
 ];
 
+const ACTION_HEADERS: Record<string, string> = {
+  schedule_audition: "🎤 Audition Scheduling Required",
+  enroll_training: "📚 Training Enrollment Required",
+  request_more_content: "📎 More Content Needed",
+  refer_to_emerge: "🚀 Referred for Emerge Review",
+};
+
+const CANDIDATE_MESSAGES: Record<string, string> = {
+  schedule_audition:
+    "Great news! You have been selected for an audition. Our team will contact you with scheduling details shortly.",
+  enroll_training:
+    "Great news! You have been selected for training. Our team will contact you with the next steps shortly.",
+  request_more_content:
+    "Thanks for your submission. Please send additional content so we can continue your review.",
+  refer_to_emerge:
+    "Congratulations! You have been selected for our premium Emerge consideration. Our team will contact you with next steps.",
+};
+
+const MINOR_SAFE_SUMMARY =
+  "Thanks for your submission. Before any next step can move forward, legal parent/guardian authorization may be required. Our team will provide instructions if needed.";
+
+const buildInternalTelegramPreview = (action: string, row: Submission): string => {
+  const priority = row.emerge_ready ? "HIGH" : "STANDARD";
+  const header = ACTION_HEADERS[action] ?? "📌 Submission Action Required";
+  return [
+    header,
+    "",
+    `Priority: ${priority}`,
+    "",
+    `Name: ${row.full_name ?? "n/a"}`,
+    `Category: ${row.category ?? "n/a"}`,
+    `Source: ${row.source ?? "n/a"}`,
+    `Status: ${row.status ?? "n/a"}`,
+    `Level: ${row.level ?? "n/a"}`,
+    `Emerge Ready: ${row.emerge_ready ? "YES" : "NO"}`,
+    `Next Action: ${action}`,
+    `Email: ${row.email ?? "n/a"}`,
+    `Phone: ${row.phone ?? "n/a"}`,
+    `City: ${row.city ?? "n/a"}`,
+  ].join("\n");
+};
+
+const buildCandidateTelegramPreview = (action: string, row: Submission): string => {
+  const summary = CANDIDATE_MESSAGES[action] ?? "Your submission has been updated. Our team will contact you with details.";
+  const firstName = row.full_name?.trim().split(" ")[0] ?? null;
+  const body = row.is_minor ? MINOR_SAFE_SUMMARY : summary;
+  return [firstName ? `Hi ${firstName},` : "Hi,", "", body, "", "— Gold Agency Team"].join("\n");
+};
+
 const ACTION_QUEUE_GROUP_ORDER = [
   "schedule_audition",
   "request_more_content",
@@ -231,6 +280,46 @@ const isEmergeReady = (params: {
   const averageScore = getAverageFromScores(getEvaluationCriteria(category), evaluationScores);
   return averageScore !== null && averageScore >= 3.8;
 };
+
+function TelegramPreviewPanel({ row }: { row: Submission }) {
+  const [open, setOpen] = useState(false);
+  const action = normalizeNextAction(row.next_action) || "request_more_content";
+  const internal = buildInternalTelegramPreview(action, row);
+  const candidate = buildCandidateTelegramPreview(action, row);
+  const audience = row.is_minor ? "Minor — guardian-safe wording" : "Adult — standard wording";
+
+  return (
+    <div className="rounded-md border border-border/60 bg-muted/10 p-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-foreground">Telegram Preview</p>
+          <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium ${row.is_minor ? "border border-destructive/40 bg-destructive/10 text-destructive" : "border border-border bg-secondary text-foreground"}`}>
+            {audience}
+          </span>
+          <span className="text-[11px] text-muted-foreground">Action: {action}</span>
+        </div>
+        <Button size="sm" variant="outline" onClick={() => setOpen((v) => !v)}>
+          {open ? "Hide preview" : "Show preview"}
+        </Button>
+      </div>
+      {open && (
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <div>
+            <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Internal (admin chat)</p>
+            <pre className="whitespace-pre-wrap rounded-md border border-border/60 bg-background p-2 text-[11px] leading-snug text-foreground">{internal}</pre>
+          </div>
+          <div>
+            <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Candidate-facing</p>
+            <pre className={`whitespace-pre-wrap rounded-md border p-2 text-[11px] leading-snug text-foreground ${row.is_minor ? "border-destructive/40 bg-destructive/5" : "border-border/60 bg-background"}`}>{candidate}</pre>
+            {row.is_minor && (
+              <p className="mt-1 text-[10px] text-destructive">Minor-safe override active — no booking, casting, travel, or media-use language sent.</p>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function AdminReview() {
   const [rows, setRows] = useState<Submission[]>([]);
@@ -711,6 +800,11 @@ export default function AdminReview() {
     return ACTION_QUEUE_GROUP_ORDER.filter((key) => grouped[key]?.length).map((key) => ({
       key,
       rows: [...(grouped[key] ?? [])].sort((a, b) => {
+        // Surface minors first within each action group so guardian
+        // authorization gets reviewed before adult queue items.
+        if (!!a.is_minor !== !!b.is_minor) {
+          return a.is_minor ? -1 : 1;
+        }
         if (a.emerge_ready !== b.emerge_ready) {
           return a.emerge_ready ? -1 : 1;
         }
@@ -1228,8 +1322,36 @@ export default function AdminReview() {
                     </td>
                     <td className="min-w-72 px-3 py-2">
                       <div className="space-y-2">
+                        {/* Clear minor vs adult banner so reviewers can sort guardian-required submissions at a glance */}
+                        <div className="flex items-center justify-between gap-2">
+                          {row.is_minor ? (
+                            <span className="inline-flex items-center rounded-full border border-destructive/40 bg-destructive/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-destructive">
+                              Minor{row.applicant_age != null ? ` · age ${row.applicant_age}` : ""} — Guardian required
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center rounded-full border border-border/60 bg-muted/30 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                              Adult{row.applicant_age != null ? ` · age ${row.applicant_age}` : ""}
+                            </span>
+                          )}
+                          {row.is_minor && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const el = document.getElementById(`guardian-${row.id}`);
+                                if (el) {
+                                  el.scrollIntoView({ behavior: "smooth", block: "center" });
+                                  el.classList.add("ring-2", "ring-destructive");
+                                  window.setTimeout(() => el.classList.remove("ring-2", "ring-destructive"), 1600);
+                                }
+                              }}
+                              className="text-[10px] font-medium text-destructive underline underline-offset-2 hover:text-destructive/80"
+                            >
+                              Jump to guardian details →
+                            </button>
+                          )}
+                        </div>
                         {row.is_minor && (
-                          <div className="rounded-md border border-destructive/40 bg-destructive/5 p-2 text-xs space-y-0.5">
+                          <div id={`guardian-${row.id}`} className="rounded-md border border-destructive/40 bg-destructive/5 p-2 text-xs space-y-0.5 transition-shadow">
                             <p className="font-semibold text-destructive uppercase tracking-wide text-[10px]">Guardian — Minor Applicant{row.applicant_age != null ? ` (age ${row.applicant_age})` : ""}</p>
                             <p><span className="text-muted-foreground">Name:</span> {row.parent_guardian_full_name ?? "—"}</p>
                             <p><span className="text-muted-foreground">Relationship:</span> {row.parent_guardian_relationship ?? "—"}</p>
@@ -1275,7 +1397,8 @@ export default function AdminReview() {
                     </td>
                     </tr>
                     <tr className="border-b border-border bg-background/30">
-                      <td colSpan={21} className="px-3 py-3">
+                      <td colSpan={21} className="px-3 py-3 space-y-4">
+                        <TelegramPreviewPanel row={row} />
                         <CandidateMessagingPanel
                           submissionId={row.id}
                           telegramChatId={row.telegram_chat_id}
