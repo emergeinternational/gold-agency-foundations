@@ -760,6 +760,11 @@ export default function AdminReview() {
     return ACTION_QUEUE_GROUP_ORDER.filter((key) => grouped[key]?.length).map((key) => ({
       key,
       rows: [...(grouped[key] ?? [])].sort((a, b) => {
+        // Surface minors first within each action group so guardian
+        // authorization gets reviewed before adult queue items.
+        if (!!a.is_minor !== !!b.is_minor) {
+          return a.is_minor ? -1 : 1;
+        }
         if (a.emerge_ready !== b.emerge_ready) {
           return a.emerge_ready ? -1 : 1;
         }
