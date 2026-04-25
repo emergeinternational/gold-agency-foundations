@@ -55,12 +55,12 @@ export default function SubmissionSuccess() {
               <p className="text-xs uppercase tracking-[0.16em] text-gray-500 mb-3">Follow for updates</p>
               <div className="flex flex-col gap-1 text-sm text-gray-400">
                 <a
-                  href="https://instagram.com/AscendEliteHQ"
+                  href="https://www.instagram.com/ascendelitehq"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-gray-200 transition-colors"
                 >
-                  @AscendEliteHQ
+                  @ascendelitehq
                 </a>
                 <a
                   href="https://www.ascendeliteagency.com"

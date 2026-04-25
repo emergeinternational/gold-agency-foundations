@@ -312,9 +312,13 @@ export default function Submit() {
     fullName: "", stageName: "", age: "", city: "", country: "",
     phone: "", email: "", instagram: "", tiktok: "", youtube: "", website: "",
     category: recognizedCategory, experienceLevel: "", shortBio: "", whyRepresentation: "",
-    portfolioLinks: "", guardianName: "", guardianEmail: "", guardianPhone: "",
+    portfolioLinks: "",
+    guardianName: "", guardianRelationship: "", guardianEmail: "", guardianPhone: "",
   });
   const [isMinor, setIsMinor] = useState(false);
+  const [isUnder13, setIsUnder13] = useState(false);
+  const [guardianConsent, setGuardianConsent] = useState(false);
+  const [guardianAuthAck, setGuardianAuthAck] = useState(false);
   const [consent, setConsent] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -375,8 +379,15 @@ export default function Submit() {
     if (!form.whyRepresentation.trim()) e.whyRepresentation = "Please share your goals";
     if (!consent) e.consent = "Consent is required to proceed";
     if (!agreeTerms) e.agreeTerms = "You must agree to submission terms";
-    if (isMinor && !form.guardianName.trim()) e.guardianName = "Required for applicants under 18";
-    if (isMinor && !form.guardianEmail.trim()) e.guardianEmail = "Required for applicants under 18";
+    if (isMinor) {
+      if (!form.guardianName.trim()) e.guardianName = "Required for applicants under 18";
+      if (!form.guardianRelationship.trim()) e.guardianRelationship = "Required for applicants under 18";
+      if (!form.guardianEmail.trim()) e.guardianEmail = "Required for applicants under 18";
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.guardianEmail)) e.guardianEmail = "Please enter a valid guardian email";
+      if (!form.guardianPhone.trim()) e.guardianPhone = "Required for applicants under 18";
+      if (!guardianConsent) e.guardianConsent = "Guardian consent is required";
+      if (!guardianAuthAck) e.guardianAuthAck = "Guardian acknowledgment is required";
+    }
 
     const linkFields = [form.instagram, form.tiktok, form.youtube, form.website];
     const portfolioLinks = form.portfolioLinks
@@ -402,6 +413,8 @@ export default function Submit() {
     setSubmitting(true);
     try {
       // 1. Insert submission
+      const ageNum = form.age ? Number(form.age) : null;
+      const minorFlag = ageNum !== null && ageNum < 18;
       const { data: submission, error: subErr } = await supabase
         .from("submissions")
         .insert({
@@ -424,6 +437,14 @@ export default function Submit() {
           application_mode: applicationMode,
           opportunity_slug: opportunitySlug,
           opportunity_title: effectiveOpportunityTitle,
+          applicant_age: ageNum,
+          is_minor: minorFlag,
+          parent_guardian_full_name: minorFlag ? form.guardianName || null : null,
+          parent_guardian_relationship: minorFlag ? form.guardianRelationship || null : null,
+          parent_guardian_email: minorFlag ? form.guardianEmail || null : null,
+          parent_guardian_phone: minorFlag ? form.guardianPhone || null : null,
+          parent_guardian_consent: minorFlag ? guardianConsent : false,
+          parent_guardian_authorization_acknowledgment: minorFlag ? guardianAuthAck : false,
         })
         .select("id")
         .single();
@@ -630,7 +651,12 @@ export default function Submit() {
                     </div>
                     <div>
                       <label className={labelClass}>Age</label>
-                      <input className={inputClass} type="number" min="1" max="100" value={form.age} onChange={e => { update("age", e.target.value); setIsMinor(Number(e.target.value) < 18); }} placeholder="Your age" />
+                      <input className={inputClass} type="number" min="1" max="100" value={form.age} onChange={e => {
+                        update("age", e.target.value);
+                        const n = Number(e.target.value);
+                        setIsMinor(!!e.target.value && n < 18);
+                        setIsUnder13(!!e.target.value && n > 0 && n < 13);
+                      }} placeholder="Your age" />
                     </div>
                     <div>
                       <label className={labelClass}>City</label>
@@ -741,15 +767,30 @@ export default function Submit() {
                   <p className="text-xs text-gray-200 mt-3">File uploads will be fully active once the backend is connected.</p>
                 </fieldset>
 
-                {/* Guardian Info */}
+                {/* Guardian Info — required when applicant is under 18 */}
                 {isMinor && (
-                  <fieldset>
-                    <legend className="font-display text-xl font-semibold text-foreground mb-6">Guardian Information <span className="text-sm font-normal text-muted-foreground">(required under 18)</span></legend>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <fieldset className="border border-primary/30 rounded-md p-5 bg-primary/5">
+                    <legend className="font-display text-xl font-semibold text-foreground px-2">
+                      Under 18? Parent/Guardian Required
+                    </legend>
+                    <p className="text-sm text-muted-foreground mb-5">
+                      Applicants under 18 may not move forward without legal parent or guardian authorization. Additional guardian information and consent are required before review can continue.
+                    </p>
+                    {isUnder13 && (
+                      <p className="text-sm text-foreground bg-secondary/60 border border-border/60 rounded-sm p-3 mb-5">
+                        Applicants under 13 require verified parent/guardian consent before any personal information can be reviewed or used.
+                      </p>
+                    )}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className={labelClass}>Guardian Full Name *</label>
+                        <label className={labelClass}>Parent / Guardian Full Name *</label>
                         <input className={inputClass} value={form.guardianName} onChange={e => update("guardianName", e.target.value)} placeholder="Guardian's full name" />
                         {errors.guardianName && <p className={errorClass}>{errors.guardianName}</p>}
+                      </div>
+                      <div>
+                        <label className={labelClass}>Relationship to Applicant *</label>
+                        <input className={inputClass} value={form.guardianRelationship} onChange={e => update("guardianRelationship", e.target.value)} placeholder="e.g. Mother, Father, Legal Guardian" />
+                        {errors.guardianRelationship && <p className={errorClass}>{errors.guardianRelationship}</p>}
                       </div>
                       <div>
                         <label className={labelClass}>Guardian Email *</label>
@@ -757,9 +798,27 @@ export default function Submit() {
                         {errors.guardianEmail && <p className={errorClass}>{errors.guardianEmail}</p>}
                       </div>
                       <div>
-                        <label className={labelClass}>Guardian Phone</label>
-                        <input className={inputClass} type="tel" value={form.guardianPhone} onChange={e => update("guardianPhone", e.target.value)} placeholder="+251..." />
+                        <label className={labelClass}>Guardian Phone *</label>
+                        <input className={inputClass} type="tel" value={form.guardianPhone} onChange={e => update("guardianPhone", e.target.value)} placeholder="+1..." />
+                        {errors.guardianPhone && <p className={errorClass}>{errors.guardianPhone}</p>}
                       </div>
+                    </div>
+                    <div className="space-y-4 mt-5">
+                      <label className="flex items-start gap-3 cursor-pointer">
+                        <input type="checkbox" checked={guardianConsent} onChange={e => { setGuardianConsent(e.target.checked); if (errors.guardianConsent) setErrors(prev => { const n = { ...prev }; delete n.guardianConsent; return n; }); }} className="mt-1 accent-primary" />
+                        <span className="text-sm text-muted-foreground">
+                          I confirm that I am the applicant's legal parent or guardian and authorize {BRAND.name} to review this submission. I understand that no casting, training, booking, representation, travel, media use, or participation may move forward without required legal authorization, releases, and any applicable permits.
+                        </span>
+                      </label>
+                      {errors.guardianConsent && <p className={errorClass}>{errors.guardianConsent}</p>}
+
+                      <label className="flex items-start gap-3 cursor-pointer">
+                        <input type="checkbox" checked={guardianAuthAck} onChange={e => { setGuardianAuthAck(e.target.checked); if (errors.guardianAuthAck) setErrors(prev => { const n = { ...prev }; delete n.guardianAuthAck; return n; }); }} className="mt-1 accent-primary" />
+                        <span className="text-sm text-muted-foreground">
+                          I understand that additional documentation may be required before any minor can participate in any opportunity.
+                        </span>
+                      </label>
+                      {errors.guardianAuthAck && <p className={errorClass}>{errors.guardianAuthAck}</p>}
                     </div>
                   </fieldset>
                 )}

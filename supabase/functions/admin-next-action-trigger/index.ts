@@ -13,6 +13,7 @@ type SubmissionRecord = {
   phone?: string | null;
   city?: string | null;
   telegram_chat_id?: string | null;
+  is_minor?: boolean | null;
 };
 
 type WebhookPayload = {
@@ -127,10 +128,16 @@ const formatCandidateMessage = (action: string, submission: SubmissionRecord) =>
     "Your submission has been updated. Our team will contact you with details.";
   const firstName = cleanString(submission.full_name)?.split(" ")[0] ?? null;
 
+  // Minor-safe override: never imply final booking, casting, travel, media use,
+  // or representation approval without guardian authorization.
+  const minorSafeSummary =
+    "Thanks for your submission. Before any next step can move forward, legal parent/guardian authorization may be required. Our team will provide instructions if needed.";
+  const body = submission.is_minor === true ? minorSafeSummary : summary;
+
   return [
     firstName ? `Hi ${firstName},` : "Hi,",
     "",
-    summary,
+    body,
     "",
     "— Gold Agency Team",
   ].join("\n");

@@ -3199,6 +3199,7 @@ export type Database = {
       }
       submissions: {
         Row: {
+          applicant_age: number | null
           application_mode: string | null
           assignee: string | null
           candidate_outcome: string | null
@@ -3213,11 +3214,18 @@ export type Database = {
           full_name: string | null
           id: string
           instagram: string | null
+          is_minor: boolean
           level: string | null
           next_action: string | null
           notes: string | null
           opportunity_slug: string | null
           opportunity_title: string | null
+          parent_guardian_authorization_acknowledgment: boolean
+          parent_guardian_consent: boolean
+          parent_guardian_email: string | null
+          parent_guardian_full_name: string | null
+          parent_guardian_phone: string | null
+          parent_guardian_relationship: string | null
           phone: string | null
           portfolio_url: string | null
           priority_tier: string | null
@@ -3231,6 +3239,7 @@ export type Database = {
           youtube: string | null
         }
         Insert: {
+          applicant_age?: number | null
           application_mode?: string | null
           assignee?: string | null
           candidate_outcome?: string | null
@@ -3245,11 +3254,18 @@ export type Database = {
           full_name?: string | null
           id?: string
           instagram?: string | null
+          is_minor?: boolean
           level?: string | null
           next_action?: string | null
           notes?: string | null
           opportunity_slug?: string | null
           opportunity_title?: string | null
+          parent_guardian_authorization_acknowledgment?: boolean
+          parent_guardian_consent?: boolean
+          parent_guardian_email?: string | null
+          parent_guardian_full_name?: string | null
+          parent_guardian_phone?: string | null
+          parent_guardian_relationship?: string | null
           phone?: string | null
           portfolio_url?: string | null
           priority_tier?: string | null
@@ -3263,6 +3279,7 @@ export type Database = {
           youtube?: string | null
         }
         Update: {
+          applicant_age?: number | null
           application_mode?: string | null
           assignee?: string | null
           candidate_outcome?: string | null
@@ -3277,11 +3294,18 @@ export type Database = {
           full_name?: string | null
           id?: string
           instagram?: string | null
+          is_minor?: boolean
           level?: string | null
           next_action?: string | null
           notes?: string | null
           opportunity_slug?: string | null
           opportunity_title?: string | null
+          parent_guardian_authorization_acknowledgment?: boolean
+          parent_guardian_consent?: boolean
+          parent_guardian_email?: string | null
+          parent_guardian_full_name?: string | null
+          parent_guardian_phone?: string | null
+          parent_guardian_relationship?: string | null
           phone?: string | null
           portfolio_url?: string | null
           priority_tier?: string | null

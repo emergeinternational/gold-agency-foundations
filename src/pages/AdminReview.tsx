@@ -67,6 +67,14 @@ type Submission = {
   candidate_outcome: string | null;
   priority_tier: string | null;
   tags: string[] | null;
+  applicant_age: number | null;
+  is_minor: boolean | null;
+  parent_guardian_full_name: string | null;
+  parent_guardian_relationship: string | null;
+  parent_guardian_email: string | null;
+  parent_guardian_phone: string | null;
+  parent_guardian_consent: boolean | null;
+  parent_guardian_authorization_acknowledgment: boolean | null;
   prequalification_results?: {
     outcome: string | null;
     score: number | null;
@@ -257,7 +265,7 @@ export default function AdminReview() {
       const { data, error: submissionsError } = await supabase
         .from("submissions")
         .select(
-          "id, assignee, created_at, full_name, email, phone, city, category, country, source, status, level, next_action, emerge_ready, evaluation_scores, portfolio_url, sample_url, instagram, tiktok, youtube, website, telegram_chat_id, application_mode, opportunity_slug, opportunity_title, candidate_outcome, priority_tier, tags, prequalification_results(outcome, score, critical_pass)",
+          "id, assignee, created_at, full_name, email, phone, city, category, country, source, status, level, next_action, emerge_ready, evaluation_scores, portfolio_url, sample_url, instagram, tiktok, youtube, website, telegram_chat_id, application_mode, opportunity_slug, opportunity_title, candidate_outcome, priority_tier, tags, applicant_age, is_minor, parent_guardian_full_name, parent_guardian_relationship, parent_guardian_email, parent_guardian_phone, parent_guardian_consent, parent_guardian_authorization_acknowledgment, prequalification_results(outcome, score, critical_pass)",
         )
         .order("created_at", { ascending: false });
 
@@ -935,6 +943,11 @@ export default function AdminReview() {
                     <td className="px-3 py-2">
                       <div className="flex flex-col gap-0.5">
                         <span>{row.full_name ?? "—"}</span>
+                        {row.is_minor && (
+                          <span className="inline-flex w-fit items-center rounded-full border border-destructive/40 bg-destructive/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-destructive font-semibold">
+                            Minor — Guardian Authorization Required
+                          </span>
+                        )}
                         {(row.application_mode || row.opportunity_title) && (
                           <span className="flex flex-wrap gap-1">
                             {row.application_mode && row.application_mode !== "general" && (
@@ -1215,6 +1228,17 @@ export default function AdminReview() {
                     </td>
                     <td className="min-w-72 px-3 py-2">
                       <div className="space-y-2">
+                        {row.is_minor && (
+                          <div className="rounded-md border border-destructive/40 bg-destructive/5 p-2 text-xs space-y-0.5">
+                            <p className="font-semibold text-destructive uppercase tracking-wide text-[10px]">Guardian — Minor Applicant{row.applicant_age != null ? ` (age ${row.applicant_age})` : ""}</p>
+                            <p><span className="text-muted-foreground">Name:</span> {row.parent_guardian_full_name ?? "—"}</p>
+                            <p><span className="text-muted-foreground">Relationship:</span> {row.parent_guardian_relationship ?? "—"}</p>
+                            <p><span className="text-muted-foreground">Email:</span> {row.parent_guardian_email ?? "—"}</p>
+                            <p><span className="text-muted-foreground">Phone:</span> {row.parent_guardian_phone ?? "—"}</p>
+                            <p><span className="text-muted-foreground">Consent:</span> {row.parent_guardian_consent ? "✓ Granted" : "✗ Not granted"}</p>
+                            <p><span className="text-muted-foreground">Acknowledgment:</span> {row.parent_guardian_authorization_acknowledgment ? "✓ Confirmed" : "✗ Missing"}</p>
+                          </div>
+                        )}
                         {notes.length > 0 ? (
                           <div className="max-h-28 overflow-y-auto rounded-md border border-border/60 p-2">
                             {notes.map((note) => (
