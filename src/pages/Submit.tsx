@@ -312,9 +312,13 @@ export default function Submit() {
     fullName: "", stageName: "", age: "", city: "", country: "",
     phone: "", email: "", instagram: "", tiktok: "", youtube: "", website: "",
     category: recognizedCategory, experienceLevel: "", shortBio: "", whyRepresentation: "",
-    portfolioLinks: "", guardianName: "", guardianEmail: "", guardianPhone: "",
+    portfolioLinks: "",
+    guardianName: "", guardianRelationship: "", guardianEmail: "", guardianPhone: "",
   });
   const [isMinor, setIsMinor] = useState(false);
+  const [isUnder13, setIsUnder13] = useState(false);
+  const [guardianConsent, setGuardianConsent] = useState(false);
+  const [guardianAuthAck, setGuardianAuthAck] = useState(false);
   const [consent, setConsent] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -375,8 +379,15 @@ export default function Submit() {
     if (!form.whyRepresentation.trim()) e.whyRepresentation = "Please share your goals";
     if (!consent) e.consent = "Consent is required to proceed";
     if (!agreeTerms) e.agreeTerms = "You must agree to submission terms";
-    if (isMinor && !form.guardianName.trim()) e.guardianName = "Required for applicants under 18";
-    if (isMinor && !form.guardianEmail.trim()) e.guardianEmail = "Required for applicants under 18";
+    if (isMinor) {
+      if (!form.guardianName.trim()) e.guardianName = "Required for applicants under 18";
+      if (!form.guardianRelationship.trim()) e.guardianRelationship = "Required for applicants under 18";
+      if (!form.guardianEmail.trim()) e.guardianEmail = "Required for applicants under 18";
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.guardianEmail)) e.guardianEmail = "Please enter a valid guardian email";
+      if (!form.guardianPhone.trim()) e.guardianPhone = "Required for applicants under 18";
+      if (!guardianConsent) e.guardianConsent = "Guardian consent is required";
+      if (!guardianAuthAck) e.guardianAuthAck = "Guardian acknowledgment is required";
+    }
 
     const linkFields = [form.instagram, form.tiktok, form.youtube, form.website];
     const portfolioLinks = form.portfolioLinks
