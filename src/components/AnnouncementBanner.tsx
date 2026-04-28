@@ -67,7 +67,7 @@ export default function AnnouncementBanner() {
   const current = messages[index % messages.length];
 
   return (
-    <div className="w-full border-b border-primary/15 bg-gradient-to-r from-background via-primary/5 to-background">
+    <div className="w-full border-b border-primary/15 bg-gradient-to-r from-background via-primary/5 to-background ae-banner-motion">
       <div className="container-wide px-5 sm:px-8 lg:px-12 py-2 flex items-center justify-between gap-4 min-h-[36px]">
         <div className="flex-1 overflow-hidden">
           <AnimatePresence mode="wait">
