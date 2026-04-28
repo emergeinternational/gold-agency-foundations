@@ -218,12 +218,20 @@
     animation: ae-featured-glow 4.2s ease-in-out infinite;
   }
 
-  /* Disable motion for reduced-motion users */
+  /* Disable motion for reduced-motion users (covers CSS + Framer Motion via
+     useReducedMotion in components). Use !important + transform reset to
+     also kill any inline animation styles. */
   @media (prefers-reduced-motion: reduce) {
     .ae-hero-motion,
     .ae-banner-motion::after,
     .ae-featured-motion {
       animation: none !important;
+    }
+    .ae-hero-motion {
+      transform: none !important;
+    }
+    .ae-featured-motion {
+      box-shadow: 0 0 0 1px hsl(var(--primary) / 0.4) !important;
     }
   }
 
@@ -239,5 +247,19 @@
     .ae-featured-motion {
       animation: none;
     }
+  }
+
+  /* Runtime low-power detection (low cores, slow network, save-data, low fps).
+     Same kill switch as prefers-reduced-motion. */
+  html[data-low-power="true"] .ae-hero-motion,
+  html[data-low-power="true"] .ae-banner-motion::after,
+  html[data-low-power="true"] .ae-featured-motion {
+    animation: none !important;
+  }
+  html[data-low-power="true"] .ae-hero-motion {
+    transform: none !important;
+  }
+  html[data-low-power="true"] .ae-featured-motion {
+    box-shadow: 0 0 0 1px hsl(var(--primary) / 0.4) !important;
   }
 }
