@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Layout from "@/components/Layout";
 import SectionHeading from "@/components/SectionHeading";
@@ -18,16 +18,31 @@ const fadeUp = {
 };
 
 export default function Index() {
+  const reduceMotion = useReducedMotion();
+  const heroBgInitial = reduceMotion ? false : { scale: 1.03, opacity: 0.92 };
+  const heroBgAnimate = reduceMotion ? undefined : { scale: 1, opacity: 1 };
+  const heroTextInitial = reduceMotion ? false : { opacity: 0, y: 30 };
+  const heroTextAnimate = reduceMotion ? undefined : { opacity: 1, y: 0 };
+
   return (
     <Layout>
       {/* ─── HERO ─── */}
       <section className="relative min-h-screen flex items-start overflow-hidden">
-        <motion.div
-          initial={{ scale: 1.03, opacity: 0.92 }}
-          animate={{ scale: 1, opacity: 1 }}
+        {/* LCP image: real <img> with fetchpriority="high" + eager so the
+            browser prioritizes it. Motion class only adds a transform
+            (no layout, no LCP impact). */}
+        <motion.img
+          src={heroImage}
+          alt=""
+          aria-hidden="true"
+          decoding="async"
+          fetchPriority="high"
+          loading="eager"
+          initial={heroBgInitial}
+          animate={heroBgAnimate}
           transition={{ duration: 1.2, ease: "easeOut" as const }}
-          className="absolute inset-0 bg-cover ae-hero-motion"
-          style={{ backgroundImage: `url(${heroImage})`, backgroundPosition: "center 32%" }}
+          className={`absolute inset-0 w-full h-full object-cover ${reduceMotion ? "" : "ae-hero-motion"}`}
+          style={{ objectPosition: "center 32%" }}
         />
         <div className="absolute inset-0 bg-background/62" />
         <div className="absolute inset-y-0 left-0 right-[30%] bg-gradient-to-r from-background via-background/90 to-transparent" />
@@ -35,8 +50,8 @@ export default function Index() {
         <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-background/58 to-transparent" />
         <div className="relative z-10 container-wide px-5 sm:px-8 lg:px-12 pt-20 sm:pt-24 lg:pt-28 pb-16 sm:pb-20">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={heroTextInitial}
+            animate={heroTextAnimate}
             transition={{ duration: 1, ease: "easeOut" as const }}
             className="max-w-2xl"
           >
