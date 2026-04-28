@@ -161,8 +161,83 @@
   to { opacity: 1; }
 }
 
+/* ─── Premium motion layer (approved areas only) ───
+   Lightweight, GPU-friendly, no layout shift.
+   Disabled on prefers-reduced-motion and low-power touch devices. */
+@keyframes ae-hero-drift {
+  0%   { transform: scale(1.06) translate3d(0, 0, 0); }
+  50%  { transform: scale(1.09) translate3d(-1.2%, -0.8%, 0); }
+  100% { transform: scale(1.06) translate3d(0, 0, 0); }
+}
+
+@keyframes ae-banner-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes ae-featured-glow {
+  0%, 100% { box-shadow: 0 0 0 1px hsl(var(--primary) / 0.35), 0 0 18px -6px hsl(var(--primary) / 0.25); }
+  50%      { box-shadow: 0 0 0 1px hsl(var(--primary) / 0.55), 0 0 28px -4px hsl(var(--primary) / 0.45); }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* Hero background: slow Ken-Burns drift */
+  .ae-hero-motion {
+    will-change: transform;
+    animation: ae-hero-drift 22s ease-in-out infinite;
+    transform-origin: center 35%;
+  }
+
+  /* Announcement banner: subtle gold sheen sweep across the strip */
+  .ae-banner-motion {
+    position: relative;
+    overflow: hidden;
+  }
+  .ae-banner-motion::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      100deg,
+      transparent 35%,
+      hsl(var(--primary) / 0.10) 50%,
+      transparent 65%
+    );
+    background-size: 200% 100%;
+    animation: ae-banner-shimmer 9s linear infinite;
+    mix-blend-mode: screen;
+  }
+
+  /* Featured opportunity card: gentle gold pulse ring */
+  .ae-featured-motion {
+    animation: ae-featured-glow 4.2s ease-in-out infinite;
+  }
+
+  /* Disable motion for reduced-motion users */
+  @media (prefers-reduced-motion: reduce) {
+    .ae-hero-motion,
+    .ae-banner-motion::after,
+    .ae-featured-motion {
+      animation: none !important;
+    }
+  }
+
+  /* Soften / disable on low-power touch devices (phones, most tablets)
+     to protect Core Web Vitals and battery */
+  @media (hover: none) and (pointer: coarse) {
+    .ae-hero-motion {
+      animation-duration: 32s;
+    }
+    .ae-banner-motion::after {
+      display: none;
+    }
+    .ae-featured-motion {
+      animation: none;
+    }
   }
 }
