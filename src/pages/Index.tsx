@@ -41,8 +41,8 @@ export default function Index() {
         <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-background/58 to-transparent" />
         <div className="relative z-10 container-wide px-5 sm:px-8 lg:px-12 pt-20 sm:pt-24 lg:pt-28 pb-16 sm:pb-20">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={heroTextInitial}
+            animate={heroTextAnimate}
             transition={{ duration: 1, ease: "easeOut" as const }}
             className="max-w-2xl"
           >
