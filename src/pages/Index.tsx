@@ -26,7 +26,7 @@ export default function Index() {
           initial={{ scale: 1.03, opacity: 0.92 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 1.2, ease: "easeOut" as const }}
-          className="absolute inset-0 bg-cover"
+          className="absolute inset-0 bg-cover ae-hero-motion"
           style={{ backgroundImage: `url(${heroImage})`, backgroundPosition: "center 32%" }}
         />
         <div className="absolute inset-0 bg-background/62" />

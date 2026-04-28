@@ -117,7 +117,7 @@ export default function Opportunities() {
                 key={opp.slug}
                 {...fadeUp}
                 transition={{ duration: 0.6, delay: i * 0.05 }}
-                className={`card-premium p-6 card-hover flex flex-col ${opp.featured ? "ring-1 ring-primary/40 border-primary/30" : ""}`}
+                className={`card-premium p-6 card-hover flex flex-col ${opp.featured ? "ring-1 ring-primary/40 border-primary/30 ae-featured-motion" : ""}`}
               >
                 <div className="flex items-center gap-2 mb-3 flex-wrap">
                   <span className="text-[10px] uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded">
