@@ -28,12 +28,21 @@ export default function Index() {
     <Layout>
       {/* ─── HERO ─── */}
       <section className="relative min-h-screen flex items-start overflow-hidden">
-        <motion.div
+        {/* LCP image: real <img> with fetchpriority="high" + eager so the
+            browser prioritizes it. Motion class only adds a transform
+            (no layout, no LCP impact). */}
+        <motion.img
+          src={heroImage}
+          alt=""
+          aria-hidden="true"
+          decoding="async"
+          fetchPriority="high"
+          loading="eager"
           initial={heroBgInitial}
           animate={heroBgAnimate}
           transition={{ duration: 1.2, ease: "easeOut" as const }}
-          className={`absolute inset-0 bg-cover ${reduceMotion ? "" : "ae-hero-motion"}`}
-          style={{ backgroundImage: `url(${heroImage})`, backgroundPosition: "center 32%" }}
+          className={`absolute inset-0 w-full h-full object-cover ${reduceMotion ? "" : "ae-hero-motion"}`}
+          style={{ objectPosition: "center 32%" }}
         />
         <div className="absolute inset-0 bg-background/62" />
         <div className="absolute inset-y-0 left-0 right-[30%] bg-gradient-to-r from-background via-background/90 to-transparent" />
