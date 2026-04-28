@@ -18,15 +18,21 @@ const fadeUp = {
 };
 
 export default function Index() {
+  const reduceMotion = useReducedMotion();
+  const heroBgInitial = reduceMotion ? false : { scale: 1.03, opacity: 0.92 };
+  const heroBgAnimate = reduceMotion ? undefined : { scale: 1, opacity: 1 };
+  const heroTextInitial = reduceMotion ? false : { opacity: 0, y: 30 };
+  const heroTextAnimate = reduceMotion ? undefined : { opacity: 1, y: 0 };
+
   return (
     <Layout>
       {/* ─── HERO ─── */}
       <section className="relative min-h-screen flex items-start overflow-hidden">
         <motion.div
-          initial={{ scale: 1.03, opacity: 0.92 }}
-          animate={{ scale: 1, opacity: 1 }}
+          initial={heroBgInitial}
+          animate={heroBgAnimate}
           transition={{ duration: 1.2, ease: "easeOut" as const }}
-          className="absolute inset-0 bg-cover ae-hero-motion"
+          className={`absolute inset-0 bg-cover ${reduceMotion ? "" : "ae-hero-motion"}`}
           style={{ backgroundImage: `url(${heroImage})`, backgroundPosition: "center 32%" }}
         />
         <div className="absolute inset-0 bg-background/62" />
