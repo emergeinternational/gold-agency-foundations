@@ -35,6 +35,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import RequireAdmin from "./components/auth/RequireAdmin";
 const queryClient = new QueryClient();
+const routerBasename = import.meta.env.BASE_URL === "/" ? undefined : import.meta.env.BASE_URL;
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -42,7 +43,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        <BrowserRouter basename={routerBasename}>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />
