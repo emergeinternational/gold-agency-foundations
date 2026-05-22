@@ -6,7 +6,7 @@ import SectionHeading from "@/components/SectionHeading";
 import { BRAND, TALENT_CATEGORIES, ACADEMY_TRACKS } from "@/lib/brand";
 import heroImage from "@/assets/hero-main.jpg";
 import mrZikHero from "@/assets/mr-zik-hero.jpg";
-import mrZikImage from "@/assets/mr-zik.jpg";
+import mrZikImage from "@/assets/mr-zik.png";
 import academyImage from "@/assets/academy.jpg";
 import { ArrowRight, Star, Users, BookOpen, Briefcase, Globe } from "lucide-react";
 
@@ -95,16 +95,16 @@ export default function Index() {
         </div>
       </section>
 
-      {/* ─── MR. ZIK HERO SECTION ─── */}
+      {/* ─── ZEWOTIR DESALEGN ALEMU (MR. ZIK) HERO SECTION ─── */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${mrZikHero})` }} />
         <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-transparent" />
         <div className="relative z-10 container-wide px-5 sm:px-8 lg:px-12 py-24 sm:py-32 lg:py-40">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <motion.div {...fadeUp}>
-              <span className="badge-label mb-5 block">Public Ambassador</span>
-              <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-[1.05]">
-                Mr. Zik
+              <span className="badge-label mb-5 block">National Creative Ambassador</span>
+              <h2 className="font-display text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-foreground leading-[1.05] whitespace-nowrap">
+                Zewotir Desalegn Alemu (Mr. Zik)
               </h2>
               <div className="gold-line mt-5 mb-8" />
               <p className="text-secondary-foreground/80 text-lg leading-relaxed mb-4 font-light">
@@ -125,7 +125,7 @@ export default function Index() {
               className="hidden lg:flex justify-end"
             >
               <div className="w-72 xl:w-80 aspect-[3/4] rounded-sm overflow-hidden border border-primary/10">
-                <img src={mrZikImage} alt={`Mr. Zik — Ambassador of ${BRAND.name}`} className="w-full h-full object-cover" loading="lazy" />
+                <img src={mrZikImage} alt={`Zewotir Desalegn Alemu (Mr. Zik) — Ambassador of ${BRAND.name}`} className="w-full h-full object-cover" loading="lazy" />
               </div>
             </motion.div>
           </div>

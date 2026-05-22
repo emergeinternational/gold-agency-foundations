@@ -4,7 +4,7 @@ import { BRAND } from "@/lib/brand";
 const footerLinks = {
   Agency: [
     { label: "About", href: "/about" },
-    { label: "Mr. Zik", href: "/mr-zik" },
+    { label: "Zewotir Desalegn Alemu (Mr. Zik)", href: "/mr-zik" },
     { label: "Management", href: "/representation" },
     { label: "Areas of Representation", href: "/talent-categories" },
     { label: "Partnerships", href: "/partnerships" },
