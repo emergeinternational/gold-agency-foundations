@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { BRAND } from "@/lib/brand";
-import mrZikImage from "@/assets/mr-zik.jpg";
+import mrZikImage from "@/assets/mr-zik.png";
 import mrZikHero from "@/assets/mr-zik-hero.jpg";
 import { ArrowRight, Quote } from "lucide-react";
 
@@ -25,9 +25,9 @@ export default function MrZik() {
         <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-transparent" />
         <div className="relative z-10 container-wide px-5 sm:px-8 lg:px-12 pb-16 sm:pb-20 lg:pb-24 pt-40">
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" as const }}>
-            <span className="badge-label mb-5 block">Public Ambassador</span>
-            <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold text-foreground leading-[1.02] tracking-tight">
-              Mr. Zik
+            <span className="badge-label mb-5 block">National Creative Ambassador</span>
+            <h1 className="font-display text-lg sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground leading-[1.02] tracking-tight whitespace-nowrap">
+              Zewotir Desalegn Alemu (Mr. Zik)
             </h1>
             <p className="mt-6 text-lg sm:text-xl text-secondary-foreground/80 leading-relaxed max-w-lg font-light">
               Media personality, talent advocate, and the public face of an agency built to change how Ethiopia's creative industry operates.
@@ -49,7 +49,7 @@ export default function MrZik() {
                 <div className="gold-line mb-10" />
                 <div className="space-y-5 text-gray-300 leading-[1.8] text-[15px]">
                   <p>
-                    Mr. Zik's career spans media production, entertainment, and talent advocacy — a rare combination that makes him uniquely qualified to lead the public identity of {BRAND.name}. He understands both sides of the industry because he's worked both sides.
+                    The career of Zewotir Desalegn Alemu (Mr. Zik) spans media production, entertainment, and talent advocacy — a rare combination that makes him uniquely qualified to lead the public identity of {BRAND.name}. He understands both sides of the industry because he's worked both sides.
                   </p>
                   <p>
                     His role isn't ceremonial. As the agency's ambassador, he's personally involved in talent scouting, program direction, and building the partnerships that connect {BRAND.locationPrimary}'s creative community with opportunities that would otherwise remain out of reach.
@@ -63,7 +63,7 @@ export default function MrZik() {
             <div className="lg:col-span-2">
               <motion.div {...fadeUp} transition={{ duration: 0.6, delay: 0.1 }} className="sticky top-28">
                 <div className="aspect-[3/4] rounded-sm overflow-hidden border border-border/40">
-                  <img src={mrZikImage} alt="Mr. Zik" className="w-full h-full object-cover" loading="lazy" />
+                  <img src={mrZikImage} alt="Zewotir Desalegn Alemu (Mr. Zik)" className="w-full h-full object-cover" loading="lazy" />
                 </div>
               </motion.div>
             </div>
@@ -79,12 +79,12 @@ export default function MrZik() {
             <blockquote className="font-display text-xl sm:text-2xl lg:text-3xl font-light text-foreground/90 leading-relaxed italic">
               "Talent is everywhere. Infrastructure is not. That's the gap we exist to close — with intention, not promises."
             </blockquote>
-            <p className="mt-6 text-sm text-primary font-semibold tracking-[0.2em] uppercase">— Mr. Zik</p>
+            <p className="mt-6 text-sm text-primary font-semibold tracking-[0.2em] uppercase">— Zewotir Desalegn Alemu (Mr. Zik)</p>
           </motion.div>
         </div>
       </section>
 
-      {/* Why Mr. Zik */}
+      {/* Why Zewotir Desalegn Alemu (Mr. Zik) */}
       <section className="section-padding">
         <div className="container-wide">
           <SectionHeading badge="Role" title="What His Leadership Means" align="left" />
@@ -106,7 +106,7 @@ export default function MrZik() {
       {/* Media */}
       <section className="section-padding bg-card/50 border-y border-border/20">
         <div className="container-wide">
-          <SectionHeading badge="Appearances" title="Selected Media & Speaking" subtitle="Highlights from Mr. Zik's public engagements and industry presence." />
+          <SectionHeading badge="Appearances" title="Selected Media & Speaking" subtitle="Highlights from the public engagements and industry presence of Zewotir Desalegn Alemu (Mr. Zik)." />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {[
               { title: "Agency Launch Address", type: "Keynote", desc: "The founding vision behind the agency and its commitment to building real infrastructure for African creative talent." },
@@ -136,7 +136,7 @@ export default function MrZik() {
               Built on Substance. Selective by Design.
             </h2>
             <p className="mt-5 text-gray-300 text-base max-w-lg mx-auto font-light">
-              Mr. Zik invites serious creatives, collaborators, and industry partners to be part of an agency that earns its credibility every day.
+              Zewotir Desalegn Alemu (Mr. Zik) invites serious creatives, collaborators, and industry partners to be part of an agency that earns its credibility every day.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
               <Button variant="hero" size="xl" asChild>
