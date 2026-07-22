@@ -4,8 +4,8 @@
 
 - Vercel project: `ascend-elite-agency`
 - Vercel project id: `prj_vqPb1szFGAV9qhk3CboA1W7yqLbW`
-- Production deployment id: `dpl_7ZFQyR6baroU7NC4fetKAKDbMKaP`
-- Production deployment URL: `https://ascend-elite-agency-q5ye3oces-emerges-projects-c1ae993a.vercel.app`
+- Production deployment id: `dpl_F1PWgqjfAA3qVh76AScBX7mspY46`
+- Production deployment URL: `https://ascend-elite-agency-n4w00e236-emerges-projects-c1ae993a.vercel.app`
 - Production alias: `https://ascend-elite-agency.vercel.app`
 
 ## Build And Route Evidence
@@ -24,6 +24,9 @@
 - `submission_media` insert: HTTP 201.
 - `prequalification_results` insert: HTTP 201.
 - Anonymous protected `submissions` select: HTTP 200, `[]`.
+- Final API QA submission id: `e4009e01-09bd-42ec-a28c-948ce9dbb2a4`.
+- Final API QA email: `ascend-final-api-1784762573156@example.com`.
+- Final API QA media count: `3`.
 
 ## Browser E2E Evidence
 
@@ -32,6 +35,16 @@
 - Submitted QA email: `ascend-ui-vercel-1784761173539@example.com`.
 - Success URL: `https://ascend-elite-agency.vercel.app/submission-success?id=1a3c447d-bf9e-46a6-87c7-ac66192286b0`.
 - Browser console warnings/errors captured for successful run: `0`.
+
+## Admin Evidence
+
+- Authenticated Vercel admin route loads `/admin/review`.
+- Admin shell shows Dashboard, Applications, Applicants, Opportunities, Banners, Inquiries, Back to Website, and Sign Out.
+- Search by application id `e4009e01-09bd-42ec-a28c-948ce9dbb2a4` returns exactly the final QA applicant.
+- Admin row shows applicant fields, prequalification outcome, file roles, MIME types, upload dates, and `UPLOADED MEDIA (3)`.
+- Current remaining media preview failure: Storage signed URL generation returns `The database schema is invalid or incompatible.`
+- Targeted repair migration added: `supabase/migrations/20260722232000_repair_ascend_admin_media_storage_read.sql`.
+- Live migration application is blocked because Supabase CLI is not authenticated: `LegacyPlatformAuthRequiredError`, `Access token not provided`.
 
 ## DNS Blocker
 
@@ -49,3 +62,12 @@ After changing DNS, run:
 npx vercel domains verify www.ascendeliteagency.com
 ```
 
+## Supabase Migration Blocker
+
+To apply the pending media preview repair:
+
+```bash
+supabase login
+npx supabase link --project-ref fqphlzqactfvaiuoahcd
+npx supabase db query --linked --file supabase/migrations/20260722232000_repair_ascend_admin_media_storage_read.sql
+```

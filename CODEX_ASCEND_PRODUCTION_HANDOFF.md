@@ -8,8 +8,8 @@
 - Branch state after fetch: current branch is 2 commits behind and 1 commit ahead of `origin/main`.
 - Deployment platform: Vercel, matching the proven Emerge Globally pattern where technically appropriate.
 - Vercel project: `ascend-elite-agency` (`prj_vqPb1szFGAV9qhk3CboA1W7yqLbW`).
-- Latest Vercel production deployment: `dpl_7ZFQyR6baroU7NC4fetKAKDbMKaP`.
-- Production deployment URL: `https://ascend-elite-agency-q5ye3oces-emerges-projects-c1ae993a.vercel.app`.
+- Latest Vercel production deployment: `dpl_F1PWgqjfAA3qVh76AScBX7mspY46`.
+- Production deployment URL: `https://ascend-elite-agency-n4w00e236-emerges-projects-c1ae993a.vercel.app`.
 - Production alias: `https://ascend-elite-agency.vercel.app`.
 - Custom domain: `www.ascendeliteagency.com` is attached to the Vercel project but DNS still points to the prior host.
 - Production URL: `https://www.ascendeliteagency.com`
@@ -68,6 +68,7 @@
 - `git diff --check`: passed.
 - `npm test`: passed with Vitest 3.2.7.
 - Vercel production deployment `dpl_7ZFQyR6baroU7NC4fetKAKDbMKaP`: READY.
+- Vercel production deployment `dpl_F1PWgqjfAA3qVh76AScBX7mspY46`: READY.
 - Vercel direct route checks: `/`, `/submit`, and `/admin` return HTTP 200.
 - Live anon REST/API verification after migrations:
   - `is_privileged_user` RPC returns HTTP 200 with `false`.
@@ -89,6 +90,12 @@
   - Three files attach through visible upload controls.
   - Submit navigates to `/submission-success?id=1a3c447d-bf9e-46a6-87c7-ac66192286b0`.
   - Browser dev logs show 0 warnings/errors for the successful run.
+- Vercel admin verification:
+  - `/admin/review` loads for the authenticated admin session.
+  - Admin navigation, search, filters, reset, pagination, and CSV export controls are visible.
+  - Search by `e4009e01-09bd-42ec-a28c-948ce9dbb2a4` returns the final QA applicant.
+  - Applicant media metadata is linked and visible with `UPLOADED MEDIA (3)`.
+  - Storage signed URL creation still fails with `The database schema is invalid or incompatible`; targeted migration `20260722232000_repair_ascend_admin_media_storage_read.sql` is staged but not applied because Supabase CLI is not authenticated.
 - Admin SQL verification on project `fqphlzqactfvaiuoahcd`:
   - Browser-submitted row exists: `dc754af7-a6d3-448c-8d3a-a51d38555fdc`.
   - Row values: `status=new`, `source=emerge`, `mode=general`, `category=models`, `is_minor=false`, `guardian_consent=false`.

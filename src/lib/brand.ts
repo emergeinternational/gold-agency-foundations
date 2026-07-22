@@ -29,6 +29,20 @@ export const BRAND = {
 
 export const TALENT_CATEGORIES = [
   {
+    id: "actors",
+    label: "Actors",
+    description: "Screen, stage, commercial, voice, and performance talent preparing for casting and professional representation opportunities.",
+    specialties: ["Screen Actor", "Stage Actor", "Commercial Actor", "Voice Actor", "Comedian", "Performance Artist"],
+    profileEmphasis: "video" as const,
+  },
+  {
+    id: "actresses",
+    label: "Actresses",
+    description: "Screen, stage, commercial, voice, and performance talent who prefer actress as their public professional label.",
+    specialties: ["Screen Actress", "Stage Actress", "Commercial Actress", "Voice Actress", "Presenter", "Performance Artist"],
+    profileEmphasis: "video" as const,
+  },
+  {
     id: "media-personalities",
     label: "Media Personalities",
     description: "Television anchors, radio hosts, podcast leaders, commentators, and broadcast talent shaping modern media. Includes demo reel development, on-camera training, and broadcast positioning assets.",
@@ -71,6 +85,13 @@ export const TALENT_CATEGORIES = [
     profileEmphasis: "video" as const,
   },
   {
+    id: "content-creators",
+    label: "Content Creators",
+    description: "Creators building audiences, original formats, brand partnerships, and platform-native media across social and streaming channels.",
+    specialties: ["YouTuber", "Streamer", "Podcaster", "UGC Creator", "Lifestyle Creator", "Gaming Creator", "Technology Creator"],
+    profileEmphasis: "video" as const,
+  },
+  {
     id: "models",
     label: "Models",
     description: "Editorial, commercial, and runway talent representing diverse beauty standards. Includes comp card development, test shoots, and portfolio positioning for agency and brand readiness.",
@@ -88,8 +109,36 @@ export const TALENT_CATEGORIES = [
     id: "digital-creators",
     label: "Digital Creators",
     description: "Content creators, filmmakers, and digital storytellers defining the new creative economy. Includes content strategy systems, brand positioning kits, and platform growth alignment.",
-    specialties: ["YouTuber", "Filmmaker", "Photographer", "Animator", "Short-Form Creator", "Documentary Maker"],
+    specialties: ["YouTuber", "Streamer", "Podcaster", "Filmmaker", "Photographer", "Videographer", "Editor", "Short-Form Creator"],
     profileEmphasis: "video" as const,
+  },
+  {
+    id: "film-production",
+    label: "Film, TV & Production",
+    description: "Directors, producers, screenwriters, crew, editors, and production professionals building filmed, live, and digital projects.",
+    specialties: ["Director", "Producer", "Screenwriter", "Filmmaker", "Videographer", "Editor", "Production Crew"],
+    profileEmphasis: "video" as const,
+  },
+  {
+    id: "fashion-beauty",
+    label: "Fashion & Beauty",
+    description: "Fashion designers, stylists, makeup artists, hair artists, and beauty professionals supporting talent, campaigns, and productions.",
+    specialties: ["Fashion Designer", "Stylist", "Makeup Artist", "Hair Artist", "Beauty Creator", "Wardrobe Professional"],
+    profileEmphasis: "gallery" as const,
+  },
+  {
+    id: "sports-fitness",
+    label: "Sports & Fitness",
+    description: "Athletes, trainers, wellness personalities, fitness creators, and sport-focused talent with media and brand potential.",
+    specialties: ["Athlete", "Fitness Creator", "Coach", "Sports Creator", "Wellness Creator", "Trainer"],
+    profileEmphasis: "video" as const,
+  },
+  {
+    id: "writers-journalists",
+    label: "Writers & Journalists",
+    description: "Writers, journalists, commentators, bloggers, and editorial voices with perspective, audience, or production potential.",
+    specialties: ["Journalist", "Writer", "Author", "Blogger", "Commentator", "Business Creator"],
+    profileEmphasis: "narrative" as const,
   },
   {
     id: "cultural-voices",
@@ -102,6 +151,104 @@ export const TALENT_CATEGORIES = [
 
 export type TalentCategory = typeof TALENT_CATEGORIES[number];
 export type ProfileEmphasis = TalentCategory["profileEmphasis"];
+
+export type ApplicantMediaRole = "headshot" | "media_kit" | "sample";
+
+export type CategoryApplicationRequirement = {
+  summary: string;
+  requiredMedia: ApplicantMediaRole[];
+  recommendedMedia: ApplicantMediaRole[];
+  linkRequirement: "portfolio_or_social" | "social_platform" | "portfolio_or_reel" | "optional";
+  guidance: string[];
+};
+
+export const CATEGORY_APPLICATION_REQUIREMENTS: Record<string, CategoryApplicationRequirement> = {
+  models: {
+    summary: "Models need current photos that show face, proportions, and presentation.",
+    requiredMedia: ["headshot", "media_kit"],
+    recommendedMedia: ["sample"],
+    linkRequirement: "portfolio_or_social",
+    guidance: ["Upload a clear headshot.", "Upload a full-length or profile image.", "Portfolio, comp card, or social links help reviewers evaluate fit."],
+  },
+  actors: {
+    summary: "Actors need a clear headshot. A reel or resume helps when available, but beginners may still apply.",
+    requiredMedia: ["headshot"],
+    recommendedMedia: ["media_kit", "sample"],
+    linkRequirement: "portfolio_or_reel",
+    guidance: ["Upload a recent headshot.", "Add resume, credits, or reel if available.", "Do not invent credits or training."],
+  },
+  actresses: {
+    summary: "Actresses need a clear headshot. A reel or resume helps when available, but beginners may still apply.",
+    requiredMedia: ["headshot"],
+    recommendedMedia: ["media_kit", "sample"],
+    linkRequirement: "portfolio_or_reel",
+    guidance: ["Upload a recent headshot.", "Add resume, credits, or reel if available.", "Do not invent credits or training."],
+  },
+  "actors-performers": {
+    summary: "Performers need a clear headshot plus performance evidence when available.",
+    requiredMedia: ["headshot"],
+    recommendedMedia: ["media_kit", "sample"],
+    linkRequirement: "portfolio_or_reel",
+    guidance: ["Upload a recent headshot.", "Add clips, reel, resume, or training notes where available."],
+  },
+  "content-creators": {
+    summary: "Creators need a profile image and active platform links so audience and content style can be reviewed.",
+    requiredMedia: ["headshot"],
+    recommendedMedia: ["sample"],
+    linkRequirement: "social_platform",
+    guidance: ["Provide public social or channel links.", "Sample content links are more useful than follower claims alone."],
+  },
+  influencers: {
+    summary: "Influencers need profile media and public social links for brand-fit review.",
+    requiredMedia: ["headshot"],
+    recommendedMedia: ["sample"],
+    linkRequirement: "social_platform",
+    guidance: ["Provide Instagram, TikTok, YouTube, or website links.", "Add collaboration or media kit if available."],
+  },
+  "digital-creators": {
+    summary: "Digital creators need public work samples or channels for content-quality review.",
+    requiredMedia: ["headshot"],
+    recommendedMedia: ["sample"],
+    linkRequirement: "social_platform",
+    guidance: ["Provide channel or portfolio links.", "Upload a sample clip or media kit when available."],
+  },
+  "film-production": {
+    summary: "Production professionals need a reel, portfolio, credits, or project links.",
+    requiredMedia: [],
+    recommendedMedia: ["media_kit", "sample"],
+    linkRequirement: "portfolio_or_reel",
+    guidance: ["Add portfolio, reel, or project links.", "Upload credits, resume, or samples if available."],
+  },
+  musicians: {
+    summary: "Musicians need listenable work samples or public music links.",
+    requiredMedia: [],
+    recommendedMedia: ["headshot", "sample"],
+    linkRequirement: "portfolio_or_reel",
+    guidance: ["Provide streaming, music, or performance links.", "Upload audio/video sample when available."],
+  },
+  "voice-narration": {
+    summary: "Voice talent needs a voice sample or demo link.",
+    requiredMedia: [],
+    recommendedMedia: ["sample"],
+    linkRequirement: "portfolio_or_reel",
+    guidance: ["Provide a voice demo, narration sample, or commercial read link."],
+  },
+  "fashion-beauty": {
+    summary: "Fashion and beauty professionals need portfolio evidence of finished work.",
+    requiredMedia: [],
+    recommendedMedia: ["headshot", "media_kit", "sample"],
+    linkRequirement: "portfolio_or_reel",
+    guidance: ["Provide portfolio or campaign links.", "Upload lookbook, resume, or samples where available."],
+  },
+};
+
+export const DEFAULT_APPLICATION_REQUIREMENT: CategoryApplicationRequirement = {
+  summary: "Submit the strongest current materials you have. Requirements adapt by category.",
+  requiredMedia: ["headshot"],
+  recommendedMedia: ["media_kit", "sample"],
+  linkRequirement: "portfolio_or_social",
+  guidance: ["Upload a clear profile image.", "Add portfolio, social, reel, or sample links when available."],
+};
 
 export const ACADEMY_TRACKS = [
   "Media & Hosting",

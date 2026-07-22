@@ -1,9 +1,9 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { CandidateMessagingPanel } from "@/components/admin/CandidateMessagingPanel";
+import AdminShell from "@/components/admin/AdminShell";
 
 type ReviewStatus = "new" | "review" | "development" | "approved" | "rejected";
 type SubmissionLevel = "beginner" | "intermediate" | "advanced" | "elite";
@@ -16,6 +16,9 @@ type NextAction =
   | "reject";
 
 type ReviewViewMode = "standard" | "action_queue";
+type MediaFilter = "all" | "complete" | "missing";
+type DateFilter = "all" | "today" | "7d" | "30d";
+type SortMode = "newest" | "oldest" | "name" | "status";
 
 const STATUS_OPTIONS: ReviewStatus[] = ["new", "review", "development", "approved", "rejected"];
 const LEVEL_OPTIONS: SubmissionLevel[] = ["beginner", "intermediate", "advanced", "elite"];
@@ -148,7 +151,9 @@ type SubmissionMedia = {
   file_role: string;
   mime_type: string | null;
   size_bytes: number | null;
+  created_at: string;
   signedUrl?: string;
+  signedUrlError?: string;
 };
 
 const GENERIC_EVALUATION_CRITERIA = ["potential", "professionalism", "market_fit"] as const;
@@ -160,6 +165,10 @@ const CATEGORY_EVALUATION_CRITERIA: Record<string, readonly string[]> = {
   influencer: ["content_quality", "engagement", "consistency", "brand_fit", "potential"],
   actor: ["performance", "range", "presence", "emotional_depth", "professionalism"],
   voice: ["clarity", "tone", "delivery", "versatility", "professionalism"],
+  production: ["portfolio_quality", "technical_skill", "storytelling", "credits", "professionalism"],
+  "fashion/beauty": ["portfolio_quality", "craft", "taste_level", "professionalism", "market_fit"],
+  "sports/fitness": ["performance", "presence", "credibility", "content_fit", "professionalism"],
+  "writer/journalist": ["voice", "clarity", "subject_matter", "portfolio_quality", "professionalism"],
 };
 
 export function normalizeCategory(category: string): string {
@@ -169,20 +178,32 @@ export function normalizeCategory(category: string): string {
   const compact = normalized.replace(/[_\s-]+/g, "");
 
   if (["model", "models", "modeling"].includes(compact)) return "model";
-  if (["musician", "musicians", "music", "artist", "artists", "singer", "singers"].includes(compact)) {
+  if (["musician", "musicians", "music", "artist", "artists", "singer", "singers", "dj"].includes(compact)) {
     return "musician";
   }
   if (["host", "hosts", "media", "presenter", "presenters", "mediahosts", "mediapersonalities"].includes(compact)) {
     return "host/media";
   }
-  if (["influencer", "influencers", "creator", "creators", "digitalcreator", "digitalcreators"].includes(compact)) {
+  if (["influencer", "influencers", "creator", "creators", "contentcreator", "contentcreators", "digitalcreator", "digitalcreators", "youtuber", "streamer", "podcaster"].includes(compact)) {
     return "influencer";
   }
-  if (["actor", "actors", "performer", "performers", "actorsperformers"].includes(compact)) {
+  if (["actor", "actors", "actress", "actresses", "performer", "performers", "actorsperformers"].includes(compact)) {
     return "actor";
   }
   if (["voice", "voices", "voiceover", "voiceovers", "voicenarration", "narration"].includes(compact)) {
     return "voice";
+  }
+  if (["filmproduction", "filmtvproduction", "filmmaker", "filmmakers", "director", "producer", "screenwriter", "videographer", "photographer", "editor", "productioncrew"].includes(compact)) {
+    return "production";
+  }
+  if (["fashionbeauty", "fashiondesigner", "stylist", "makeupartist", "hairartist", "beautycreator"].includes(compact)) {
+    return "fashion/beauty";
+  }
+  if (["sportsfitness", "athlete", "fitnesscreator", "sportscreator", "coach", "trainer"].includes(compact)) {
+    return "sports/fitness";
+  }
+  if (["writersjournalists", "writer", "writers", "journalist", "journalists", "author", "blogger", "businesscreator"].includes(compact)) {
+    return "writer/journalist";
   }
 
   return normalized;
@@ -348,6 +369,12 @@ export default function AdminReview() {
   const [filterSource, setFilterSource] = useState("ascend");
   const [filterNextAction, setFilterNextAction] = useState("all");
   const [filterReadiness, setFilterReadiness] = useState("all");
+  const [filterCountry, setFilterCountry] = useState("all");
+  const [filterMedia, setFilterMedia] = useState<MediaFilter>("all");
+  const [filterDate, setFilterDate] = useState<DateFilter>("all");
+  const [sortMode, setSortMode] = useState<SortMode>("newest");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
   const [search, setSearch] = useState("");
   const [viewMode, setViewMode] = useState<ReviewViewMode>("standard");
   const [savingStatusId, setSavingStatusId] = useState<string | null>(null);
@@ -358,8 +385,6 @@ export default function AdminReview() {
   const [savingEvaluationId, setSavingEvaluationId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
-
   useEffect(() => {
     const load = async () => {
       setLoading(true);
@@ -449,7 +474,7 @@ export default function AdminReview() {
 
         const { data: mediaData, error: mediaError } = await supabase
           .from("submission_media")
-          .select("id, submission_id, bucket_id, object_path, file_name, file_role, mime_type, size_bytes")
+          .select("id, submission_id, bucket_id, object_path, file_name, file_role, mime_type, size_bytes, created_at")
           .in("submission_id", ids)
           .order("created_at", { ascending: true });
 
@@ -458,10 +483,18 @@ export default function AdminReview() {
         } else if (mediaData) {
           const signedMedia = await Promise.all(
             (mediaData as SubmissionMedia[]).map(async (media) => {
-              const { data: signed } = await supabase.storage
+              const { data: signed, error: signedError } = await supabase.storage
                 .from(media.bucket_id)
                 .createSignedUrl(media.object_path, 60 * 10);
-              return { ...media, signedUrl: signed?.signedUrl };
+              if (signedError) {
+                console.error("submission media signed URL error", {
+                  mediaId: media.id,
+                  bucketId: media.bucket_id,
+                  objectPath: media.object_path,
+                  message: signedError.message,
+                });
+              }
+              return { ...media, signedUrl: signed?.signedUrl, signedUrlError: signedError?.message };
             }),
           );
 
@@ -479,11 +512,6 @@ export default function AdminReview() {
 
     void load();
   }, []);
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate("/sign-in", { replace: true });
-  };
 
   const handleStatusSave = async (submissionId: string) => {
     const status = statusDrafts[submissionId];
@@ -782,33 +810,149 @@ export default function AdminReview() {
     [rows],
   );
 
+  const countryOptions = useMemo(
+    () => [...new Set(rows.map((row) => row.country).filter(Boolean) as string[])].sort(),
+    [rows],
+  );
+
+  const resetFilters = () => {
+    setFilterCategory("all");
+    setFilterStatus("all");
+    setFilterSource("all");
+    setFilterNextAction("all");
+    setFilterReadiness("all");
+    setFilterCountry("all");
+    setFilterMedia("all");
+    setFilterDate("all");
+    setSearch("");
+    setSortMode("newest");
+    setPage(1);
+  };
+
   const filteredRows = useMemo(
-    () =>
-      rows.filter((row) => {
+    () => {
+      const now = Date.now();
+      const rowsAfterFilter = rows.filter((row) => {
         const rowStatus = normalizeStatus(row.status);
         const normalizedCategory = normalizeCategory(row.category ?? "");
         const normalizedSource = row.source ?? "";
         const normalizedNextAction = normalizeNextAction(row.next_action);
+        const mediaCount = mediaBySubmission[row.id]?.length ?? 0;
         const searchTerm = search.trim().toLowerCase();
+        const submittedAt = new Date(row.created_at).getTime();
 
         const categoryMatch = filterCategory === "all" || normalizedCategory === filterCategory;
         const statusMatch = filterStatus === "all" || rowStatus === filterStatus;
         const sourceMatch = filterSource === "all" || normalizedSource === filterSource;
         const nextActionMatch = filterNextAction === "all" || normalizedNextAction === filterNextAction;
+        const countryMatch = filterCountry === "all" || row.country === filterCountry;
+        const mediaMatch =
+          filterMedia === "all" ||
+          (filterMedia === "complete" && mediaCount > 0) ||
+          (filterMedia === "missing" && mediaCount === 0);
+        const dateMatch =
+          filterDate === "all" ||
+          (filterDate === "today" && now - submittedAt <= 24 * 60 * 60 * 1000) ||
+          (filterDate === "7d" && now - submittedAt <= 7 * 24 * 60 * 60 * 1000) ||
+          (filterDate === "30d" && now - submittedAt <= 30 * 24 * 60 * 60 * 1000);
         const readinessMatch =
           filterReadiness === "all" ||
           (filterReadiness === "ready" && row.emerge_ready) ||
           (filterReadiness === "not_ready" && !row.emerge_ready);
         const searchMatch =
           searchTerm.length === 0 ||
-          [row.full_name, row.email, row.phone, row.city, row.category, normalizedCategory]
+          [
+            row.id,
+            row.full_name,
+            row.email,
+            row.phone,
+            row.city,
+            row.country,
+            row.category,
+            normalizedCategory,
+            row.status,
+            row.source,
+            row.instagram,
+            row.tiktok,
+            row.youtube,
+            row.website,
+            row.application_mode,
+            row.opportunity_slug,
+            row.opportunity_title,
+            row.assignee,
+          ]
             .filter(Boolean)
             .some((value) => value?.toLowerCase().includes(searchTerm));
 
-        return categoryMatch && statusMatch && sourceMatch && nextActionMatch && readinessMatch && searchMatch;
-      }),
-    [rows, filterCategory, filterStatus, filterSource, filterNextAction, filterReadiness, search],
+        return categoryMatch && statusMatch && sourceMatch && nextActionMatch && countryMatch && mediaMatch && dateMatch && readinessMatch && searchMatch;
+      });
+
+      return [...rowsAfterFilter].sort((a, b) => {
+        if (sortMode === "oldest") return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        if (sortMode === "name") return (a.full_name ?? "").localeCompare(b.full_name ?? "");
+        if (sortMode === "status") return normalizeStatus(a.status).localeCompare(normalizeStatus(b.status));
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
+    },
+    [rows, mediaBySubmission, filterCategory, filterStatus, filterSource, filterNextAction, filterCountry, filterMedia, filterDate, filterReadiness, search, sortMode],
   );
+
+  const totalPages = Math.max(1, Math.ceil(filteredRows.length / pageSize));
+  const paginatedRows = useMemo(() => {
+    const safePage = Math.min(page, totalPages);
+    const start = (safePage - 1) * pageSize;
+    return filteredRows.slice(start, start + pageSize);
+  }, [filteredRows, page, pageSize, totalPages]);
+
+  const exportCsv = () => {
+    const header = [
+      "id",
+      "created_at",
+      "full_name",
+      "email",
+      "phone",
+      "country",
+      "city",
+      "category",
+      "status",
+      "source",
+      "application_mode",
+      "opportunity_title",
+      "assignee",
+      "media_count",
+    ];
+    const escape = (value: unknown) => `"${String(value ?? "").replace(/"/g, '""')}"`;
+    const lines = [
+      header.join(","),
+      ...filteredRows.map((row) =>
+        [
+          row.id,
+          row.created_at,
+          row.full_name,
+          row.email,
+          row.phone,
+          row.country,
+          row.city,
+          row.category,
+          row.status,
+          row.source,
+          row.application_mode,
+          row.opportunity_title,
+          row.assignee,
+          mediaBySubmission[row.id]?.length ?? 0,
+        ]
+          .map(escape)
+          .join(","),
+      ),
+    ];
+    const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `ascend-applications-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
 
 
@@ -860,22 +1004,15 @@ export default function AdminReview() {
       }),
     }));
   }, [filteredRows]);
-  return (
-    <div className="min-h-screen bg-background p-6 text-foreground sm:p-10">
-      <div className="mb-6 flex items-center justify-between gap-4">
-        <div>
-          <h1 className="mb-1 text-2xl font-semibold">Submission Review</h1>
-          <p className="text-sm text-muted-foreground">
-            Internal only — founder/admin review workspace. Source is shown prominently to keep Ascend and Emerge
-            separated.
-          </p>
-        </div>
-        <Button variant="outline" onClick={handleSignOut}>
-          Sign out
-        </Button>
-      </div>
+  const activeReviewRows = viewMode === "action_queue" ? actionQueueGroups.flatMap((group) => group.rows) : paginatedRows;
 
-      <div className="mb-4 grid gap-3 sm:grid-cols-6">
+  return (
+    <AdminShell
+      title="Applications"
+      description="Founder/admin review workspace for applicant records, private media, scoring, assignments, statuses, and next actions."
+    >
+
+      <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-10">
         <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">Filter by category</label>
           <select
@@ -925,6 +1062,25 @@ export default function AdminReview() {
         </div>
 
         <div>
+          <label className="mb-1 block text-xs font-medium text-muted-foreground">Country</label>
+          <select
+            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+            value={filterCountry}
+            onChange={(event) => {
+              setFilterCountry(event.target.value);
+              setPage(1);
+            }}
+          >
+            <option value="all">All countries</option>
+            {countryOptions.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">Filter by readiness</label>
           <select
             className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
@@ -954,13 +1110,100 @@ export default function AdminReview() {
         </div>
 
         <div>
+          <label className="mb-1 block text-xs font-medium text-muted-foreground">Media</label>
+          <select
+            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+            value={filterMedia}
+            onChange={(event) => {
+              setFilterMedia(event.target.value as MediaFilter);
+              setPage(1);
+            }}
+          >
+            <option value="all">All media states</option>
+            <option value="complete">Has media</option>
+            <option value="missing">Missing media</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="mb-1 block text-xs font-medium text-muted-foreground">Date</label>
+          <select
+            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+            value={filterDate}
+            onChange={(event) => {
+              setFilterDate(event.target.value as DateFilter);
+              setPage(1);
+            }}
+          >
+            <option value="all">All dates</option>
+            <option value="today">Last 24h</option>
+            <option value="7d">Last 7 days</option>
+            <option value="30d">Last 30 days</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="mb-1 block text-xs font-medium text-muted-foreground">Sort</label>
+          <select
+            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+            value={sortMode}
+            onChange={(event) => setSortMode(event.target.value as SortMode)}
+          >
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="name">Name A-Z</option>
+            <option value="status">Status A-Z</option>
+          </select>
+        </div>
+
+        <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">Search</label>
           <input
             className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
-            placeholder="Name, email, phone, city, category"
+            placeholder="Name, email, phone, id, country, city, category, status, social"
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setPage(1);
+            }}
           />
+        </div>
+      </div>
+
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-md border border-border/60 bg-muted/20 px-3 py-2">
+        <p className="text-xs text-muted-foreground">
+          Showing {filteredRows.length === 0 ? 0 : (Math.min(page, totalPages) - 1) * pageSize + 1}-
+          {Math.min(Math.min(page, totalPages) * pageSize, filteredRows.length)} of {filteredRows.length} matching applications.
+        </p>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button size="sm" variant="outline" onClick={resetFilters}>
+            Reset Filters
+          </Button>
+          <Button size="sm" variant="outline" onClick={exportCsv} disabled={filteredRows.length === 0}>
+            Export CSV
+          </Button>
+          <select
+            className="h-8 rounded-md border border-input bg-background px-2 text-xs"
+            value={pageSize}
+            onChange={(event) => {
+              setPageSize(Number(event.target.value));
+              setPage(1);
+            }}
+          >
+            <option value={10}>10 per page</option>
+            <option value={25}>25 per page</option>
+            <option value={50}>50 per page</option>
+            <option value={100}>100 per page</option>
+          </select>
+          <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage((prev) => Math.max(1, prev - 1))}>
+            Previous
+          </Button>
+          <span className="text-xs text-muted-foreground">
+            Page {Math.min(page, totalPages)} of {totalPages}
+          </span>
+          <Button size="sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}>
+            Next
+          </Button>
         </div>
       </div>
 
@@ -1039,7 +1282,7 @@ export default function AdminReview() {
               </tr>
             </thead>
             <tbody>
-              {(viewMode === "action_queue" ? actionQueueGroups.flatMap((group) => group.rows) : filteredRows).map((row, index, activeRows) => {
+              {activeReviewRows.map((row, index, activeRows) => {
                 const previousRow = activeRows[index - 1];
                 const startsNewGroup =
                   viewMode === "action_queue" && (index === 0 || previousRow?.next_action !== row.next_action);
@@ -1323,17 +1566,60 @@ export default function AdminReview() {
                           !row.youtube &&
                           !row.website &&
                           media.length === 0 && <span className="text-xs text-muted-foreground">—</span>}
-                        {media.map((item) => (
-                          <a
-                            key={item.id}
-                            href={item.signedUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-xs underline underline-offset-2"
-                          >
-                            {item.file_role.replace("_", " ")}
-                          </a>
-                        ))}
+                        {media.length > 0 && (
+                          <div className="basis-full space-y-2">
+                            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                              Uploaded media ({media.length})
+                            </p>
+                            <div className="grid min-w-64 grid-cols-1 gap-2">
+                              {media.map((item) => {
+                                const isImage = item.mime_type?.startsWith("image/");
+                                return (
+                                  <a
+                                    key={item.id}
+                                    href={item.signedUrl ?? undefined}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className={`flex items-center gap-2 rounded-md border p-2 ${
+                                      item.signedUrl
+                                        ? "border-border/70 bg-secondary/20 hover:border-primary/50"
+                                        : "border-destructive/50 bg-destructive/5"
+                                    }`}
+                                    title={item.object_path}
+                                  >
+                                    <span className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded border border-border/60 bg-background text-[10px] uppercase text-muted-foreground">
+                                      {isImage && item.signedUrl ? (
+                                        <img
+                                          src={item.signedUrl}
+                                          alt={`${item.file_role.replace("_", " ")} preview`}
+                                          className="h-full w-full object-cover"
+                                          loading="lazy"
+                                        />
+                                      ) : (
+                                        item.file_role.replace("_", " ")
+                                      )}
+                                    </span>
+                                    <span className="min-w-0 text-xs">
+                                      <span className="block font-medium text-foreground">{item.file_role.replace("_", " ")}</span>
+                                      <span className="block truncate text-muted-foreground">{item.file_name ?? item.object_path}</span>
+                                      <span className="block text-muted-foreground">
+                                        {item.mime_type ?? "unknown type"} · {item.size_bytes ? `${Math.round(item.size_bytes / 1024)} KB` : "size unknown"}
+                                      </span>
+                                      <span className="block text-muted-foreground">
+                                        Uploaded {new Date(item.created_at).toLocaleString()}
+                                      </span>
+                                      {!item.signedUrl && (
+                                        <span className="block font-medium text-destructive">
+                                          Preview unavailable: {item.signedUrlError ?? "signed URL missing"}
+                                        </span>
+                                      )}
+                                    </span>
+                                  </a>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </td>
                     <td className="min-w-80 px-3 py-2">
@@ -1480,6 +1766,6 @@ export default function AdminReview() {
           </table>
         </div>
       )}
-    </div>
+    </AdminShell>
   );
 }

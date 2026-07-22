@@ -2,7 +2,13 @@ import { useEffect, useMemo, useState } from "react";
 import Layout from "@/components/Layout";
 import PageHero from "@/components/PageHero";
 import { Button } from "@/components/ui/button";
-import { BRAND, TALENT_CATEGORIES } from "@/lib/brand";
+import {
+  BRAND,
+  CATEGORY_APPLICATION_REQUIREMENTS,
+  DEFAULT_APPLICATION_REQUIREMENT,
+  TALENT_CATEGORIES,
+  type ApplicantMediaRole,
+} from "@/lib/brand";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Upload, CheckCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +19,12 @@ import { supabase } from "@/integrations/supabase/client";
 const LABEL_TO_CATEGORY_ID: Record<string, string> = {
   model: "models",
   models: "models",
+  actor: "actors",
+  actors: "actors",
+  actress: "actresses",
+  actresses: "actresses",
+  "screen actor": "actors",
+  "stage actor": "actors",
   "actor / performer": "actors-performers",
   "actors / performers": "actors-performers",
   performer: "actors-performers",
@@ -31,19 +43,26 @@ const LABEL_TO_CATEGORY_ID: Record<string, string> = {
   "musician / artist": "musicians",
   "performer (music)": "musicians",
   "influencer / content creator": "influencers",
+  "content creator": "content-creators",
+  "content creators": "content-creators",
   "tiktok creator": "influencers",
-  "youtuber": "digital-creators",
-  "podcaster": "digital-creators",
+  "youtuber": "content-creators",
+  "streamer": "content-creators",
+  "podcaster": "content-creators",
   "livestream personality": "digital-creators",
-  "content creator": "digital-creators",
-  "photographer": "digital-creators",
-  "videographer": "digital-creators",
-  "video editor": "digital-creators",
-  "graphic designer": "digital-creators",
-  "creative director": "digital-creators",
-  "stylist": "digital-creators",
-  "makeup artist": "digital-creators",
-  "fashion designer": "digital-creators",
+  "photographer": "film-production",
+  "videographer": "film-production",
+  "video editor": "film-production",
+  "graphic designer": "film-production",
+  "creative director": "film-production",
+  "director": "film-production",
+  "film producer": "film-production",
+  "screenwriter": "film-production",
+  "production crew": "film-production",
+  "stylist": "fashion-beauty",
+  "makeup artist": "fashion-beauty",
+  "hair artist": "fashion-beauty",
+  "fashion designer": "fashion-beauty",
   "journalist / interviewer": "speakers-storytellers",
   "speaker": "speakers-storytellers",
   "brand ambassador": "influencers",
@@ -182,7 +201,10 @@ const CATEGORY_TO_GATE: Record<string, keyof typeof GATE_CONFIG> = {
   "media-personalities": "media-hosts",
   "hosts-presenters": "media-hosts",
   influencers: "digital-creators",
+  "content-creators": "digital-creators",
   "digital-creators": "digital-creators",
+  actors: "actors-performers",
+  actresses: "actors-performers",
   "actors-performers": "actors-performers",
   "speakers-storytellers": "speakers-storytellers",
 };
@@ -193,7 +215,7 @@ const APPLICANT_MEDIA_BUCKET = "ascend-applicant-media";
 
 type ApplicantMediaUpload = {
   file: File;
-  role: "headshot" | "media_kit" | "sample";
+  role: ApplicantMediaRole;
 };
 
 type UploadedApplicantMedia = {
@@ -300,16 +322,16 @@ export default function Submit() {
   // If opportunity not in map (or no opportunity), show full TALENT_CATEGORIES list.
   const OPPORTUNITY_CATEGORY_MAP: Record<string, string[]> = {
     new_faces_talent_review: TALENT_CATEGORIES.map((c) => c.id) as string[],
-    ongoing_casting_call: ["models", "actors-performers", "hosts-presenters", "media-personalities"],
-    featured_casting_call: ["models", "actors-performers", "hosts-presenters", "media-personalities", "musicians"],
-    creative_showcase: ["musicians", "speakers-storytellers", "actors-performers", "hosts-presenters", "digital-creators"],
-    brand_campaign_spring_2026: ["models", "influencers", "actors-performers", "digital-creators"],
-    east_african_media_fellowship: ["media-personalities", "hosts-presenters", "digital-creators", "speakers-storytellers"],
+    ongoing_casting_call: ["models", "actors", "actresses", "actors-performers", "hosts-presenters", "media-personalities"],
+    featured_casting_call: ["models", "actors", "actresses", "actors-performers", "hosts-presenters", "media-personalities", "musicians"],
+    creative_showcase: ["musicians", "speakers-storytellers", "actors", "actresses", "actors-performers", "hosts-presenters", "content-creators", "digital-creators"],
+    brand_campaign_spring_2026: ["models", "influencers", "content-creators", "actors", "actresses", "actors-performers", "digital-creators"],
+    east_african_media_fellowship: ["media-personalities", "hosts-presenters", "content-creators", "digital-creators", "speakers-storytellers"],
     program_spotlight_series: TALENT_CATEGORIES.map((c) => c.id) as string[],
     monthly_creative_spotlight: TALENT_CATEGORIES.map((c) => c.id) as string[],
     music_talent_spotlight: ["musicians", "voice-narration"],
-    visual_creators_opportunity: ["digital-creators", "models"],
-    creator_campaigns: ["influencers", "digital-creators", "models"],
+    visual_creators_opportunity: ["content-creators", "digital-creators", "film-production", "models"],
+    creator_campaigns: ["influencers", "content-creators", "digital-creators", "models"],
     training_development_opportunities: TALENT_CATEGORIES.map((c) => c.id) as string[],
   };
   // Live lookup of the opportunity card from Supabase. If found, its
@@ -384,6 +406,8 @@ export default function Submit() {
   const [gateCategory, setGateCategory] = useState(recognizedCategory);
   const [answers, setAnswers] = useState<Record<string, boolean | null>>({});
   const [attestation, setAttestation] = useState(false);
+  const activeRequirement =
+    CATEGORY_APPLICATION_REQUIREMENTS[form.category || gateCategory] ?? DEFAULT_APPLICATION_REQUIREMENT;
 
   const gateKey = CATEGORY_TO_GATE[gateCategory] ?? null;
   const gateDefinition = gateKey ? GATE_CONFIG[gateKey] : null;
@@ -450,10 +474,22 @@ export default function Submit() {
     const nonEmptyLinks = [...linkFields.map((link) => link.trim()).filter(Boolean), ...portfolioLinks];
     const hasAtLeastOneValidLink = nonEmptyLinks.some(isValidHttpUrl);
 
-    if (!hasAtLeastOneValidLink) {
+    if (activeRequirement.linkRequirement !== "optional" && !hasAtLeastOneValidLink) {
       e.links = REQUIRED_LINK_ERROR;
     } else if (nonEmptyLinks.some((link) => !isValidHttpUrl(link))) {
       e.links = "All links must start with http:// or https://";
+    }
+
+    const selectedMedia: Record<ApplicantMediaRole, File | null> = {
+      headshot,
+      media_kit: mediaKit,
+      sample: videoAudio,
+    };
+    const missingMedia = activeRequirement.requiredMedia.filter((role) => !selectedMedia[role]);
+    if (missingMedia.length > 0) {
+      e.media = `Required for ${TALENT_CATEGORIES.find((c) => c.id === form.category)?.label ?? "this category"}: ${missingMedia
+        .map((role) => role.replace("_", " "))
+        .join(", ")}.`;
     }
 
     setErrors(e);
@@ -820,12 +856,15 @@ export default function Submit() {
                   <legend className="font-display text-xl font-semibold text-foreground mb-6">Supporting Materials</legend>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {[
-                      { label: "Headshot / Photo", accept: "image/*", file: headshot, setFile: setHeadshot, hint: "JPG, PNG, or WebP" },
-                      { label: "Media Kit / Resume", accept: ".pdf,image/*", file: mediaKit, setFile: setMediaKit, hint: "PDF or image" },
-                      { label: "Video / Audio Sample", accept: "video/*,audio/*", file: videoAudio, setFile: setVideoAudio, hint: "MP4, MP3, or WAV" },
+                      { role: "headshot" as const, label: "Headshot / Profile Photo", accept: "image/*", file: headshot, setFile: setHeadshot, hint: "JPG, PNG, or WebP" },
+                      { role: "media_kit" as const, label: "Resume / Media Kit / Look", accept: ".pdf,image/*", file: mediaKit, setFile: setMediaKit, hint: "PDF or image" },
+                      { role: "sample" as const, label: "Reel / Video / Audio Sample", accept: "video/*,audio/*,image/*", file: videoAudio, setFile: setVideoAudio, hint: "MP4, MP3, WAV, or image" },
                     ].map(u => (
                       <div key={u.label}>
-                        <label className={labelClass}>{u.label}</label>
+                        <label className={labelClass}>
+                          {u.label}
+                          {activeRequirement.requiredMedia.includes(u.role) ? " *" : ""}
+                        </label>
                         <label className="flex flex-col items-center justify-center border-2 border-dashed border-border rounded-lg p-6 cursor-pointer hover:border-primary/40 transition-colors bg-secondary/30">
                           <Upload className="w-6 h-6 text-muted-foreground mb-2" />
                           <span className="text-xs text-muted-foreground text-center">{u.file ? u.file.name : `Select file · ${u.hint}`}</span>
@@ -834,6 +873,15 @@ export default function Submit() {
                       </div>
                     ))}
                   </div>
+                  <div className="mt-4 rounded-sm border border-border/60 bg-secondary/30 p-4 text-xs text-muted-foreground">
+                    <p className="font-medium text-foreground">{activeRequirement.summary}</p>
+                    <ul className="mt-2 list-disc space-y-1 pl-4">
+                      {activeRequirement.guidance.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  {errors.media && <p className={errorClass}>{errors.media}</p>}
                   <p className="text-xs text-gray-200 mt-3">Files are uploaded securely for private review by the Ascend team.</p>
                 </fieldset>
 

@@ -9,6 +9,7 @@ import {
   ScrollText,
   ArrowRight,
 } from "lucide-react";
+import AdminShell from "@/components/admin/AdminShell";
 
 type AdminCard = {
   title: string;
@@ -68,20 +69,10 @@ const CARDS: AdminCard[] = [
 
 export default function AdminHub() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border/40">
-        <div className="container-wide px-5 sm:px-8 lg:px-12 py-6 flex items-center justify-between gap-4">
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.2em] text-primary">Internal · Admin Hub</p>
-            <h1 className="font-display text-2xl sm:text-3xl text-foreground mt-1">Ascend Elite Operations</h1>
-          </div>
-          <Button variant="outline" size="sm" asChild>
-            <Link to="/">View public site</Link>
-          </Button>
-        </div>
-      </header>
-
-      <main className="container-wide px-5 sm:px-8 lg:px-12 py-8 sm:py-12">
+    <AdminShell
+      title="Ascend Elite Operations"
+      description="Internal command center for applications, opportunities, public content, inquiries, and launch operations."
+    >
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {CARDS.map((card) => {
             const Icon = card.icon;
@@ -129,7 +120,6 @@ export default function AdminHub() {
             );
           })}
         </div>
-      </main>
-    </div>
+    </AdminShell>
   );
 }
