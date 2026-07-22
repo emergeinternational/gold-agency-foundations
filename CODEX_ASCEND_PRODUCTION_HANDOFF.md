@@ -6,8 +6,12 @@
 - Requested production branch: `main`
 - Current local branch at audit start: `codex/setup-vite-pages-deploy`
 - Branch state after fetch: current branch is 2 commits behind and 1 commit ahead of `origin/main`.
-- Deployment platform: GitHub Pages via `.github/workflows/deploy-pages.yml`.
-- Production deploy trigger: push to `main`; workflow runs `npm ci`, `npm run build:pages`, copies `dist/index.html` to `dist/404.html`, and deploys Pages.
+- Deployment platform: Vercel, matching the proven Emerge Globally pattern where technically appropriate.
+- Vercel project: `ascend-elite-agency` (`prj_vqPb1szFGAV9qhk3CboA1W7yqLbW`).
+- Latest Vercel production deployment: `dpl_7ZFQyR6baroU7NC4fetKAKDbMKaP`.
+- Production deployment URL: `https://ascend-elite-agency-q5ye3oces-emerges-projects-c1ae993a.vercel.app`.
+- Production alias: `https://ascend-elite-agency.vercel.app`.
+- Custom domain: `www.ascendeliteagency.com` is attached to the Vercel project but DNS still points to the prior host.
 - Production URL: `https://www.ascendeliteagency.com`
 - Supabase project: `fqphlzqactfvaiuoahcd`
 
@@ -42,7 +46,7 @@
 - Supporting-materials copy still said uploads would be active once the backend was connected.
 - Footer rendered an external `<a>` inside a React Router `<Link>`, producing a React DOM nesting console error on local browser verification.
 - Baseline lint failed on five errors: empty interface types in shadcn components, `any` in `AdminBanners`, `prefer-const` in `telegram-start-webhook`, and Tailwind `require`.
-- `npm test` / Vitest hangs before executing the trivial test in both configured jsdom and direct node-environment runs.
+- The old GitHub Pages workflow was an unproven production path and failed because the repository integration could not create/configure Pages. It also required the `build:pages` base path, which is not appropriate for the custom domain/Vercel deployment.
 
 ## Bugs Fixed In This Audit
 - Fixed lint-blocking empty interface/type errors without changing UI behavior.
@@ -60,10 +64,11 @@
 
 ## Validation
 - `npm run build`: passed.
-- `npm run build:pages`: passed.
 - `npm run lint`: passed with 8 warnings and 0 errors.
 - `git diff --check`: passed.
-- `npm test`: blocked by Vitest runner hang before test execution; runner prints only `RUN v3.2.4` and never reports test execution.
+- `npm test`: passed with Vitest 3.2.7.
+- Vercel production deployment `dpl_7ZFQyR6baroU7NC4fetKAKDbMKaP`: READY.
+- Vercel direct route checks: `/`, `/submit`, and `/admin` return HTTP 200.
 - Live anon REST/API verification after migrations:
   - `is_privileged_user` RPC returns HTTP 200 with `false`.
   - `check_casting_duplicate` RPC returns HTTP 200 with `false` for unique QA input.
@@ -78,17 +83,24 @@
   - Three files attach through visible upload controls.
   - Submit navigates to `/submission-success?id=dc754af7-a6d3-448c-8d3a-a51d38555fdc`.
   - Browser dev logs show no application/Supabase errors; only React Router v7 future-flag warnings remain.
+- Vercel browser verification:
+  - `/submit` loads on `https://ascend-elite-agency.vercel.app`.
+  - Category gate completes.
+  - Three files attach through visible upload controls.
+  - Submit navigates to `/submission-success?id=1a3c447d-bf9e-46a6-87c7-ac66192286b0`.
+  - Browser dev logs show 0 warnings/errors for the successful run.
 - Admin SQL verification on project `fqphlzqactfvaiuoahcd`:
   - Browser-submitted row exists: `dc754af7-a6d3-448c-8d3a-a51d38555fdc`.
   - Row values: `status=new`, `source=emerge`, `mode=general`, `category=models`, `is_minor=false`, `guardian_consent=false`.
   - Linked records: `media_rows=3`, `storage_objects=3`, `prequalification_rows=1`.
 
 ## Remaining Work
-- Commit the verified local changes and merge them into `main` for GitHub Pages deployment.
-- Merge this branch with `origin/main` without losing existing launch fixes.
-- Run the GitHub Pages workflow after merge to production `main`.
-- Investigate Vitest startup hang separately; it is not caused by the submission-flow changes but blocks automated test reporting.
+- Commit the Vercel deployment config and documentation changes, then merge into `main`.
+- Change DNS for `www.ascendeliteagency.com` to `CNAME www -> 7a7eba8e32c9a538.vercel-dns-017.com.`
+- Rerun `npx vercel domains verify www.ascendeliteagency.com` after DNS propagation.
+- Repeat the public `/submit` E2E against `https://www.ascendeliteagency.com`.
+- Sign in on the Vercel/custom domain admin route and verify submission id `1a3c447d-bf9e-46a6-87c7-ac66192286b0` plus its three media files.
 - Consider a later non-emergency cleanup for bundle chunk size and React Router future-flag warnings.
 
 ## Exact Next Action
-- Commit and deploy the verified changes to `main`; then run the same `/submit` browser test against `https://www.ascendeliteagency.com` after Pages finishes deploying.
+- Complete DNS cutover to Vercel, verify the domain, and repeat `/submit` plus admin media review on `https://www.ascendeliteagency.com`.
