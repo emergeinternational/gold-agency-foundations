@@ -22,6 +22,7 @@ type BannerRow = {
 };
 
 type Draft = Omit<BannerRow, "id"> & { id?: string; _dirty?: boolean };
+type RoleRow = { role: string | null };
 
 const blankDraft = (sort_order: number): Draft => ({
   text: "",
@@ -92,8 +93,8 @@ export default function AdminBanners() {
         .from("user_roles")
         .select("role")
         .eq("user_id", userData.user.id);
-      const ok = (roleRows || []).some((r: any) =>
-        ["admin", "superadmin", "founder"].includes(r.role),
+      const ok = ((roleRows || []) as RoleRow[]).some((r) =>
+        ["admin", "superadmin", "founder"].includes(r.role ?? ""),
       );
       setAuthorized(ok);
       if (ok) load();
