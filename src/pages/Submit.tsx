@@ -189,6 +189,21 @@ const CATEGORY_TO_GATE: Record<string, keyof typeof GATE_CONFIG> = {
 
 const BLOCKED_FAKE_VALUES = new Set(["test", "abc", "123", "none", "na"]);
 const REQUIRED_LINK_ERROR = "Please provide at least one valid portfolio, sample, or social link.";
+const APPLICANT_MEDIA_BUCKET = "ascend-applicant-media";
+
+type ApplicantMediaUpload = {
+  file: File;
+  role: "headshot" | "media_kit" | "sample";
+};
+
+type UploadedApplicantMedia = {
+  bucket_id: string;
+  object_path: string;
+  file_name: string;
+  file_role: ApplicantMediaUpload["role"];
+  mime_type: string | null;
+  size_bytes: number;
+};
 
 const normalizeInput = (value: string) => value.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
 const isBlockedFakeValue = (value: string) => BLOCKED_FAKE_VALUES.has(normalizeInput(value));
@@ -201,6 +216,44 @@ const isValidHttpUrl = (value: string) => {
   } catch {
     return false;
   }
+};
+
+const extensionForFile = (file: File) => {
+  const fallback = file.type.split("/")[1]?.replace("jpeg", "jpg") || "bin";
+  return file.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || fallback;
+};
+
+const uploadApplicantMedia = async (
+  submissionId: string,
+  uploads: ApplicantMediaUpload[],
+): Promise<UploadedApplicantMedia[]> => {
+  const uploaded: UploadedApplicantMedia[] = [];
+
+  for (const upload of uploads) {
+    const objectPath = `submissions/${submissionId}/${upload.role}-${crypto.randomUUID()}.${extensionForFile(upload.file)}`;
+    const { error } = await supabase.storage
+      .from(APPLICANT_MEDIA_BUCKET)
+      .upload(objectPath, upload.file, {
+        cacheControl: "3600",
+        contentType: upload.file.type || undefined,
+        upsert: false,
+      });
+
+    if (error) {
+      throw new Error(`Could not upload ${upload.file.name}: ${error.message}`);
+    }
+
+    uploaded.push({
+      bucket_id: APPLICANT_MEDIA_BUCKET,
+      object_path: objectPath,
+      file_name: upload.file.name,
+      file_role: upload.role,
+      mime_type: upload.file.type || null,
+      size_bytes: upload.file.size,
+    });
+  }
+
+  return uploaded;
 };
 
 export default function Submit() {
@@ -415,9 +468,21 @@ export default function Submit() {
       // 1. Insert submission
       const ageNum = form.age ? Number(form.age) : null;
       const minorFlag = ageNum !== null && ageNum < 18;
-      const { data: submission, error: subErr } = await supabase
+      const applicantNotes = [
+        `Short bio:\n${form.shortBio.trim()}`,
+        `Representation goals:\n${form.whyRepresentation.trim()}`,
+      ].join("\n\n");
+      const submissionId = crypto.randomUUID();
+      const selectedUploads: ApplicantMediaUpload[] = [
+        headshot ? { file: headshot, role: "headshot" } : null,
+        mediaKit ? { file: mediaKit, role: "media_kit" } : null,
+        videoAudio ? { file: videoAudio, role: "sample" } : null,
+      ].filter((item): item is ApplicantMediaUpload => Boolean(item));
+      const uploadedMedia = await uploadApplicantMedia(submissionId, selectedUploads);
+      const { error: subErr } = await supabase
         .from("submissions")
         .insert({
+          id: submissionId,
           full_name: form.fullName,
           email: form.email,
           phone: form.phone || null,
@@ -433,7 +498,7 @@ export default function Submit() {
           sample_url: null,
           source: outcome?.qualify ? "emerge" : "ascend",
           status: "new",
-          notes: null,
+          notes: applicantNotes,
           application_mode: applicationMode,
           opportunity_slug: opportunitySlug,
           opportunity_title: effectiveOpportunityTitle,
@@ -445,18 +510,23 @@ export default function Submit() {
           parent_guardian_phone: minorFlag ? form.guardianPhone || null : null,
           parent_guardian_consent: minorFlag ? guardianConsent : false,
           parent_guardian_authorization_acknowledgment: minorFlag ? guardianAuthAck : false,
-        })
-        .select("id")
-        .single();
+        });
 
       if (subErr) throw subErr;
 
+      if (uploadedMedia.length > 0) {
+        const { error: mediaErr } = await supabase
+          .from("submission_media")
+          .insert(uploadedMedia.map((media) => ({ ...media, submission_id: submissionId })));
+        if (mediaErr) throw mediaErr;
+      }
+
       // 2. Insert prequalification result linked to submission
-      if (outcome && submission) {
+      if (outcome) {
         const { error: pqErr } = await supabase
           .from("prequalification_results")
           .insert({
-            submission_id: submission.id,
+            submission_id: submissionId,
             category: gateCategory,
             score: outcome.score,
             critical_pass: outcome.criticalPass,
@@ -467,11 +537,11 @@ export default function Submit() {
       }
 
       // Phase 1 fix: pass submission id to success page so Telegram deep link works
-      const successId = submission?.id;
-      navigate(successId ? `/submission-success?id=${encodeURIComponent(successId)}` : "/submission-success");
+      navigate(`/submission-success?id=${encodeURIComponent(submissionId)}`);
     } catch (err) {
       console.error("Submission error:", err);
-      setErrors({ form: "Something went wrong. Please try again." });
+      const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      setErrors({ form: message });
     } finally {
       setSubmitting(false);
     }
@@ -764,7 +834,7 @@ export default function Submit() {
                       </div>
                     ))}
                   </div>
-                  <p className="text-xs text-gray-200 mt-3">File uploads will be fully active once the backend is connected.</p>
+                  <p className="text-xs text-gray-200 mt-3">Files are uploaded securely for private review by the Ascend team.</p>
                 </fieldset>
 
                 {/* Guardian Info — required when applicant is under 18 */}

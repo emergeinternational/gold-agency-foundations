@@ -105,6 +105,7 @@ type Submission = {
   evaluation_scores: Record<string, number> | null;
   portfolio_url: string | null;
   sample_url: string | null;
+  notes: string | null;
   instagram: string | null;
   tiktok: string | null;
   youtube: string | null;
@@ -136,6 +137,18 @@ type AdminNote = {
   created_at: string;
   note: string | null;
   submission_id: string | null;
+};
+
+type SubmissionMedia = {
+  id: string;
+  submission_id: string;
+  bucket_id: string;
+  object_path: string;
+  file_name: string | null;
+  file_role: string;
+  mime_type: string | null;
+  size_bytes: number | null;
+  signedUrl?: string;
 };
 
 const GENERIC_EVALUATION_CRITERIA = ["potential", "professionalism", "market_fit"] as const;
@@ -328,6 +341,7 @@ export default function AdminReview() {
   const [assigneeDrafts, setAssigneeDrafts] = useState<Record<string, string>>({});
   const [levelDrafts, setLevelDrafts] = useState<Record<string, SubmissionLevel | "">>({});
   const [noteDrafts, setNoteDrafts] = useState<Record<string, string>>({});
+  const [mediaBySubmission, setMediaBySubmission] = useState<Record<string, SubmissionMedia[]>>({});
   const [evaluationDrafts, setEvaluationDrafts] = useState<Record<string, Record<string, number>>>({});
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -354,7 +368,7 @@ export default function AdminReview() {
       const { data, error: submissionsError } = await supabase
         .from("submissions")
         .select(
-          "id, assignee, created_at, full_name, email, phone, city, category, country, source, status, level, next_action, emerge_ready, evaluation_scores, portfolio_url, sample_url, instagram, tiktok, youtube, website, telegram_chat_id, application_mode, opportunity_slug, opportunity_title, candidate_outcome, priority_tier, tags, applicant_age, is_minor, parent_guardian_full_name, parent_guardian_relationship, parent_guardian_email, parent_guardian_phone, parent_guardian_consent, parent_guardian_authorization_acknowledgment, prequalification_results(outcome, score, critical_pass)",
+          "id, assignee, created_at, full_name, email, phone, city, category, country, source, status, level, next_action, emerge_ready, evaluation_scores, portfolio_url, sample_url, notes, instagram, tiktok, youtube, website, telegram_chat_id, application_mode, opportunity_slug, opportunity_title, candidate_outcome, priority_tier, tags, applicant_age, is_minor, parent_guardian_full_name, parent_guardian_relationship, parent_guardian_email, parent_guardian_phone, parent_guardian_consent, parent_guardian_authorization_acknowledgment, prequalification_results(outcome, score, critical_pass)",
         )
         .order("created_at", { ascending: false });
 
@@ -431,6 +445,32 @@ export default function AdminReview() {
             return acc;
           }, {});
           setNotesBySubmission(grouped);
+        }
+
+        const { data: mediaData, error: mediaError } = await supabase
+          .from("submission_media")
+          .select("id, submission_id, bucket_id, object_path, file_name, file_role, mime_type, size_bytes")
+          .in("submission_id", ids)
+          .order("created_at", { ascending: true });
+
+        if (mediaError) {
+          console.error("submission media load error", mediaError);
+        } else if (mediaData) {
+          const signedMedia = await Promise.all(
+            (mediaData as SubmissionMedia[]).map(async (media) => {
+              const { data: signed } = await supabase.storage
+                .from(media.bucket_id)
+                .createSignedUrl(media.object_path, 60 * 10);
+              return { ...media, signedUrl: signed?.signedUrl };
+            }),
+          );
+
+          const groupedMedia = signedMedia.reduce<Record<string, SubmissionMedia[]>>((acc, media) => {
+            const current = acc[media.submission_id] ?? [];
+            acc[media.submission_id] = [...current, media];
+            return acc;
+          }, {});
+          setMediaBySubmission(groupedMedia);
         }
       }
 
@@ -1006,6 +1046,7 @@ export default function AdminReview() {
 
                 const pq = row.prequalification_results?.[0];
                 const notes = notesBySubmission[row.id] ?? [];
+                const media = mediaBySubmission[row.id] ?? [];
                 const normalizedCategory = normalizeCategory(row.category ?? "");
                 const criteria = getEvaluationCriteria(row.category);
                 const draftScores = evaluationDrafts[row.id] ?? {};
@@ -1280,7 +1321,19 @@ export default function AdminReview() {
                           !row.instagram &&
                           !row.tiktok &&
                           !row.youtube &&
-                          !row.website && <span className="text-xs text-muted-foreground">—</span>}
+                          !row.website &&
+                          media.length === 0 && <span className="text-xs text-muted-foreground">—</span>}
+                        {media.map((item) => (
+                          <a
+                            key={item.id}
+                            href={item.signedUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-xs underline underline-offset-2"
+                          >
+                            {item.file_role.replace("_", " ")}
+                          </a>
+                        ))}
                       </div>
                     </td>
                     <td className="min-w-80 px-3 py-2">
@@ -1359,6 +1412,12 @@ export default function AdminReview() {
                             <p><span className="text-muted-foreground">Phone:</span> {row.parent_guardian_phone ?? "—"}</p>
                             <p><span className="text-muted-foreground">Consent:</span> {row.parent_guardian_consent ? "✓ Granted" : "✗ Not granted"}</p>
                             <p><span className="text-muted-foreground">Acknowledgment:</span> {row.parent_guardian_authorization_acknowledgment ? "✓ Confirmed" : "✗ Missing"}</p>
+                          </div>
+                        )}
+                        {row.notes && (
+                          <div className="max-h-36 overflow-y-auto rounded-md border border-primary/30 bg-primary/5 p-2 text-xs whitespace-pre-wrap">
+                            <p className="mb-1 font-semibold uppercase tracking-wide text-[10px] text-primary">Applicant submission</p>
+                            {row.notes}
                           </div>
                         )}
                         {notes.length > 0 ? (

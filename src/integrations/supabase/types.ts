@@ -2591,6 +2591,50 @@ export type Database = {
         }
         Relationships: []
       }
+      submission_media: {
+        Row: {
+          bucket_id: string
+          created_at: string
+          file_name: string | null
+          file_role: string
+          id: string
+          mime_type: string | null
+          object_path: string
+          size_bytes: number | null
+          submission_id: string
+        }
+        Insert: {
+          bucket_id?: string
+          created_at?: string
+          file_name?: string | null
+          file_role: string
+          id?: string
+          mime_type?: string | null
+          object_path: string
+          size_bytes?: number | null
+          submission_id: string
+        }
+        Update: {
+          bucket_id?: string
+          created_at?: string
+          file_name?: string | null
+          file_role?: string
+          id?: string
+          mime_type?: string | null
+          object_path?: string
+          size_bytes?: number | null
+          submission_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submission_media_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       prequalification_results: {
         Row: {
           answers: Json | null

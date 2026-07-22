@@ -39,13 +39,13 @@ export default function Footer() {
               <h3 className="font-display text-lg font-bold tracking-[0.25em] text-primary uppercase group-hover:text-gold-light transition-colors">
                 {BRAND.name}
               </h3>
-              <p className="text-[8px] tracking-[0.25em] text-gray-200 uppercase mt-1">
-                Development Division of{" "}
-                <a href={BRAND.poweredByUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-                  {BRAND.poweredBy}
-                </a>
-              </p>
             </Link>
+            <p className="text-[8px] tracking-[0.25em] text-gray-200 uppercase mt-1">
+              Development Division of{" "}
+              <a href={BRAND.poweredByUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                {BRAND.poweredBy}
+              </a>
+            </p>
             <p className="text-xs text-gray-200 mt-5 max-w-xs leading-relaxed">
               Serving talent across Africa and global markets.
             </p>
