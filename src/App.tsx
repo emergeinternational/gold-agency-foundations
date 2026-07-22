@@ -31,6 +31,7 @@ import AdminReview from "./pages/AdminReview";
 import AdminBanners from "./pages/AdminBanners";
 import AdminHub from "./pages/AdminHub";
 import AdminOpportunities from "./pages/AdminOpportunities";
+import AdminInquiries from "./pages/AdminInquiries";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import RequireAdmin from "./components/auth/RequireAdmin";
@@ -73,6 +74,7 @@ const App = () => (
           <Route path="/admin/review" element={<RequireAdmin><AdminReview /></RequireAdmin>} />
           <Route path="/admin/banners" element={<RequireAdmin><AdminBanners /></RequireAdmin>} />
           <Route path="/admin/opportunities" element={<RequireAdmin><AdminOpportunities /></RequireAdmin>} />
+          <Route path="/admin/partners" element={<RequireAdmin><AdminInquiries /></RequireAdmin>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         </BrowserRouter>

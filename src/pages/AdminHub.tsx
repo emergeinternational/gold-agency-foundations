@@ -45,10 +45,10 @@ const CARDS: AdminCard[] = [
   },
   {
     title: "Partner Inquiries",
-    description: "Review and manage Partner With Us inquiries.",
+    description: "Review contact, booking, and Partner With Us inquiries.",
     to: "/admin/partners",
     icon: Handshake,
-    status: "coming",
+    status: "ready",
   },
   {
     title: "System Check",

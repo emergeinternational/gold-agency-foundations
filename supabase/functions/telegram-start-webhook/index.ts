@@ -256,7 +256,7 @@ const handleInboundMessage = async (message: TelegramMessage, chatId: number) =>
   // Determine message type + content + file_id (we don't download — admin can fetch later).
   let messageType = "text";
   let fileUrl: string | null = null;
-  let content: string | null = text || null;
+  const content: string | null = text || null;
 
   if (message.photo && message.photo.length > 0) {
     messageType = "photo";

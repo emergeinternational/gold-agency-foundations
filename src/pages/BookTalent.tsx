@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Upload } from "lucide-react";
 import { BRAND } from "@/lib/brand";
+import { supabase } from "@/integrations/supabase/client";
 
 const CURRENCIES = [
   { value: "USD", label: "USD ($)" },
@@ -38,6 +39,7 @@ export default function BookTalent() {
   });
   const [file, setFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
 
   const update = (field: string, value: string) => {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -56,9 +58,41 @@ export default function BookTalent() {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validate()) navigate("/booking-success");
+    if (!validate()) return;
+
+    setSubmitting(true);
+    try {
+      const details = [
+        `Preferred contact: ${form.preferredContact}`,
+        `Country: ${form.country || "Not provided"}`,
+        `Project type: ${form.projectType}`,
+        `Talent category: ${form.talentType || "Not provided"}`,
+        `Date: ${form.date || "Not provided"}`,
+        `Location: ${form.location || "Not provided"}`,
+        `Budget: ${form.budgetCurrency} ${form.budgetRange || "Not provided"}`,
+        file ? `Attached brief filename: ${file.name}` : null,
+        "",
+        form.projectDescription.trim(),
+      ].filter(Boolean).join("\n");
+      const { error } = await supabase.from("partner_inquiries").insert({
+        inquiry_type: "booking",
+        company: form.companyName.trim(),
+        name: form.fullName.trim(),
+        email: form.email.trim(),
+        phone: form.phone.trim() || null,
+        message: details,
+        status: "new",
+      });
+      if (error) throw error;
+      navigate("/booking-success");
+    } catch (err) {
+      console.error("booking inquiry submit error", err);
+      setErrors({ form: "Something went wrong. Please try again, or email us directly." });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const inputClass = "w-full px-4 py-3 bg-secondary/60 border border-border/60 rounded-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary/40 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-sm";
@@ -188,8 +222,9 @@ export default function BookTalent() {
               </div>
             </fieldset>
 
-            <Button type="submit" variant="hero" size="xl" className="w-full sm:w-auto">
-              Send Booking Inquiry
+            {errors.form && <p className="text-sm text-destructive">{errors.form}</p>}
+            <Button type="submit" variant="hero" size="xl" className="w-full sm:w-auto" disabled={submitting}>
+              {submitting ? "Submitting..." : "Send Booking Inquiry"}
             </Button>
           </form>
         </div>
