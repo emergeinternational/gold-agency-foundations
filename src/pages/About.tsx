@@ -17,8 +17,8 @@ export default function About() {
     <Layout>
       <PageHero
         badge="About"
-        title="Built for Talent That Demands More"
-        subtitle={`${BRAND.name} is a development-stage talent representation agency and Development Division of Emerge Globally, designed to close the gap between potential and the global stage.`}
+        title="Built for Talent Ready to Advance"
+        subtitle={`${BRAND.name} is the talent-development division of Emerge Globally, created to discover, prepare, and position emerging professionals for credible opportunities across media, entertainment, fashion, and the creator economy.`}
         backgroundImage={addisImage}
       />
 
@@ -26,51 +26,48 @@ export default function About() {
         <div className="container-wide">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20">
             <motion.div {...fadeUp}>
-              <span className="badge-label mb-5 block">Origin</span>
-              <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground leading-[1.1] mb-8">The Agency Behind the Name</h2>
+              <span className="badge-label mb-5 block">Purpose</span>
+              <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground leading-[1.1] mb-8">Closing the Readiness Gap</h2>
               <div className="gold-line mb-10" />
               <div className="space-y-5 text-gray-300 leading-[1.8] text-[15px]">
                 <p>
-                  {BRAND.name} was built to address a specific gap: extraordinary creative talent exists across Ethiopia and beyond, but the infrastructure to develop, position, and represent that talent at the highest level rarely does.
+                  Exceptional talent exists across Ethiopia, Africa, and global markets. What is often missing is the professional infrastructure required to develop that talent, sharpen its positioning, and prepare it for serious industry consideration.
                 </p>
                 <p>
-                  Serving talent across Africa and global markets, we operate at the intersection of African creative excellence and international industry standards. Our model combines selective representation with structured development — because visibility without readiness is a wasted opportunity.
+                  Ascend Elite Agency is built around that gap. We combine selective talent review, structured development, portfolio preparation, media positioning, and career-readiness support within one coordinated platform.
                 </p>
                 <p>
-                  As a Development Division of Emerge Globally, we bring together industry expertise, media access, and development infrastructure for talent who want lasting careers — not just moments of attention.
+                  Our focus is not visibility for its own sake. We help talent strengthen the materials, discipline, presentation, and market understanding required to pursue sustainable careers.
                 </p>
                 <p>
-                  Built on the proven infrastructure of{" "}
+                  As the Development Division of{" "}
                   <a href={BRAND.poweredByUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-gold-light transition-colors">
                     Emerge Globally
                   </a>
-                  , Ascend Elite Agency draws from cross-market operations spanning international shows and activations in Addis Ababa, Nairobi, Lagos, Accra, New York City, and Cartagena.
+                  , Ascend draws on cross-market experience spanning talent initiatives, castings, workshops, media activity, and industry collaborations in Africa, the United States, and other international markets.
                 </p>
                 <p>
-                  Our foundation includes castings, workshops, and structured talent development, with television and media visibility across major Ethiopian networks and broader international exposure through collaborations with designers, models, musicians, actors, media personalities, digital talent, and brand partners.
-                </p>
-                <p>
-                  Advanced talent may be reviewed for{" "}
+                  Talent demonstrating advanced readiness may be considered separately by{" "}
                   <a href={BRAND.poweredByUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-gold-light transition-colors">
                     Emerge Globally
                   </a>
-                  .
+                  for representation opportunities. Participation in Ascend does not guarantee representation.
                 </p>
               </div>
             </motion.div>
             <motion.div {...fadeUp} transition={{ duration: 0.6, delay: 0.1 }}>
-              <span className="badge-label mb-5 block">Philosophy</span>
-              <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground leading-[1.1] mb-8">Representation Requires Preparation</h2>
+              <span className="badge-label mb-5 block">Approach</span>
+              <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground leading-[1.1] mb-8">Preparation Before Promotion</h2>
               <div className="gold-line mb-10" />
               <div className="space-y-5 text-gray-300 leading-[1.8] text-[15px]">
                 <p>
-                  We don't simply add names to a roster — we invest in building careers. Our model integrates structured development, brand strategy, media positioning, and opportunity access into a single, cohesive agency.
+                  We do not confuse attention with career progress. Strong positioning begins with honest assessment, clear direction, and work that meets professional standards.
                 </p>
                 <p>
-                  Through our development programs, creatives at every stage gain structured learning, industry-led workshops, and direct mentorship. Through our representation arm, selected talent gains access to bookings, partnerships, and campaigns with credible industry partners.
+                  Development pathways may include practical training, portfolio and profile refinement, brand strategy, media preparation, digital positioning, and guidance tailored to a talent's discipline and stage of growth.
                 </p>
                 <p>
-                  The result: professionals who arrive prepared, not just present. Talent that's ready for the room — and memorable long after they leave it.
+                  The objective is simple: help promising individuals become better prepared for the rooms, platforms, partnerships, and decisions that shape long-term careers.
                 </p>
               </div>
             </motion.div>
@@ -80,13 +77,13 @@ export default function About() {
 
       <section className="section-padding bg-card/50 border-y border-border/20">
         <div className="container-wide">
-          <SectionHeading badge="Principles" title="What We Stand On" />
+          <SectionHeading badge="Principles" title="The Standard Behind the Work" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { title: "Excellence", desc: "We hold ourselves and our talent to the highest professional and creative standards — without compromise." },
-              { title: "Consideration", desc: "Opportunity should follow merit and readiness, not geography or connections. We build bridges where others build walls." },
-              { title: "Integrity", desc: "Transparent processes, honest communication, and ethical representation define every decision we make." },
-              { title: "Growth", desc: "Development is continuous. We invest in long-term readiness, not short-term exposure." },
+              { title: "Excellence", desc: "We expect professional discipline, strong preparation, and continuous improvement from our team and the talent we support." },
+              { title: "Merit", desc: "Consideration is based on potential, readiness, conduct, and fit, not geography, social proximity, or empty visibility." },
+              { title: "Integrity", desc: "Clear expectations, honest communication, responsible talent practices, and respect for applicant privacy guide every decision." },
+              { title: "Progress", desc: "We prioritize measurable development and durable career foundations over short-term exposure." },
             ].map((v, i) => (
               <motion.div
                 key={v.title}
