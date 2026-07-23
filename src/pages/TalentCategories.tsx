@@ -20,8 +20,8 @@ export default function TalentCategories() {
     <Layout>
       <PageHero
         badge="Disciplines"
-        title="Areas of Representation"
-        subtitle="We represent and develop talent across the full spectrum of creative industries — from broadcast media to digital storytelling."
+        title="Areas of Talent Development"
+        subtitle="We review and develop talent across media, entertainment, fashion, performance, and the creator economy, with selective pathways based on readiness and fit."
         backgroundImage={representationBanner}
         backgroundPosition="center 22%"
         overlayVariant="enhanced"
@@ -45,7 +45,7 @@ export default function TalentCategories() {
                   <p className="text-gray-300 leading-relaxed mb-6">{cat.description}</p>
                   <Button variant="gold-outline" size="sm" asChild>
                     <Link to={`/submit?category=${cat.id}`}>
-                      Submit for Representation Consideration <ArrowRight className="w-3 h-3 ml-1" />
+                      Submit for Talent Review <ArrowRight className="w-3 h-3 ml-1" />
                     </Link>
                   </Button>
                 </div>
@@ -62,7 +62,7 @@ export default function TalentCategories() {
               Work Across Multiple Disciplines?
             </h2>
             <p className="mt-4 text-gray-300 text-lg font-light">
-              We welcome multidisciplinary talent. If your craft crosses categories, we still want to hear from you.
+              Multidisciplinary applicants are welcome. Select the category that best reflects your primary professional direction and provide relevant supporting material.
             </p>
             <div className="mt-8">
               <Button variant="hero" size="xl" asChild>
