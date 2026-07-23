@@ -18,14 +18,14 @@ const fadeUp = {
 };
 
 const services = [
-  { icon: TrendingUp, title: "Career Strategy", desc: "Tailored direction built around your strengths, market position, and long-term trajectory — not short-term visibility." },
-  { icon: Sparkles, title: "Brand Architecture", desc: "Defining a personal brand that resonates with audiences and industry decision-makers alike." },
-  { icon: Camera, title: "Campaign Placement", desc: "Positioning talent in brand campaigns, editorial features, and commercial productions with credible partners." },
-  { icon: Users, title: "Booking Management", desc: "Professional coordination of event, production, and partnership bookings on your behalf." },
-  { icon: Megaphone, title: "Media Positioning", desc: "Press strategy, interview preparation, and public profile development for sustained media presence." },
-  { icon: Globe, title: "International Readiness", desc: "Preparing talent for cross-border opportunities, international standards, and global market demands." },
-  { icon: Shield, title: "Partnership Facilitation", desc: "Connecting represented talent with endorsements, sponsorships, and strategic brand collaborations." },
-  { icon: Laptop, title: "Digital Presence", desc: "Social media optimization, content direction, and digital footprint management for professional credibility." },
+  { icon: TrendingUp, title: "Career Strategy", desc: "Individual direction shaped by professional strengths, market fit, and long-term career objectives." },
+  { icon: Sparkles, title: "Brand Positioning", desc: "Clear personal positioning designed to communicate value to audiences, partners, and industry decision-makers." },
+  { icon: Camera, title: "Opportunity Positioning", desc: "Preparation and positioning for appropriate campaigns, castings, editorial opportunities, and commercial productions." },
+  { icon: Users, title: "Booking Coordination", desc: "Professional handling of approved inquiries, schedules, requirements, and communications for confirmed engagements." },
+  { icon: Megaphone, title: "Media Readiness", desc: "Interview preparation, message development, and public-profile guidance for credible and consistent visibility." },
+  { icon: Globe, title: "International Readiness", desc: "Support for talent adapting their materials, conduct, and positioning to cross-border professional standards." },
+  { icon: Shield, title: "Partnership Guidance", desc: "Strategic review of suitable sponsorship, endorsement, and brand-collaboration opportunities." },
+  { icon: Laptop, title: "Digital Presence", desc: "Professional guidance for platform positioning, content direction, and a credible digital footprint." },
 ];
 
 export default function Representation() {
@@ -34,7 +34,7 @@ export default function Representation() {
       <PageHero
         badge="Management"
         title="Management & Representation"
-        subtitle="Selective. Strategic. Invested."
+        subtitle="Selective. Strategic. Development-led."
         backgroundImage={managementBanner}
         backgroundPosition="center 24%"
         overlayVariant="enhanced"
@@ -43,7 +43,7 @@ export default function Representation() {
 
       <section className="section-padding">
         <div className="container-wide">
-          <SectionHeading badge="What's Included" title="The Full Scope of Representation" subtitle="Aligned with global casting, media, and distribution standards." />
+          <SectionHeading badge="Scope" title="Support Built Around Career Readiness" subtitle="Services are tailored to the talent's stage, discipline, market fit, and approved pathway." />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {services.map((s, i) => (
               <motion.div
@@ -64,9 +64,9 @@ export default function Representation() {
       <section className="section-padding bg-card">
         <div className="container-narrow text-center">
           <motion.div {...fadeUp}>
-            <SectionHeading badge="How to Apply" title="Joining Our Roster" subtitle="Representation is earned through review, not guaranteed by application. Submission does not guarantee representation. Selected talent may be invited to further development and positioning opportunities." />
+            <SectionHeading badge="Consideration" title="A Selective Review Process" subtitle="Submitting an application begins a review; it does not guarantee development placement, management, bookings, or representation. Decisions are based on readiness, professionalism, market fit, and current capacity." />
             <p className="text-sm text-gray-300">
-              Advanced talent may be considered for{" "}
+              Talent demonstrating advanced readiness may be considered separately by{" "}
               <a href={BRAND.poweredByUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-gold-light transition-colors">
                 Emerge Globally
               </a>
@@ -80,7 +80,7 @@ export default function Representation() {
                 <Link to="/academy">Explore Development Pathways</Link>
               </Button>
             </div>
-            <p className="mt-4 text-xs text-gray-300">Serious applicants only.</p>
+            <p className="mt-4 text-xs text-gray-300">Every submission is assessed against professional readiness and current opportunity fit.</p>
           </motion.div>
         </div>
       </section>
