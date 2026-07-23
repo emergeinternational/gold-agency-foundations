@@ -640,7 +640,7 @@ export default function AdminReview() {
                 .createSignedUrl(normalizedObjectPath, 60 * 60);
               if (signedError) {
                 const storageSignProbe = await readStorageSignProbe(bucketId, normalizedObjectPath);
-                console.error("submission media signed URL error", {
+                const diagnosticPayload = {
                   submissionId: media.submission_id,
                   mediaId: media.id,
                   bucketName: bucketId,
@@ -649,7 +649,8 @@ export default function AdminReview() {
                   mediaRole: media.file_role,
                   storageError: describeStorageError(signedError),
                   storageSignProbe,
-                });
+                };
+                console.error(`submission media signed URL error ${JSON.stringify(diagnosticPayload)}`);
               }
               return {
                 ...media,
