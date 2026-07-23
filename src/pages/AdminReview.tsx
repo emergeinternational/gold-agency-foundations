@@ -163,7 +163,27 @@ type SupabaseStorageError = {
   message?: string;
   status?: number;
   statusCode?: number | string;
+  cause?: unknown;
 };
+
+type StorageSignProbe = {
+  projectHost: string;
+  endpointPath: string;
+  method: "POST";
+  sessionPresent: boolean;
+  accessTokenPresent: boolean;
+  authenticatedUserId: string | null;
+  resolvedRoles: string[];
+  authorizationHeaderPresent: boolean;
+  apiKeyHeaderPresent: boolean;
+  httpStatus: number | null;
+  responseBody: string | null;
+  requestFailed: string | null;
+};
+
+const SUPABASE_PROJECT_URL = "https://fqphlzqactfvaiuoahcd.supabase.co";
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxcGhsenFhY3RmdmFpdW9haGNkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDczODY2MDMsImV4cCI6MjA2Mjk2MjYwM30.NjXBNOXgoJ-3jOm6Yti4iJ36JqRjAPI66fp5wZtsUeg";
 
 const normalizeStorageObjectPath = (bucketId: string, storedPath: string) => {
   const originalPath = storedPath.trim();
@@ -207,7 +227,84 @@ const describeStorageError = (error: SupabaseStorageError | null | undefined) =>
   code: error?.code,
   message: error?.message,
   status: error?.status ?? error?.statusCode,
+  cause: error?.cause instanceof Error ? error.cause.message : error?.cause,
 });
+
+const redactStorageResponseBody = (responseBody: string) => {
+  try {
+    const parsed = JSON.parse(responseBody) as Record<string, unknown>;
+    for (const key of ["signedURL", "signedUrl", "url", "token"]) {
+      if (key in parsed) parsed[key] = "[redacted]";
+    }
+    return JSON.stringify(parsed);
+  } catch {
+    return responseBody.replace(/token=[^&"'\s]+/g, "token=[redacted]");
+  }
+};
+
+const readStorageSignProbe = async (
+  bucketId: string,
+  objectPath: string,
+): Promise<StorageSignProbe> => {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const { data: roles } = user
+    ? await supabase.from("user_roles").select("role").eq("user_id", user.id)
+    : { data: null };
+
+  const encodedPath = objectPath
+    .split("/")
+    .map((part) => encodeURIComponent(part))
+    .join("/");
+  const endpointPath = `/storage/v1/object/sign/${bucketId}/${encodedPath}`;
+  const headers = {
+    apikey: SUPABASE_ANON_KEY,
+    authorization: session?.access_token ? `Bearer ${session.access_token}` : `Bearer ${SUPABASE_ANON_KEY}`,
+    "content-type": "application/json",
+  };
+
+  try {
+    const response = await fetch(`${SUPABASE_PROJECT_URL}${endpointPath}`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ expiresIn: 60 * 60 }),
+    });
+    const responseBody = redactStorageResponseBody(await response.text());
+    return {
+      projectHost: new URL(SUPABASE_PROJECT_URL).host,
+      endpointPath,
+      method: "POST",
+      sessionPresent: Boolean(session),
+      accessTokenPresent: Boolean(session?.access_token),
+      authenticatedUserId: user?.id ?? null,
+      resolvedRoles: (roles ?? []).map((role) => role.role).filter(Boolean) as string[],
+      authorizationHeaderPresent: Boolean(headers.authorization),
+      apiKeyHeaderPresent: Boolean(headers.apikey),
+      httpStatus: response.status,
+      responseBody,
+      requestFailed: null,
+    };
+  } catch (error) {
+    return {
+      projectHost: new URL(SUPABASE_PROJECT_URL).host,
+      endpointPath,
+      method: "POST",
+      sessionPresent: Boolean(session),
+      accessTokenPresent: Boolean(session?.access_token),
+      authenticatedUserId: user?.id ?? null,
+      resolvedRoles: (roles ?? []).map((role) => role.role).filter(Boolean) as string[],
+      authorizationHeaderPresent: Boolean(headers.authorization),
+      apiKeyHeaderPresent: Boolean(headers.apikey),
+      httpStatus: null,
+      responseBody: null,
+      requestFailed: error instanceof Error ? error.message : "Unknown request failure",
+    };
+  }
+};
 
 const GENERIC_EVALUATION_CRITERIA = ["potential", "professionalism", "market_fit"] as const;
 
@@ -542,6 +639,7 @@ export default function AdminReview() {
                 .from(bucketId)
                 .createSignedUrl(normalizedObjectPath, 60 * 60);
               if (signedError) {
+                const storageSignProbe = await readStorageSignProbe(bucketId, normalizedObjectPath);
                 console.error("submission media signed URL error", {
                   submissionId: media.submission_id,
                   mediaId: media.id,
@@ -550,6 +648,7 @@ export default function AdminReview() {
                   normalizedObjectPath,
                   mediaRole: media.file_role,
                   storageError: describeStorageError(signedError),
+                  storageSignProbe,
                 });
               }
               return {
