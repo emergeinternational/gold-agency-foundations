@@ -154,7 +154,60 @@ type SubmissionMedia = {
   created_at: string;
   signedUrl?: string;
   signedUrlError?: string;
+  normalizedObjectPath?: string;
 };
+
+type SupabaseStorageError = {
+  name?: string;
+  code?: string;
+  message?: string;
+  status?: number;
+  statusCode?: number | string;
+};
+
+const normalizeStorageObjectPath = (bucketId: string, storedPath: string) => {
+  const originalPath = storedPath.trim();
+  let candidate = originalPath;
+
+  try {
+    const parsed = new URL(candidate);
+    candidate = parsed.pathname;
+  } catch {
+    // Stored value is already a path.
+  }
+
+  candidate = candidate.split("?")[0].split("#")[0].replace(/^\/+/, "");
+
+  const storagePrefixes = [
+    `storage/v1/object/sign/${bucketId}/`,
+    `storage/v1/object/public/${bucketId}/`,
+    `storage/v1/object/${bucketId}/`,
+    `${bucketId}/`,
+  ];
+
+  for (const prefix of storagePrefixes) {
+    if (candidate.startsWith(prefix)) {
+      candidate = candidate.slice(prefix.length);
+      break;
+    }
+  }
+
+  try {
+    const decoded = decodeURIComponent(candidate);
+    if (!decoded.includes("://")) candidate = decoded;
+  } catch {
+    // Keep the stored value if it is not valid percent-encoding.
+  }
+
+  return candidate.replace(/^\/+/, "");
+};
+
+const describeStorageError = (error: SupabaseStorageError | null | undefined) => ({
+  name: error?.name,
+  code: error?.code,
+  message: error?.message,
+  status: error?.status ?? error?.statusCode,
+});
 
 const GENERIC_EVALUATION_CRITERIA = ["potential", "professionalism", "market_fit"] as const;
 
@@ -483,18 +536,29 @@ export default function AdminReview() {
         } else if (mediaData) {
           const signedMedia = await Promise.all(
             (mediaData as SubmissionMedia[]).map(async (media) => {
+              const bucketId = media.bucket_id.trim();
+              const normalizedObjectPath = normalizeStorageObjectPath(bucketId, media.object_path);
               const { data: signed, error: signedError } = await supabase.storage
-                .from(media.bucket_id)
-                .createSignedUrl(media.object_path, 60 * 10);
+                .from(bucketId)
+                .createSignedUrl(normalizedObjectPath, 60 * 60);
               if (signedError) {
                 console.error("submission media signed URL error", {
+                  submissionId: media.submission_id,
                   mediaId: media.id,
-                  bucketId: media.bucket_id,
-                  objectPath: media.object_path,
-                  message: signedError.message,
+                  bucketName: bucketId,
+                  originalStoredPath: media.object_path,
+                  normalizedObjectPath,
+                  mediaRole: media.file_role,
+                  storageError: describeStorageError(signedError),
                 });
               }
-              return { ...media, signedUrl: signed?.signedUrl, signedUrlError: signedError?.message };
+              return {
+                ...media,
+                bucket_id: bucketId,
+                normalizedObjectPath,
+                signedUrl: signed?.signedUrl,
+                signedUrlError: signedError?.message,
+              };
             }),
           );
 
@@ -1585,7 +1649,7 @@ export default function AdminReview() {
                                         ? "border-border/70 bg-secondary/20 hover:border-primary/50"
                                         : "border-destructive/50 bg-destructive/5"
                                     }`}
-                                    title={item.object_path}
+                                    title={item.normalizedObjectPath ?? item.object_path}
                                   >
                                     <span className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded border border-border/60 bg-background text-[10px] uppercase text-muted-foreground">
                                       {isImage && item.signedUrl ? (
