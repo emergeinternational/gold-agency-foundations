@@ -37,7 +37,7 @@ export default function Academy() {
             {[
               { icon: GraduationCap, title: "Structured Progression", desc: "Clear learning tracks from foundational skills to advanced industry readiness — nothing left to guesswork." },
               { icon: Users, title: "Active Practitioners", desc: "Every instructor works in the industry today. Real insight from people who understand current market realities." },
-              { icon: Video, title: "In-Person & Online", desc: "Attend sessions in Addis Ababa or access our growing tutorial library from wherever you are." },
+              { icon: Video, title: "In-Person & Online", desc: "Attend select in-person sessions or access our growing tutorial library from wherever you are." },
               { icon: Award, title: "Masterclass Format", desc: "Intensive deep-dives with guest experts who bring specialized, high-value knowledge to the table." },
               { icon: BookOpen, title: "Applied Workshops", desc: "Skill-building sessions designed to produce results you can use immediately — not theory for theory's sake." },
               { icon: Clock, title: "Designed for Real Schedules", desc: "Evening, weekend, and self-paced options for working professionals and active creatives." },
@@ -70,10 +70,10 @@ export default function Academy() {
           <SectionHeading badge="Faculty" title="Instructors Who Do the Work" subtitle="Our faculty aren't retired professionals — they're active practitioners bringing current industry reality to every session." />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {[
-              { name: "Instructor TBA", role: "Media & Broadcasting", desc: "Veteran broadcaster with over a decade in television, radio, and digital media production." },
-              { name: "Instructor TBA", role: "Digital Strategy", desc: "Growth strategist who has built audiences in the millions across multiple social platforms." },
-              { name: "Instructor TBA", role: "Music & Performance", desc: "Producer and performer with international touring, recording, and licensing experience." },
-              { name: "Instructor TBA", role: "Public Speaking", desc: "Communication specialist focused on executive delivery and on-camera presence." },
+              { name: "Instructor TBA", role: "Media & Broadcasting", desc: "Practitioner-led sessions focused on presentation, media readiness, and professional communication standards." },
+              { name: "Instructor TBA", role: "Digital Strategy", desc: "Creator-economy guidance for platform positioning, content systems, and audience-facing brand discipline." },
+              { name: "Instructor TBA", role: "Music & Performance", desc: "Development sessions focused on performance preparation, release positioning, and professional creative assets." },
+              { name: "Instructor TBA", role: "Public Speaking", desc: "Communication training focused on executive delivery, live presence, and on-camera confidence." },
             ].map((inst, i) => (
               <motion.div key={i} {...fadeUp} transition={{ duration: 0.5, delay: i * 0.05 }} className="card-premium p-7 text-center card-hover">
                 <div className="w-16 h-16 rounded-full bg-secondary/60 mx-auto mb-5 flex items-center justify-center">
@@ -94,7 +94,7 @@ export default function Academy() {
           <div className="space-y-3">
             {[
               { q: "Do I need prior experience?", a: "No. Programs range from foundational to advanced. We meet you where you are and build from there." },
-              { q: "Are sessions in-person or online?", a: "Both. Workshops and masterclasses run in person in Addis Ababa, with select programs available online for participants anywhere in the world. Each listing clearly indicates its delivery format and location." },
+              { q: "Are sessions in-person or online?", a: "Both. Workshops and masterclasses may run in person, online, or hybrid depending on the program. Each listing clearly indicates its delivery format and location." },
               { q: "Does completing a program lead to representation?", a: "Not automatically. Development programs and representation operate as separate tracks. Strong performance may lead to consideration, but there is no guaranteed pathway." },
               { q: "What do programs cost?", a: "Pricing varies by program. Some introductory workshops are free. Full pricing details are listed on individual program pages." },
             ].map((faq, i) => (

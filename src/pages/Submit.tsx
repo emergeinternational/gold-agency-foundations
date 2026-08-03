@@ -284,9 +284,9 @@ export default function Submit() {
     new_faces_talent_review: "New Faces Talent Review",
     ongoing_casting_call: "Ongoing Casting Call",
     featured_casting_call: "Featured Casting Call",
-    creative_showcase: "Addis Creative Showcase",
+    creative_showcase: "Creative Showcase",
     brand_campaign_spring_2026: "Brand Campaign — Spring 2026",
-    east_african_media_fellowship: "East Africa Media Fellowship",
+    east_african_media_fellowship: "Media Fellowship",
     program_spotlight_series: "Program Spotlight Series",
     monthly_creative_spotlight: "Monthly Creative Spotlight",
     music_talent_spotlight: "Music Talent Spotlight",
@@ -739,7 +739,7 @@ export default function Submit() {
                     </div>
                     <div>
                       <label className={labelClass}>Phone</label>
-                      <input className={inputClass} type="tel" value={form.phone} onChange={e => update("phone", e.target.value)} placeholder="+251..." />
+                      <input className={inputClass} type="tel" value={form.phone} onChange={e => update("phone", e.target.value)} placeholder="+1, +44, +971..." />
                     </div>
                     <div className="sm:col-span-2">
                       <label className={labelClass}>Email *</label>

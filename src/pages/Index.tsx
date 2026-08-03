@@ -55,7 +55,7 @@ export default function Index() {
             transition={{ duration: 1, ease: "easeOut" as const }}
             className="max-w-2xl"
           >
-            <span className="badge-label mb-8 block">Serving talent across Africa and global markets.</span>
+            <span className="badge-label mb-8 block">Serving creators across global markets.</span>
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground leading-[1.05] tracking-tight">
               Development-Stage Talent Representation
             </h1>
@@ -107,8 +107,8 @@ export default function Index() {
                 Zewotir Desalegn Alemu (Mr. Zik)
               </h2>
               <div className="gold-line mt-5 mb-8" />
-              <p className="text-secondary-foreground/80 text-lg leading-relaxed mb-4 font-light">
-                The face of {BRAND.name} — connecting Ethiopia's creative talent with the infrastructure, visibility, and access the industry demands.
+            <p className="text-secondary-foreground/80 text-lg leading-relaxed mb-4 font-light">
+                The face of {BRAND.name} — connecting creative talent with the infrastructure, visibility, and readiness the international industry demands.
               </p>
               <p className="text-gray-300 text-base leading-relaxed mb-10">
                 A media personality and talent advocate whose career in entertainment and creative strategy gives the agency its edge: credibility earned, not claimed.
@@ -168,7 +168,7 @@ export default function Index() {
               { icon: Users, title: "Consideration", desc: "Representation review for selected talent with genuine potential." },
               { icon: BookOpen, title: "Development", desc: "Structured training tied directly to career readiness." },
               { icon: Briefcase, title: "Opportunity", desc: "Booking, casting, and campaign placement for our roster." },
-              { icon: Globe, title: "Reach", desc: "Ethiopia-rooted with infrastructure for international markets." },
+              { icon: Globe, title: "Reach", desc: "Globally positioned with infrastructure for international markets." },
             ].map((pillar, i) => (
               <motion.div
                 key={pillar.title}

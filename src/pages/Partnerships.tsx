@@ -23,7 +23,7 @@ const partnerTypes = [
   { icon: Mic, title: "Studios & Venues", desc: "Host or co-produce events, live programming, and creative productions through our network." },
   { icon: MapPin, title: "Media Partners", desc: "Access our talent pool for editorial, broadcast, digital, and branded content opportunities." },
   { icon: BookOpen, title: "Educators & Mentors", desc: "Contribute to our development programs as guest instructors, curriculum advisors, or mentorship leads." },
-  { icon: TrendingUp, title: "Investors & Institutions", desc: "Support the growth of Ethiopia's creative economy through strategic, long-term collaboration." },
+  { icon: TrendingUp, title: "Investors & Institutions", desc: "Support the growth of creative talent infrastructure through strategic, long-term collaboration." },
 ];
 
 // Structured inquiry types stored on the inquiry record (separate from legacy "partner type" UI categories above).

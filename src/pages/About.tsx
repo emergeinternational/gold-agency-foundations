@@ -31,10 +31,10 @@ export default function About() {
               <div className="gold-line mb-10" />
               <div className="space-y-5 text-gray-300 leading-[1.8] text-[15px]">
                 <p>
-                  {BRAND.name} was built to address a specific gap: extraordinary creative talent exists across Ethiopia and beyond, but the infrastructure to develop, position, and represent that talent at the highest level rarely does.
+                  {BRAND.name} was built to address a specific gap: extraordinary creative talent exists everywhere, but the infrastructure to develop, position, and represent that talent at an international standard is not always within reach.
                 </p>
                 <p>
-                  Serving talent across Africa and global markets, we operate at the intersection of African creative excellence and international industry standards. Our model combines selective representation with structured development — because visibility without readiness is a wasted opportunity.
+                  Serving talent across global markets, we operate at the intersection of creative excellence, professional development, and international industry standards. Our model combines selective representation with structured development — because visibility without readiness is a wasted opportunity.
                 </p>
                 <p>
                   As a Development Division of Emerge Globally, we bring together industry expertise, media access, and development infrastructure for talent who want lasting careers — not just moments of attention.
@@ -44,10 +44,10 @@ export default function About() {
                   <a href={BRAND.poweredByUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-gold-light transition-colors">
                     Emerge Globally
                   </a>
-                  , Ascend Elite Agency draws from cross-market operations spanning international shows and activations in Addis Ababa, Nairobi, Lagos, Accra, New York City, and Cartagena.
+                  , Ascend Elite Agency draws from a globally minded creative development model built for media, entertainment, fashion, culture, and the creator economy.
                 </p>
                 <p>
-                  Our foundation includes castings, workshops, and structured talent development, with television and media visibility across major Ethiopian networks and broader international exposure through collaborations with designers, models, musicians, actors, media personalities, digital talent, and brand partners.
+                  Our foundation includes castings, workshops, and structured talent development for designers, models, musicians, actors, media personalities, digital talent, and brand-ready creators preparing for broader opportunity.
                 </p>
                 <p>
                   Advanced talent may be reviewed for{" "}

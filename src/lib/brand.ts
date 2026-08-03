@@ -14,11 +14,11 @@ export const BRAND = {
   locationVision: "New York City",
   // Approved positioning statements
   positioningLong:
-    "Ascend Elite is an international talent and media platform based in New York City, with on-the-ground partnerships and creative activity across Africa, including Addis Ababa, Ethiopia.",
+    "Ascend Elite is an international creative development and talent platform based in New York City, built for creators preparing for global media, entertainment, fashion, and culture opportunities.",
   positioningShort:
-    "International talent and media platform based in New York City, with on-the-ground partnerships across Africa.",
+    "International creative development and talent platform based in New York City.",
   email: "info@ascendeliteagency.com",
-  phone: "+251 000 000 000",
+  phone: "Available by inquiry",
   // Only verified, active social accounts. Inactive handles are intentionally
   // omitted so we never link to placeholder or incorrect accounts.
   socialLinks: {

@@ -14,7 +14,7 @@ const faqs = [
   { q: "Can applicants under 18 apply?", a: "Under 18? Parent/Guardian Required. Applicants under 18 may not move forward without legal parent or guardian authorization. Additional guardian information and consent are required before review can continue." },
   { q: "How does talent booking work?", a: "Brands, event organizers, and production teams submit a booking inquiry through our agency. Our team matches project needs with available talent from the roster." },
   { q: "How do partnerships work?", a: "We collaborate with brands, studios, media organizations, and cultural institutions. Visit the Partnerships page to start a conversation about working together." },
-  { q: `Where is ${BRAND.name} based?`, a: "Ascend Elite is an international talent and media platform based in New York City, with on-the-ground partnerships and creative activity across Africa, including Addis Ababa, Ethiopia." },
+  { q: `Where is ${BRAND.name} based?`, a: BRAND.positioningLong },
   { q: "What does 'global reach' mean in practice?", a: "It means we prepare selected talent for international opportunities — through industry-standard training, cross-border partnerships, and positioning that resonates beyond local markets." },
 ];
 

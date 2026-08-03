@@ -29,6 +29,12 @@ const BUDGET_RANGES = [
 ];
 
 const bookingHero = "/booktalent.PNG";
+const INQUIRY_MEDIA_BUCKET = "ascend-applicant-media";
+
+const extensionForFile = (file: File) => {
+  const fallback = file.type.split("/")[1]?.replace("jpeg", "jpg") || "bin";
+  return file.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || fallback;
+};
 
 export default function BookTalent() {
   const navigate = useNavigate();
@@ -64,6 +70,24 @@ export default function BookTalent() {
 
     setSubmitting(true);
     try {
+      const inquiryId = crypto.randomUUID();
+      let uploadedBriefPath: string | null = null;
+
+      if (file) {
+        uploadedBriefPath = `submissions/booking-inquiries/${inquiryId}/brief-${crypto.randomUUID()}.${extensionForFile(file)}`;
+        const { error: uploadError } = await supabase.storage
+          .from(INQUIRY_MEDIA_BUCKET)
+          .upload(uploadedBriefPath, file, {
+            cacheControl: "3600",
+            contentType: file.type || undefined,
+            upsert: false,
+          });
+
+        if (uploadError) {
+          throw new Error(`Could not upload ${file.name}: ${uploadError.message}`);
+        }
+      }
+
       const details = [
         `Preferred contact: ${form.preferredContact}`,
         `Country: ${form.country || "Not provided"}`,
@@ -72,11 +96,13 @@ export default function BookTalent() {
         `Date: ${form.date || "Not provided"}`,
         `Location: ${form.location || "Not provided"}`,
         `Budget: ${form.budgetCurrency} ${form.budgetRange || "Not provided"}`,
+        uploadedBriefPath ? `Attached brief: ${INQUIRY_MEDIA_BUCKET}/${uploadedBriefPath}` : null,
         file ? `Attached brief filename: ${file.name}` : null,
         "",
         form.projectDescription.trim(),
       ].filter(Boolean).join("\n");
       const { error } = await supabase.from("partner_inquiries").insert({
+        id: inquiryId,
         inquiry_type: "booking",
         company: form.companyName.trim(),
         name: form.fullName.trim(),
