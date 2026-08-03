@@ -471,9 +471,7 @@ export default function AdminReview() {
             (mediaData as SubmissionMedia[]).map(async (media) => {
               const { data: signed, error: signedError } = await supabase.storage
                 .from(media.bucket_id)
-                .createSignedUrl(media.object_path, 60 * 10, {
-                  download: media.file_name ?? undefined,
-                });
+                .createSignedUrl(media.object_path, 60 * 10);
               return { ...media, signedUrl: signed?.signedUrl, signedUrlError: signedError?.message };
             }),
           );
