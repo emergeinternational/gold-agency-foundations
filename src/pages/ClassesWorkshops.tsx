@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import Layout from "@/components/Layout";
 import PageHero from "@/components/PageHero";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Calendar, Tag, Users, MapPin, Globe } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
@@ -31,12 +31,87 @@ export default function ClassesWorkshops() {
   const [formatFilter, setFormatFilter] = useState("All");
   const [levelFilter, setLevelFilter] = useState("All");
   const [selectedClass, setSelectedClass] = useState<typeof classes[0] | null>(null);
+  const [form, setForm] = useState({ name: "", email: "", phone: "", country: "", city: "", consent: false });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const filtered = classes.filter(c =>
     (topicFilter === "All" || c.topic === topicFilter) &&
     (formatFilter === "All" || c.format === formatFilter) &&
     (levelFilter === "All" || c.level === levelFilter)
   );
+
+  const update = (field: string, value: string | boolean) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors((prev) => {
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  };
+
+  const closeModal = () => {
+    setSelectedClass(null);
+    setSubmitted(false);
+    setSubmitting(false);
+    setErrors({});
+    setForm({ name: "", email: "", phone: "", country: "", city: "", consent: false });
+  };
+
+  const submitEnrollment = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!selectedClass) return;
+
+    const nextErrors: Record<string, string> = {};
+    if (!form.name.trim()) nextErrors.name = "Required";
+    if (!form.email.trim()) nextErrors.email = "Required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) nextErrors.email = "Please enter a valid email";
+    if (!form.country.trim()) nextErrors.country = "Required";
+    if (!form.city.trim()) nextErrors.city = "Required";
+    if (!form.consent) nextErrors.consent = "Consent is required";
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) return;
+
+    setSubmitting(true);
+    try {
+      const programType = selectedClass.format.toLowerCase();
+      const details = [
+        `Program type: ${programType}`,
+        `Program id: ${selectedClass.id}`,
+        `Program: ${selectedClass.title}`,
+        `Topic: ${selectedClass.topic}`,
+        `Level: ${selectedClass.level}`,
+        `Date: ${selectedClass.date}`,
+        `Delivery: ${selectedClass.delivery}`,
+        `Location: ${selectedClass.location}`,
+        `Availability: ${selectedClass.spots}`,
+        `Country: ${form.country.trim()}`,
+        `City: ${form.city.trim()}`,
+        `Consent: ${form.consent ? "Granted" : "Missing"}`,
+      ].join("\n");
+
+      const { error } = await supabase.from("partner_inquiries").insert({
+        inquiry_type: `program_${programType}`,
+        company: selectedClass.title,
+        name: form.name.trim(),
+        email: form.email.trim(),
+        phone: form.phone.trim() || null,
+        message: details,
+        status: "new",
+      });
+      if (error) throw error;
+      setSubmitted(true);
+    } catch (error) {
+      console.error("program enrollment submit error", error);
+      setErrors({ form: "Something went wrong. Please try again, or contact us directly." });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const inputClass = "w-full px-4 py-3 bg-secondary/60 border border-border/60 rounded-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary/40 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-sm";
+  const errorClass = "text-xs text-destructive mt-1";
 
   return (
     <Layout>
@@ -113,7 +188,7 @@ export default function ClassesWorkshops() {
 
       {/* Detail Modal */}
       {selectedClass && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4" onClick={() => setSelectedClass(null)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4" onClick={closeModal}>
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="card-premium p-8 max-w-lg w-full" onClick={e => e.stopPropagation()}>
             <span className="text-[10px] uppercase tracking-widest text-primary">{selectedClass.format} · {selectedClass.level}</span>
             <h3 className="font-display text-2xl font-semibold text-foreground mt-2 mb-4">{selectedClass.title}</h3>
@@ -125,10 +200,56 @@ export default function ClassesWorkshops() {
               <p><strong className="text-foreground">Investment:</strong> {selectedClass.price}</p>
               <p><strong className="text-foreground">Availability:</strong> {selectedClass.spots === "Waitlist" ? "Waitlist only" : "Spots available"}</p>
             </div>
-            <div className="flex gap-3">
-              <Button variant="gold" asChild className="flex-1"><Link to="/enrollment-success">{selectedClass.spots === "Waitlist" ? "Join Waitlist" : "Confirm Enrollment"}</Link></Button>
-              <Button variant="gold-outline" onClick={() => setSelectedClass(null)}>Close</Button>
-            </div>
+            {submitted ? (
+              <div className="space-y-5">
+                <div className="rounded-md border border-primary/30 bg-primary/10 p-4">
+                  <h4 className="font-display text-lg font-semibold text-foreground">Request Received</h4>
+                  <p className="mt-1 text-sm text-gray-300">Our team will review your program request and follow up with next steps.</p>
+                </div>
+                <Button variant="gold-outline" onClick={closeModal}>Close</Button>
+              </div>
+            ) : (
+              <form onSubmit={submitEnrollment} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-foreground/80 mb-1.5 uppercase tracking-wide">Full Name *</label>
+                    <input className={inputClass} value={form.name} onChange={(event) => update("name", event.target.value)} placeholder="Your full name" />
+                    {errors.name && <p className={errorClass}>{errors.name}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-foreground/80 mb-1.5 uppercase tracking-wide">Email *</label>
+                    <input className={inputClass} type="email" value={form.email} onChange={(event) => update("email", event.target.value)} placeholder="you@email.com" />
+                    {errors.email && <p className={errorClass}>{errors.email}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-foreground/80 mb-1.5 uppercase tracking-wide">Phone</label>
+                    <input className={inputClass} value={form.phone} onChange={(event) => update("phone", event.target.value)} placeholder="+1, +251, +44..." />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-foreground/80 mb-1.5 uppercase tracking-wide">Country *</label>
+                    <input className={inputClass} value={form.country} onChange={(event) => update("country", event.target.value)} placeholder="Country" />
+                    {errors.country && <p className={errorClass}>{errors.country}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-foreground/80 mb-1.5 uppercase tracking-wide">City *</label>
+                    <input className={inputClass} value={form.city} onChange={(event) => update("city", event.target.value)} placeholder="City" />
+                    {errors.city && <p className={errorClass}>{errors.city}</p>}
+                  </div>
+                </div>
+                <label className="flex items-start gap-2 text-xs text-gray-300">
+                  <input type="checkbox" checked={form.consent} onChange={(event) => update("consent", event.target.checked)} className="mt-0.5" />
+                  I consent to ASCEND contacting me about this program request.
+                </label>
+                {errors.consent && <p className={errorClass}>{errors.consent}</p>}
+                {errors.form && <p className="text-sm text-destructive">{errors.form}</p>}
+                <div className="flex gap-3">
+                  <Button type="submit" variant="gold" className="flex-1" disabled={submitting}>
+                    {submitting ? "Submitting..." : selectedClass.spots === "Waitlist" ? "Join Waitlist" : "Confirm Enrollment"}
+                  </Button>
+                  <Button type="button" variant="gold-outline" onClick={closeModal}>Close</Button>
+                </div>
+              </form>
+            )}
           </motion.div>
         </div>
       )}

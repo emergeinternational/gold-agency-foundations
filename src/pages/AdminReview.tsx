@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { CandidateMessagingPanel } from "@/components/admin/CandidateMessagingPanel";
+import { TALENT_CATEGORIES } from "@/lib/brand";
 
 type ReviewStatus = "new" | "review" | "development" | "approved" | "rejected";
 type SubmissionLevel = "beginner" | "intermediate" | "advanced" | "elite";
@@ -149,6 +150,7 @@ type SubmissionMedia = {
   mime_type: string | null;
   size_bytes: number | null;
   signedUrl?: string;
+  signedUrlError?: string;
 };
 
 const GENERIC_EVALUATION_CRITERIA = ["potential", "professionalism", "market_fit"] as const;
@@ -339,6 +341,7 @@ export default function AdminReview() {
   const [notesBySubmission, setNotesBySubmission] = useState<Record<string, AdminNote[]>>({});
   const [statusDrafts, setStatusDrafts] = useState<Record<string, ReviewStatus>>({});
   const [assigneeDrafts, setAssigneeDrafts] = useState<Record<string, string>>({});
+  const [categoryDrafts, setCategoryDrafts] = useState<Record<string, string>>({});
   const [levelDrafts, setLevelDrafts] = useState<Record<string, SubmissionLevel | "">>({});
   const [noteDrafts, setNoteDrafts] = useState<Record<string, string>>({});
   const [mediaBySubmission, setMediaBySubmission] = useState<Record<string, SubmissionMedia[]>>({});
@@ -352,6 +355,7 @@ export default function AdminReview() {
   const [viewMode, setViewMode] = useState<ReviewViewMode>("standard");
   const [savingStatusId, setSavingStatusId] = useState<string | null>(null);
   const [savingAssigneeId, setSavingAssigneeId] = useState<string | null>(null);
+  const [savingCategoryId, setSavingCategoryId] = useState<string | null>(null);
   const [savingLevelId, setSavingLevelId] = useState<string | null>(null);
   const [savingNextActionId, setSavingNextActionId] = useState<string | null>(null);
   const [savingNoteId, setSavingNoteId] = useState<string | null>(null);
@@ -395,6 +399,13 @@ export default function AdminReview() {
       setAssigneeDrafts(
         submissionRows.reduce<Record<string, string>>((acc, row) => {
           acc[row.id] = row.assignee ?? "";
+          return acc;
+        }, {}),
+      );
+
+      setCategoryDrafts(
+        submissionRows.reduce<Record<string, string>>((acc, row) => {
+          acc[row.id] = row.category ?? "";
           return acc;
         }, {}),
       );
@@ -458,10 +469,12 @@ export default function AdminReview() {
         } else if (mediaData) {
           const signedMedia = await Promise.all(
             (mediaData as SubmissionMedia[]).map(async (media) => {
-              const { data: signed } = await supabase.storage
+              const { data: signed, error: signedError } = await supabase.storage
                 .from(media.bucket_id)
-                .createSignedUrl(media.object_path, 60 * 10);
-              return { ...media, signedUrl: signed?.signedUrl };
+                .createSignedUrl(media.object_path, 60 * 10, {
+                  download: media.file_name ?? undefined,
+                });
+              return { ...media, signedUrl: signed?.signedUrl, signedUrlError: signedError?.message };
             }),
           );
 
@@ -603,6 +616,61 @@ export default function AdminReview() {
     }
 
     setSavingAssigneeId(null);
+  };
+
+  const handleCategorySave = async (submissionId: string) => {
+    const category = categoryDrafts[submissionId];
+    if (!category || !TALENT_CATEGORIES.some((item) => item.id === category)) {
+      setError("Please select a valid category.");
+      return;
+    }
+
+    const row = rows.find((item) => item.id === submissionId);
+    if (!row) return;
+
+    setSavingCategoryId(submissionId);
+    setError(null);
+
+    const currentScores = row.evaluation_scores ?? {};
+    const nextScores = getEvaluationCriteria(category).reduce<Record<string, number>>((acc, key) => {
+      const value = currentScores[key];
+      if (typeof value === "number" && value >= 1 && value <= 5) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
+
+    const decision = resolveConsistentNextAction({
+      status: normalizeStatus(row.status),
+      level: normalizeLevel(row.level),
+      category,
+      evaluationScores: nextScores,
+    });
+
+    const { error: updateError } = await supabase
+      .from("submissions")
+      .update({
+        category,
+        evaluation_scores: nextScores,
+        emerge_ready: decision.emergeReady,
+        next_action: decision.nextAction,
+      })
+      .eq("id", submissionId);
+
+    if (updateError) {
+      setError(updateError.message);
+    } else {
+      setRows((prev) =>
+        prev.map((item) =>
+          item.id === submissionId
+            ? { ...item, category, evaluation_scores: nextScores, emerge_ready: decision.emergeReady, next_action: decision.nextAction }
+            : item,
+        ),
+      );
+      setEvaluationDrafts((prev) => ({ ...prev, [submissionId]: nextScores }));
+    }
+
+    setSavingCategoryId(null);
   };
 
   const handleEvaluationScoreChange = (submissionId: string, key: string, value: number | null) => {
@@ -773,7 +841,7 @@ export default function AdminReview() {
   };
 
   const categoryOptions = useMemo(
-    () => [...new Set(rows.map((row) => normalizeCategory(row.category ?? "")).filter(Boolean))].sort(),
+    () => [...new Set([...TALENT_CATEGORIES.map((item) => normalizeCategory(item.id)), ...rows.map((row) => normalizeCategory(row.category ?? ""))].filter(Boolean))].sort(),
     [rows],
   );
 
@@ -1102,7 +1170,40 @@ export default function AdminReview() {
                     <td className="px-3 py-2">{row.email ?? "—"}</td>
                     <td className="px-3 py-2">{row.phone ?? "—"}</td>
                     <td className="px-3 py-2">{row.city ?? "—"}</td>
-                    <td className="px-3 py-2">{normalizedCategory ? formatCriterionLabel(normalizedCategory) : "—"}</td>
+                    <td className="min-w-56 px-3 py-2">
+                      <div className="space-y-2">
+                        <p className="text-xs text-muted-foreground">
+                          Current: {normalizedCategory ? formatCriterionLabel(normalizedCategory) : "—"}
+                        </p>
+                        <div className="flex gap-2">
+                          <select
+                            className="h-9 rounded-md border border-input bg-background px-2 text-sm"
+                            value={categoryDrafts[row.id] ?? row.category ?? ""}
+                            onChange={(event) =>
+                              setCategoryDrafts((prev) => ({
+                                ...prev,
+                                [row.id]: event.target.value,
+                              }))
+                            }
+                          >
+                            <option value="">Select category</option>
+                            {TALENT_CATEGORIES.map((category) => (
+                              <option key={category.id} value={category.id}>
+                                {category.label}
+                              </option>
+                            ))}
+                          </select>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={savingCategoryId === row.id}
+                            onClick={() => handleCategorySave(row.id)}
+                          >
+                            Save
+                          </Button>
+                        </div>
+                      </div>
+                    </td>
                     <td className="min-w-56 px-3 py-2">
                       <div className="flex flex-wrap gap-1">
                         {criteria.map((criterion) => (
@@ -1324,15 +1425,26 @@ export default function AdminReview() {
                           !row.website &&
                           media.length === 0 && <span className="text-xs text-muted-foreground">—</span>}
                         {media.map((item) => (
-                          <a
-                            key={item.id}
-                            href={item.signedUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-xs underline underline-offset-2"
-                          >
-                            {item.file_role.replace("_", " ")}
-                          </a>
+                          item.signedUrl ? (
+                            <a
+                              key={item.id}
+                              href={item.signedUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              download={item.file_name ?? undefined}
+                              className="text-xs underline underline-offset-2"
+                            >
+                              {item.file_role.replace("_", " ")}
+                            </a>
+                          ) : (
+                            <span
+                              key={item.id}
+                              className="text-xs text-destructive"
+                              title={item.signedUrlError || "Signed URL unavailable"}
+                            >
+                              {item.file_role.replace("_", " ")} unavailable
+                            </span>
+                          )
                         ))}
                       </div>
                     </td>
