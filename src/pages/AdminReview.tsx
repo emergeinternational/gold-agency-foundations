@@ -469,10 +469,14 @@ export default function AdminReview() {
         } else if (mediaData) {
           const signedMedia = await Promise.all(
             (mediaData as SubmissionMedia[]).map(async (media) => {
-              const { data: signed, error: signedError } = await supabase.storage
+              const { data: fileBlob, error: downloadError } = await supabase.storage
                 .from(media.bucket_id)
-                .createSignedUrl(media.object_path, 60 * 10);
-              return { ...media, signedUrl: signed?.signedUrl, signedUrlError: signedError?.message };
+                .download(media.object_path);
+              return {
+                ...media,
+                signedUrl: fileBlob ? URL.createObjectURL(fileBlob) : undefined,
+                signedUrlError: downloadError?.message,
+              };
             }),
           );
 
