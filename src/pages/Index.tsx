@@ -104,14 +104,14 @@ export default function Index() {
             <motion.div {...fadeUp}>
               <span className="badge-label mb-5 block">National Creative Ambassador</span>
               <h2 className="font-display text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-foreground leading-[1.05] whitespace-nowrap">
-                Zewotir Desalegn Alemu (Mr. Zik)
+                Meet the Face of ASCEND
               </h2>
               <div className="gold-line mt-5 mb-8" />
             <p className="text-secondary-foreground/80 text-lg leading-relaxed mb-4 font-light">
-                The face of {BRAND.name} — connecting creative talent with the infrastructure, visibility, and readiness the international industry demands.
+                An international media personality, creative strategist, and talent advocate helping shape the next generation of creators through development, industry access, and global opportunities.
               </p>
               <p className="text-gray-300 text-base leading-relaxed mb-10">
-                A media personality and talent advocate whose career in entertainment and creative strategy gives the agency its edge: credibility earned, not claimed.
+                With a career spanning media, entertainment, and creative leadership, Mr. Zik brings real-world insight to ASCEND's mission: discovering potential, developing talent, and creating pathways to long-term success across the global creative economy.
               </p>
               <Button variant="gold-outline" size="lg" asChild>
                 <Link to="/mr-zik">
